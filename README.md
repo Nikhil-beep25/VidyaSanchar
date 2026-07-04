@@ -95,8 +95,8 @@ Open the portal login page and use the following test accounts:
 |---|---|---|
 | **Admin** | `admin@sms.edu.in` | Manage student/teacher lists, collect UPI/Cash dues, issue library books. |
 | **Teacher** | `ramesh.verma@sms.edu.in` | Mark daily attendance, grade exams, view teaching timetable schedules. |
-| **Student** | `rahul.gupta@student.sms.edu.in` | Check attendance charts, view ₹0 outstanding dues balance, view math report cards. |
-| **Parent** | `anil.gupta@parent.sms.edu.in` | Monitor child's progress calendar, review class exam records, and view fee receipts. |
+| **Student** | `aarav.sharma@student.sms.edu.in` | Check attendance charts, view outstanding dues, view report cards. |
+| **Parent** | `anil.sharma@parent.sms.edu.in` | Monitor child's progress calendar, review class exam records, and view fee receipts. |
 
 ---
 
