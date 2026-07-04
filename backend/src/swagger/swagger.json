@@ -1,0 +1,192 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Student Management System API",
+    "description": "API Documentation for the enterprise-grade Student Management System (SMS) for Indian educational institutes.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "summary": "User Login",
+        "description": "Authenticates a user and returns an access token and user profile details.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "example": "admin@sms.edu.in" },
+                  "password": { "type": "string", "example": "Password@123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "accessToken": { "type": "string" },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "email": { "type": "string" },
+                        "name": { "type": "string" },
+                        "role": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register User",
+        "description": "Registers a new user (default admin or general user role).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "name", "role"],
+                "properties": {
+                  "email": { "type": "string", "example": "newadmin@sms.edu.in" },
+                  "password": { "type": "string", "example": "Password@123" },
+                  "name": { "type": "string", "example": "Amit Gupta" },
+                  "role": { "type": "string", "enum": ["ADMIN", "TEACHER", "STUDENT", "PARENT"], "example": "ADMIN" },
+                  "phone": { "type": "string", "example": "+919876543222" },
+                  "address": { "type": "string", "example": "Dwarka, Delhi" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Registration successful" },
+          "400": { "description": "User already exists or missing fields" }
+        }
+      }
+    },
+    "/api/analytics/summary": {
+      "get": {
+        "summary": "Dashboard Stats",
+        "description": "Returns counts and aggregates custom to the requesting user's role.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Summary data retrieved successfully" },
+          "401": { "description": "Missing token" }
+        }
+      }
+    },
+    "/api/students": {
+      "get": {
+        "summary": "List Students",
+        "description": "Returns all students. Optional query filters for Search and ClassId.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "search", "in": "query", "schema": { "type": "string" }, "required": false },
+          { "name": "classId", "in": "query", "schema": { "type": "string" }, "required": false }
+        ],
+        "responses": {
+          "200": { "description": "List of student records" }
+        }
+      },
+      "post": {
+        "summary": "Create Student Profile",
+        "description": "Creates a student login user and a student profile details inside a transaction.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "name", "rollNumber", "admissionNumber", "dateOfBirth", "gender", "classId"],
+                "properties": {
+                  "email": { "type": "string", "example": "rahul.gupta@student.sms.edu.in" },
+                  "name": { "type": "string", "example": "Rahul Gupta" },
+                  "rollNumber": { "type": "string", "example": "10A01" },
+                  "admissionNumber": { "type": "string", "example": "ADM-2026-0001" },
+                  "dateOfBirth": { "type": "string", "format": "date", "example": "2011-04-12" },
+                  "gender": { "type": "string", "example": "Male" },
+                  "bloodGroup": { "type": "string", "example": "O+" },
+                  "classId": { "type": "string" },
+                  "parentId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Student created" }
+        }
+      }
+    },
+    "/api/attendance": {
+      "post": {
+        "summary": "Record Daily Attendance",
+        "description": "Saves daily attendance for a list of students in a class.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["classId", "date", "records"],
+                "properties": {
+                  "classId": { "type": "string" },
+                  "date": { "type": "string", "format": "date", "example": "2026-07-04" },
+                  "records": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "studentId": { "type": "string" },
+                        "status": { "type": "string", "enum": ["PRESENT", "ABSENT", "LATE", "EXCUSED"], "example": "PRESENT" },
+                        "remarks": { "type": "string", "example": "Punctual" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Attendance recorded" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
