@@ -9,6 +9,7 @@ import { env } from './config/env';
 import apiRouter from './routes';
 import { swaggerSpec } from './swagger/swagger';
 import { errorMiddleware } from './middlewares/errorMiddleware';
+import { tenantMiddleware } from './middlewares/tenantMiddleware';
 
 const app = express();
 
@@ -19,6 +20,8 @@ app.use(helmet());
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
+  'http://localhost:5175',
+  'http://127.0.0.1:5175',
   'https://vidya-sanchar.vercel.app',
   'https://vidya-sanchar-djlsqrnr6-doc-nick.vercel.app'
 ];
@@ -32,12 +35,22 @@ if (process.env.FRONTEND_URL) {
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
+
+app.options('*', cors());
 
 // 3. Compression (Gzip)
 app.use(compression());
@@ -95,8 +108,8 @@ app.get('/healthz', (req, res) => {
   res.status(200).json({ status: 'healthy', timestamp: new Date() });
 });
 
-// 11. Register Routes
-app.use('/api', apiRouter);
+// 11. Register Routes with Tenant Isolation Middleware
+app.use('/api', tenantMiddleware, apiRouter);
 
 // 12. Handle 404
 app.use((req, res) => {

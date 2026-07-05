@@ -76,6 +76,13 @@ import {
 } from '../controllers/feeController';
 
 import {
+  createOrder,
+  verifyPayment,
+  getPaymentHistory,
+  downloadReceipt
+} from '../controllers/paymentController';
+
+import {
   createTimetableSlot,
   getClassTimetable,
   getTeacherTimetable,
@@ -100,8 +107,41 @@ import {
 } from '../controllers/notificationController';
 
 import {
-  getDashboardSummary
+  getDashboardSummary,
+  getAdvancedAnalytics
 } from '../controllers/analyticsController';
+
+import {
+  sendMessage,
+  getMessages,
+  getChatParticipants,
+  createNotice,
+  getNotices
+} from '../controllers/communicationController';
+
+import {
+  createAssignment,
+  submitAssignment,
+  gradeAssignment,
+  getStudentSubmissions,
+  getAssignmentSubmissions
+} from '../controllers/academicController';
+
+import {
+  createRoute,
+  getAllRoutes,
+  createVehicle,
+  getAllVehicles,
+  assignStudentTransport,
+  getStudentTransport
+} from '../controllers/transportController';
+
+import {
+  downloadReportCardPDF,
+  downloadCertificatePDF,
+  downloadAdmitCardPDF,
+  downloadAttendanceReportPDF
+} from '../controllers/documentController';
 
 const router = Router();
 
@@ -179,6 +219,7 @@ router.use((req, res, next) => {
 
 // Analytics
   router.get('/analytics/summary', getDashboardSummary);
+  router.get('/analytics/trends', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), getAdvancedAnalytics);
 
   // Users profile
   router.get('/users/profile', getUserProfile);
@@ -235,6 +276,33 @@ router.get('/fees', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), getAllFees);
 router.get('/fees/student/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), getStudentFeeLedger);
 router.post('/fees/payment', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), recordPayment);
 
+// Online Fees Checkout via Razorpay
+router.post('/fees/checkout/create-order', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT']), createOrder);
+router.post('/fees/checkout/verify', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT']), verifyPayment);
+router.get('/fees/history', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT', 'STUDENT']), getPaymentHistory);
+router.get('/fees/receipt/:paymentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT', 'STUDENT']), downloadReceipt);
+
+// PDF Document Reports & Certificates
+router.get('/reports/report-card/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), downloadReportCardPDF);
+router.get('/reports/certificate/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), downloadCertificatePDF);
+router.get('/reports/admit-card/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'STUDENT', 'PARENT']), downloadAdmitCardPDF);
+router.get('/reports/attendance/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), downloadAttendanceReportPDF);
+
+// Homework & Assignments
+router.post('/assignments', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createAssignment);
+router.post('/assignments/:assignmentId/submit', roleMiddleware(['STUDENT']), submitAssignment);
+router.post('/assignments/submissions/:submissionId/grade', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), gradeAssignment);
+router.get('/assignments/submissions/student/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), getStudentSubmissions);
+router.get('/assignments/:assignmentId/submissions', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), getAssignmentSubmissions);
+
+// Transport Management
+router.post('/transport/routes', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), createRoute);
+router.get('/transport/routes', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'STUDENT', 'PARENT']), getAllRoutes);
+router.post('/transport/vehicles', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), createVehicle);
+router.get('/transport/vehicles', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'STUDENT', 'PARENT']), getAllVehicles);
+router.post('/transport/assign', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), assignStudentTransport);
+router.get('/transport/student/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), getStudentTransport);
+
 // Timetable
 router.post('/timetables', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), createTimetableSlot);
 router.get('/timetables/class/:classId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), getClassTimetable);
@@ -254,5 +322,12 @@ router.put('/library/issues/:id/return', roleMiddleware(['SUPER_ADMIN', 'ADMIN']
 router.post('/notifications', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createNotification);
 router.get('/notifications', getNotifications);
 router.get('/contact/submissions', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), getContactSubmissions);
+
+// Communication Messaging & School Notices
+router.post('/messages', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), sendMessage);
+router.get('/messages/participants', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getChatParticipants);
+router.get('/messages/:otherUserId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getMessages);
+router.post('/notices', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createNotice);
+router.get('/notices', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getNotices);
 
 export default router;

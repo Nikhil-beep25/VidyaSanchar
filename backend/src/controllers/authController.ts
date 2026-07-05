@@ -53,11 +53,12 @@ export async function register(req: Request, res: Response, next: NextFunction) 
         profileImage: true,
         isActive: true,
         createdAt: true,
+        schoolId: true,
       },
     });
 
-    const accessToken = generateAccessToken({ userId: user.id, email: user.email, role: user.role });
-    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, role: user.role });
+    const accessToken = generateAccessToken({ userId: user.id, email: user.email, role: user.role, schoolId: user.schoolId || undefined });
+    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, role: user.role, schoolId: user.schoolId || undefined });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -94,8 +95,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       return res.status(401).json({ success: false, message: 'Invalid credentials.' });
     }
 
-    const accessToken = generateAccessToken({ userId: user.id, email: user.email, role: user.role });
-    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, role: user.role });
+    const accessToken = generateAccessToken({ userId: user.id, email: user.email, role: user.role, schoolId: user.schoolId || undefined });
+    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, role: user.role, schoolId: user.schoolId || undefined });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -161,7 +162,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
       return res.status(401).json({ success: false, message: 'User is inactive or does not exist.' });
     }
 
-    const newAccessToken = generateAccessToken({ userId: user.id, email: user.email, role: user.role });
+    const newAccessToken = generateAccessToken({ userId: user.id, email: user.email, role: user.role, schoolId: user.schoolId || undefined });
     return res.status(200).json({
       success: true,
       accessToken: newAccessToken,

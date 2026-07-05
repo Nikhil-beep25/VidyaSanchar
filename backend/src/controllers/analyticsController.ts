@@ -144,3 +144,67 @@ export async function getDashboardSummary(req: Request, res: Response, next: Nex
     next(error);
   }
 }
+
+/**
+ * Advanced analytics aggregators for trends graphs
+ */
+export async function getAdvancedAnalytics(req: Request, res: Response, next: NextFunction) {
+  try {
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    // 1. Fee collection trends (Last 6 months)
+    const payments = await prisma.payment.findMany({
+      where: {
+        paymentDate: { gte: sixMonthsAgo }
+      },
+      select: { amountPaid: true, paymentDate: true }
+    });
+
+    const feeTrends: Record<string, number> = {};
+    payments.forEach(p => {
+      const monthStr = p.paymentDate.toLocaleString('en-US', { month: 'short' });
+      feeTrends[monthStr] = (feeTrends[monthStr] || 0) + p.amountPaid;
+    });
+
+    // 2. Attendance trends (Last 6 months)
+    const attendances = await prisma.attendance.findMany({
+      where: {
+        date: { gte: sixMonthsAgo }
+      },
+      select: { status: true, date: true }
+    });
+
+    const attendanceRate: Record<string, { present: number, total: number }> = {};
+    attendances.forEach(a => {
+      const monthStr = a.date.toLocaleString('en-US', { month: 'short' });
+      if (!attendanceRate[monthStr]) {
+        attendanceRate[monthStr] = { present: 0, total: 0 };
+      }
+      attendanceRate[monthStr].total += 1;
+      if (a.status === 'PRESENT') {
+        attendanceRate[monthStr].present += 1;
+      }
+    });
+
+    const attendanceTrends = Object.keys(attendanceRate).map(month => {
+      const { present, total } = attendanceRate[month];
+      return {
+        month,
+        rate: total > 0 ? Math.round((present / total) * 100) : 100
+      };
+    });
+
+    const feeCollectionTrends = Object.keys(feeTrends).map(month => ({
+      month,
+      amount: feeTrends[month]
+    }));
+
+    return res.status(200).json({
+      feeCollectionTrends,
+      attendanceTrends
+    });
+  } catch (error) {
+    next(error);
+  }
+}

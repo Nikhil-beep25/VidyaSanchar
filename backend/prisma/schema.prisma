@@ -35,6 +35,53 @@ enum IssueStatus {
   OVERDUE
 }
 
+model School {
+  id           String        @id @default(uuid())
+  name         String
+  slug         String        @unique // e.g. "dps-dwarka"
+  domain       String?       @unique // custom domain support
+  logo         String?
+  themeColor   String        @default("#7C3AED")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  
+  // Relations
+  users        User[]
+  classes      Class[]
+  vehicles     Vehicle[]
+  routes       Route[]
+  subscriptions SchoolSubscription[]
+  auditLogs    AuditLog[]
+  libraryBooks LibraryBook[]
+  notifications Notification[]
+}
+
+model SubscriptionPlan {
+  id           String        @id @default(uuid())
+  name         String
+  price        Float
+  billingCycle String        // MONTHLY, ANNUALLY
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  
+  // Relations
+  subscriptions SchoolSubscription[]
+}
+
+model SchoolSubscription {
+  id           String           @id @default(uuid())
+  schoolId     String
+  school       School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  planId       String
+  plan         SubscriptionPlan @relation(fields: [planId], references: [id])
+  startDate    DateTime
+  endDate      DateTime
+  status       String           // ACTIVE, EXPIRED, CANCELLED
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
 model User {
   id           String        @id @default(uuid())
   email        String        @unique
@@ -48,11 +95,22 @@ model User {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   
+  // Tenancy relation
+  schoolId     String?
+  school       School?       @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  
   // Relations
   studentProfile Student?
   teacherProfile Teacher?
   parentProfile  Parent?
   sentNotifications Notification[] @relation("SentNotifications")
+  
+  // Messaging
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  
+  // Auditing
+  auditLogs        AuditLog[]
 }
 
 model Student {
@@ -75,6 +133,12 @@ model Student {
   marks           Mark[]
   payments        Payment[]
   bookIssues      BookIssue[]
+  transactions    Transaction[]
+  
+  // Transport & Submissions & Documents
+  transport       StudentTransport?
+  submissions     AssignmentSubmission[]
+  certificates    CertificateIssue[]
 
   @@index([classId])
   @@index([parentId])
@@ -111,6 +175,10 @@ model Class {
   name           String      // e.g. "Class 10", "B.Tech Year 1"
   section        String      // e.g. "A", "Section B"
   roomNumber     String?
+  
+  // Tenancy relation
+  schoolId       String?
+  school         School?     @relation(fields: [schoolId], references: [id], onDelete: SetNull)
   
   // Relations
   classTeacherId String?
@@ -197,6 +265,7 @@ model Fee {
   classId   String
   feeClass  Class      @relation(fields: [classId], references: [id])
   payments  Payment[]
+  transactions Transaction[]
 }
 
 model Payment {
@@ -249,6 +318,26 @@ model Assignment {
   assignmentClass Class @relation(fields: [classId], references: [id])
   subjectId   String
   subject     Subject  @relation(fields: [subjectId], references: [id])
+  
+  submissions AssignmentSubmission[]
+}
+
+model AssignmentSubmission {
+  id             String     @id @default(uuid())
+  assignmentId   String
+  assignment     Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId      String
+  student        Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  submissionDate DateTime   @default(now())
+  status         String     // SUBMITTED, GRADED, LATE
+  filePath       String?
+  marksObtained  Float?
+  feedback       String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([assignmentId])
+  @@index([studentId])
 }
 
 model Notification {
@@ -258,6 +347,10 @@ model Notification {
   recipientRole RoleType // All, SUPER_ADMIN, ADMIN, TEACHER, STUDENT, PARENT
   isAnnouncement Boolean @default(false)
   createdAt     DateTime @default(now())
+  
+  // Tenancy relation
+  schoolId      String?
+  school        School?  @relation(fields: [schoolId], references: [id], onDelete: SetNull)
   
   // Relations
   senderId      String?
@@ -272,6 +365,10 @@ model LibraryBook {
   quantity          Int
   availableQuantity Int
   location          String?     // e.g. "Rack A, Shelf 3"
+  
+  // Tenancy relation
+  schoolId          String?
+  school            School?     @relation(fields: [schoolId], references: [id], onDelete: SetNull)
   
   // Relations
   issues            BookIssue[]
@@ -303,4 +400,113 @@ model ContactSubmission {
   subject   String
   message   String
   createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id                String    @id @default(uuid())
+  razorpayOrderId   String    @unique
+  razorpayPaymentId String?   @unique
+  razorpaySignature String?
+  amount            Float
+  currency          String    @default("INR")
+  status            String    // PENDING, SUCCESS, FAILED
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  feeId             String
+  fee               Fee       @relation(fields: [feeId], references: [id], onDelete: Cascade)
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([feeId])
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipientId String
+  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+  content     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([senderId])
+  @@index([recipientId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  details   String
+  ipAddress String?
+  schoolId  String?
+  school    School?  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([schoolId])
+}
+
+model CertificateIssue {
+  id                String   @id @default(uuid())
+  studentId         String
+  student           Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  certificateType   String
+  certificateNumber String   @unique
+  issuedDate        DateTime @default(now())
+  remarks           String?
+
+  @@index([studentId])
+}
+
+model Route {
+  id             String             @id @default(uuid())
+  name           String
+  startLocation  String
+  endLocation    String
+  stops          String
+  transportFee   Float              @default(0.0)
+  schoolId       String
+  school         School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  
+  vehicles       Vehicle[]
+  assignments    StudentTransport[]
+
+  @@index([schoolId])
+}
+
+model Vehicle {
+  id           String             @id @default(uuid())
+  regNumber    String             @unique
+  model        String
+  capacity     Int
+  driverName   String
+  driverPhone  String?
+  schoolId     String
+  school       School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  routeId      String?
+  route        Route?             @relation(fields: [routeId], references: [id], onDelete: SetNull)
+  
+  assignments  StudentTransport[]
+
+  @@index([schoolId])
+  @@index([routeId])
+}
+
+model StudentTransport {
+  id        String   @id @default(uuid())
+  studentId String   @unique
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  routeId   String
+  route     Route    @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  @@index([routeId])
+  @@index([vehicleId])
 }
