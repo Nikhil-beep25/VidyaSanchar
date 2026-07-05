@@ -19,6 +19,7 @@ app.use(helmet());
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
+  'https://vidya-sanchar.vercel.app',
   'https://vidya-sanchar-djlsqrnr6-doc-nick.vercel.app'
 ];
 
@@ -29,20 +30,14 @@ if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
-    
-    const isAllowed = allowedOrigins.includes(origin) || allowedOrigins.includes('*');
-    if (isAllowed || process.env.NODE_ENV !== 'production') {
-      callback(null, true);
-    } else {
-      callback(null, false); // Block CORS request quietly without triggering internal 500 error
-    }
-  },
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
+);
 
 // 3. Compression (Gzip)
 app.use(compression());
