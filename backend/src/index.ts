@@ -16,22 +16,29 @@ const app = express();
 app.use(helmet());
 
 // 2. CORS
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://vidya-sanchar-djlsqrnr6-doc-nick.vercel.app'
+];
+
+if (process.env.ALLOWED_ORIGINS) {
+  allowedOrigins.push(...process.env.ALLOWED_ORIGINS.split(','));
+}
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
-    if (
-      process.env.NODE_ENV !== 'production' ||
-      allowedOrigins.indexOf(origin) !== -1 ||
-      allowedOrigins.includes('*')
-    ) {
+    
+    const isAllowed = allowedOrigins.includes(origin) || allowedOrigins.includes('*');
+    if (isAllowed || process.env.NODE_ENV !== 'production') {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, false); // Block CORS request quietly without triggering internal 500 error
     }
   },
   credentials: true,
