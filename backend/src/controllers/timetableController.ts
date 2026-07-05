@@ -9,6 +9,64 @@ export async function createTimetableSlot(req: Request, res: Response, next: Nex
       return res.status(400).json({ message: 'Required timetable slot fields are missing.' });
     }
 
+    // 1. Conflict Check: Teacher Double Booking
+    const teacherConflict = await prisma.timetable.findFirst({
+      where: {
+        teacherId,
+        dayOfWeek,
+        OR: [
+          {
+            startTime: { lte: startTime },
+            endTime: { gt: startTime }
+          },
+          {
+            startTime: { lt: endTime },
+            endTime: { gte: endTime }
+          },
+          {
+            startTime: { gte: startTime },
+            endTime: { lte: endTime }
+          }
+        ]
+      }
+    });
+
+    if (teacherConflict) {
+      return res.status(400).json({
+        message: `Conflict: Teacher is already booked on ${dayOfWeek} from ${teacherConflict.startTime} to ${teacherConflict.endTime}.`
+      });
+    }
+
+    // 2. Conflict Check: Classroom/Room Double Booking
+    if (roomNumber) {
+      const roomConflict = await prisma.timetable.findFirst({
+        where: {
+          roomNumber,
+          dayOfWeek,
+          OR: [
+            {
+              startTime: { lte: startTime },
+              endTime: { gt: startTime }
+            },
+            {
+              startTime: { lt: endTime },
+              endTime: { gte: endTime }
+            },
+            {
+              startTime: { gte: startTime },
+              endTime: { lte: endTime }
+            }
+          ]
+        }
+      });
+
+      if (roomConflict) {
+        return res.status(400).json({
+          message: `Conflict: Room ${roomNumber} is already occupied on ${dayOfWeek} from ${roomConflict.startTime} to ${roomConflict.endTime}.`
+        });
+      }
+    }
+
     const slot = await prisma.timetable.create({
       data: {
         dayOfWeek,
