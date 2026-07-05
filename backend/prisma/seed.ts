@@ -89,6 +89,16 @@ async function main() {
       phone: '+919876543214',
       address: 'A-404, Shanti Nagar, SG Highway, Ahmedabad, Gujarat - 380015',
       profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120',
+    },
+    {
+      email: 'teacher@sms.edu.in',
+      name: 'Test Teacher',
+      employeeId: 'T-2026-104',
+      qualification: 'M.Sc. Education',
+      specialization: 'General Studies',
+      phone: '+919876543299',
+      address: 'VidyaSanchar Campus, Bengaluru',
+      profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120',
     }
   ];
 
@@ -167,6 +177,15 @@ async function main() {
       phone: '+919988776644',
       address: 'Quarter No. 45, Sector-3, Rourkela, Odisha - 769002',
       profileImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=120',
+    },
+    {
+      email: 'parent@sms.edu.in',
+      name: 'Test Parent',
+      occupation: 'Government Service',
+      relation: 'Guardian',
+      phone: '+919988776699',
+      address: 'VidyaSanchar Campus, Bengaluru',
+      profileImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=120',
     }
   ];
 
@@ -232,6 +251,18 @@ async function main() {
       classId: classB.id,
       parentId: parents[0].id, // Also linked to Anil Gupta (siblings)
       profileImage: 'https://images.unsplash.com/photo-1488161628813-04466f872be2?auto=format&fit=crop&q=80&w=120',
+    },
+    {
+      email: 'student@sms.edu.in',
+      name: 'Test Student',
+      rollNumber: '10A03',
+      admissionNumber: 'ADM-2026-0004',
+      dateOfBirth: new Date('2011-05-15'),
+      gender: 'Male',
+      bloodGroup: 'B+',
+      classId: classA.id,
+      parentId: parents[2].id, // Link to Test Parent
+      profileImage: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=120',
     }
   ];
 

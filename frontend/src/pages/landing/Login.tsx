@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { School, Eye, EyeOff, AlertTriangle, CheckCircle, BookOpen, Clock, Calendar, Shield } from 'lucide-react';
+import { School, Eye, EyeOff, AlertTriangle, CheckCircle, BookOpen, Clock, Calendar, Shield, Copy, Check } from 'lucide-react';
 
 export const Login: React.FC = () => {
   const { login } = useAuth();
@@ -10,6 +10,42 @@ export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const handleCopyText = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => {
+      setCopiedKey(null);
+    }, 1500);
+  };
+
+  const credentialsList = [
+    {
+      role: 'Admin',
+      email: 'admin@sms.edu.in',
+      password: 'Password@123',
+      badgeColor: 'bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-950/30 dark:border-rose-900/50 dark:text-rose-400',
+    },
+    {
+      role: 'Teacher',
+      email: 'teacher@sms.edu.in',
+      password: 'Password@123',
+      badgeColor: 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-950/30 dark:border-blue-900/50 dark:text-blue-400',
+    },
+    {
+      role: 'Student',
+      email: 'student@sms.edu.in',
+      password: 'Password@123',
+      badgeColor: 'bg-violet-50 border-violet-200 text-violet-700 dark:bg-violet-950/30 dark:border-violet-900/50 dark:text-violet-400',
+    },
+    {
+      role: 'Parent',
+      email: 'parent@sms.edu.in',
+      password: 'Password@123',
+      badgeColor: 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/30 dark:border-emerald-900/50 dark:text-emerald-400',
+    },
+  ];
   
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -166,66 +202,68 @@ export const Login: React.FC = () => {
 
       </div>
 
-      {/* Dev helper credentials card (Conditional on DEV Mode) */}
-      {import.meta.env.DEV ? (
-        <div className="mt-8 w-full max-w-5xl border border-dashed border-primary/45 rounded-xl bg-primary/5 p-5 text-xs space-y-3 text-left">
-          <h4 className="font-bold text-primary flex items-center space-x-1.5">
-            <span>🛠️ Developer Test Credentials</span>
-          </h4>
-          <p className="text-muted-foreground">
-            Use these seeded user accounts to sign in and test the respective dashboard modules:
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1 w-full">
-            <div className="p-3 border rounded-xl bg-card shadow-sm flex flex-col justify-between h-full">
-              <div>
-                <span className="font-bold text-primary block text-xs mb-1">Admin Portal</span>
-                <code className="text-[10px] break-all block text-muted-foreground select-all">admin@sms.edu.in</code>
-              </div>
-              <div className="mt-2 pt-1 border-t border-muted">
-                <span className="text-[10px] text-muted-foreground">Pwd: </span>
-                <code className="text-[10px] font-semibold">Password@123</code>
-              </div>
-            </div>
-            
-            <div className="p-3 border rounded-xl bg-card shadow-sm flex flex-col justify-between h-full">
-              <div>
-                <span className="font-bold text-primary block text-xs mb-1">Teacher Portal</span>
-                <code className="text-[10px] break-all block text-muted-foreground select-all">ramesh.verma@sms.edu.in</code>
-              </div>
-              <div className="mt-2 pt-1 border-t border-muted">
-                <span className="text-[10px] text-muted-foreground">Pwd: </span>
-                <code className="text-[10px] font-semibold">Password@123</code>
-              </div>
-            </div>
-            
-            <div className="p-3 border rounded-xl bg-card shadow-sm flex flex-col justify-between h-full">
-              <div>
-                <span className="font-bold text-primary block text-xs mb-1">Student Portal</span>
-                <code className="text-[10px] break-all block text-muted-foreground select-all">aarav.sharma@student.sms.edu.in</code>
-              </div>
-              <div className="mt-2 pt-1 border-t border-muted">
-                <span className="text-[10px] text-muted-foreground">Pwd: </span>
-                <code className="text-[10px] font-semibold">Password@123</code>
-              </div>
-            </div>
-            
-            <div className="p-3 border rounded-xl bg-card shadow-sm flex flex-col justify-between h-full">
-              <div>
-                <span className="font-bold text-primary block text-xs mb-1">Parent Portal</span>
-                <code className="text-[10px] break-all block text-muted-foreground select-all">anil.sharma@parent.sms.edu.in</code>
-              </div>
-              <div className="mt-2 pt-1 border-t border-muted">
-                <span className="text-[10px] text-muted-foreground">Pwd: </span>
-                <code className="text-[10px] font-semibold">Password@123</code>
-              </div>
-            </div>
+      {/* Dev helper credentials card (Always Visible) */}
+      <div className="mt-12 w-full max-w-5xl border border-violet-100 rounded-2xl bg-violet-50/20 p-6 md:p-8 space-y-4 text-left shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 className="font-bold text-violet-700 flex items-center space-x-2 text-base md:text-lg">
+              <span className="p-1.5 bg-violet-100 rounded-lg text-violet-600">🛠️</span>
+              <span>Developer Test Credentials</span>
+            </h3>
+            <p className="text-muted-foreground text-xs mt-1">
+              Use these seeded user accounts to sign in and test the respective dashboard portals:
+            </p>
           </div>
         </div>
-      ) : (
-        <div className="mt-8 text-center text-xs text-muted-foreground">
-          Please contact the school administrator for login credentials.
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+          {credentialsList.map((cred) => {
+            const emailKey = `${cred.role.toLowerCase()}-email`;
+            const passKey = `${cred.role.toLowerCase()}-pass`;
+            return (
+              <div key={cred.role} className="p-4 border border-violet-100/50 rounded-xl bg-card shadow-sm hover:border-violet-200 hover:shadow transition-all flex flex-col justify-between space-y-3">
+                <div className="space-y-2.5">
+                  <div className="flex justify-between items-center">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${cred.badgeColor}`}>
+                      {cred.role}
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block">Email</span>
+                    <div className="flex items-center justify-between gap-1 bg-muted/40 p-1.5 rounded-md border text-xs">
+                      <code className="text-muted-foreground select-all truncate block flex-1 font-mono text-[11px]">{cred.email}</code>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyText(cred.email, emailKey)}
+                        className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+                        title="Copy email"
+                      >
+                        {copiedKey === emailKey ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block">Password</span>
+                    <div className="flex items-center justify-between gap-1 bg-muted/40 p-1.5 rounded-md border text-xs">
+                      <code className="text-muted-foreground select-all truncate block flex-1 font-mono text-[11px]">{cred.password}</code>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyText(cred.password, passKey)}
+                        className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+                        title="Copy password"
+                      >
+                        {copiedKey === passKey ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      )}
+      </div>
     </div>
   );
 };
