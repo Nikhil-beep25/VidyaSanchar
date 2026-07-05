@@ -17,40 +17,10 @@ const app = express();
 app.use(helmet());
 
 // 2. CORS
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'http://localhost:5174',
-  'http://127.0.0.1:5174',
-  'http://localhost:5175',
-  'http://127.0.0.1:5175',
-  'http://localhost:5176',
-  'http://127.0.0.1:5176',
-  'https://vidya-sanchar.vercel.app',
-  'https://vidya-sanchar-djlsqrnr6-doc-nick.vercel.app'
-];
-
-if (process.env.ALLOWED_ORIGINS) {
-  allowedOrigins.push(...process.env.ALLOWED_ORIGINS.split(','));
-}
-if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
-}
-
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error('Not allowed by CORS'));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: true,
+    credentials: true
   })
 );
 
