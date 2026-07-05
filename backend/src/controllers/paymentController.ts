@@ -57,7 +57,7 @@ export async function createOrder(req: Request, res: Response, next: NextFunctio
     }
 
     // Save transaction in database
-    const transaction = await prisma.transaction.create({
+    const transaction = await prisma.feeTransaction.create({
       data: {
         razorpayOrderId: orderId,
         amount: parseFloat(amount),
@@ -94,7 +94,7 @@ export async function verifyPayment(req: Request, res: Response, next: NextFunct
     }
 
     // Find the pending transaction
-    const transaction = await prisma.transaction.findUnique({
+    const transaction = await prisma.feeTransaction.findUnique({
       where: { razorpayOrderId: razorpay_order_id },
     });
 
@@ -118,7 +118,7 @@ export async function verifyPayment(req: Request, res: Response, next: NextFunct
 
     if (isSignatureValid) {
       // 1. Update Transaction status
-      await prisma.transaction.update({
+      await prisma.feeTransaction.update({
         where: { id: transaction.id },
         data: {
           status: 'SUCCESS',
@@ -151,7 +151,7 @@ export async function verifyPayment(req: Request, res: Response, next: NextFunct
       });
     } else {
       // Update transaction status to FAILED
-      await prisma.transaction.update({
+      await prisma.feeTransaction.update({
         where: { id: transaction.id },
         data: { status: 'FAILED' },
       });

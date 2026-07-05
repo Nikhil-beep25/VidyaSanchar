@@ -11,6 +11,56 @@ export const ParentFees: React.FC = () => {
   
   const [processingFeeId, setProcessingFeeId] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<{ status: 'success' | 'failure'; message: string; paymentId?: string } | null>(null);
+  const [mockPaymentModal, setMockPaymentModal] = useState<{ isOpen: boolean; fee: any; orderData: any } | null>(null);
+
+  const handleSimulatePayment = async (success: boolean) => {
+    if (!mockPaymentModal) return;
+    const { fee, orderData } = mockPaymentModal;
+    setMockPaymentModal(null);
+    setProcessingFeeId(fee.id);
+
+    if (success) {
+      try {
+        const mockPaymentId = `pay_mock_${Date.now()}`;
+        const verificationResult = await apiRequest('/fees/checkout/verify', {
+          method: 'POST',
+          body: JSON.stringify({
+            razorpay_order_id: orderData.orderId,
+            razorpay_payment_id: mockPaymentId,
+            razorpay_signature: 'mock_signature_success',
+          }),
+        });
+
+        if (verificationResult && verificationResult.success) {
+          setPaymentStatus({
+            status: 'success',
+            message: `Payment of ₹${fee.balance.toLocaleString('en-IN')} was successfully processed in Sandbox mode.`,
+            paymentId: verificationResult.paymentId
+          });
+          await loadLedger(selectedChildId);
+          await loadHistory(selectedChildId);
+        } else {
+          setPaymentStatus({
+            status: 'failure',
+            message: 'Sandbox verification failed.',
+          });
+        }
+      } catch (err) {
+        setPaymentStatus({
+          status: 'failure',
+          message: 'An error occurred during sandbox verification.',
+        });
+      } finally {
+        setProcessingFeeId(null);
+      }
+    } else {
+      setPaymentStatus({
+        status: 'failure',
+        message: 'Sandbox transaction was cancelled or declined.',
+      });
+      setProcessingFeeId(null);
+    }
+  };
 
   // 1. Fetch parent children context
   useEffect(() => {
@@ -97,6 +147,13 @@ export const ParentFees: React.FC = () => {
 
       if (!orderData || !orderData.orderId) {
         alert('Failed to create payment checkout order.');
+        setProcessingFeeId(null);
+        return;
+      }
+
+      // Check if it's a mock order (sandbox mode bypass)
+      if (orderData.orderId.startsWith('order_mock_')) {
+        setMockPaymentModal({ isOpen: true, fee, orderData });
         setProcessingFeeId(null);
         return;
       }
@@ -431,6 +488,58 @@ export const ParentFees: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Local Sandbox Payment Mock Modal */}
+      {mockPaymentModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card border border-violet-100 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 text-left animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center space-x-3 text-violet-700">
+              <span className="p-2 bg-violet-100 rounded-xl text-lg">🛠️</span>
+              <div>
+                <h3 className="font-bold text-base">Local Sandbox Gateway</h3>
+                <p className="text-[10px] text-muted-foreground">Simulated payment process for testing</p>
+              </div>
+            </div>
+
+            <div className="border border-dashed border-violet-100 rounded-xl p-4 bg-muted/30 space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Particulars:</span>
+                <span className="font-semibold">{mockPaymentModal.fee.title}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Order ID:</span>
+                <span className="font-mono font-semibold">{mockPaymentModal.orderData.orderId}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Total Dues:</span>
+                <span className="font-bold text-violet-700">₹{mockPaymentModal.fee.balance.toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <button
+                onClick={() => handleSimulatePayment(true)}
+                className="h-10 inline-flex items-center justify-center rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-semibold shadow-sm transition-colors"
+              >
+                Simulate Success
+              </button>
+              <button
+                onClick={() => handleSimulatePayment(false)}
+                className="h-10 inline-flex items-center justify-center rounded-lg bg-rose-600 text-white hover:bg-rose-700 text-xs font-semibold shadow-sm transition-colors"
+              >
+                Simulate Failure
+              </button>
+            </div>
+
+            <button
+              onClick={() => setMockPaymentModal(null)}
+              className="w-full h-9 inline-flex items-center justify-center rounded-lg border text-xs font-medium hover:bg-muted transition-colors text-muted-foreground"
+            >
+              Cancel Transaction
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

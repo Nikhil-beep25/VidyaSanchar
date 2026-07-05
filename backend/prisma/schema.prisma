@@ -133,7 +133,7 @@ model Student {
   marks           Mark[]
   payments        Payment[]
   bookIssues      BookIssue[]
-  transactions    Transaction[]
+  transactions    FeeTransaction[]
   
   // Transport & Submissions & Documents
   transport       StudentTransport?
@@ -265,7 +265,7 @@ model Fee {
   classId   String
   feeClass  Class      @relation(fields: [classId], references: [id])
   payments  Payment[]
-  transactions Transaction[]
+  transactions FeeTransaction[]
 }
 
 model Payment {
@@ -402,7 +402,7 @@ model ContactSubmission {
   createdAt DateTime @default(now())
 }
 
-model Transaction {
+model FeeTransaction {
   id                String    @id @default(uuid())
   razorpayOrderId   String    @unique
   razorpayPaymentId String?   @unique
