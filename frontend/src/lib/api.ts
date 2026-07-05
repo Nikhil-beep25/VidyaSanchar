@@ -16,7 +16,12 @@ export function getAccessToken(): string | null {
   return accessTokenInMemory;
 }
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || '/api';
+let API_BASE_URL = (import.meta.env.VITE_API_URL as string) || '/api';
+
+// Auto-normalize API_BASE_URL to include '/api' if not present in an absolute URL
+if (API_BASE_URL.startsWith('http') && !API_BASE_URL.includes('/api')) {
+  API_BASE_URL = `${API_BASE_URL.replace(/\/$/, '')}/api`;
+}
 
 interface RequestOptions extends RequestInit {
   skipAuth?: boolean;

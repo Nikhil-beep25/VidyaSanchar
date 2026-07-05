@@ -108,6 +108,17 @@ const router = Router();
 // ==========================================
 // PUBLIC ROUTES
 // ==========================================
+
+// API Info Route
+router.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    name: 'VidyaSanchar API',
+    version: '1.0.0',
+    status: 'running'
+  });
+});
+
 router.post('/auth/register', register);
 router.post('/auth/login', login);
 router.post('/auth/refresh', refresh);
@@ -121,7 +132,50 @@ router.post('/contact', submitContactForm);
 // ==========================================
 // PROTECTED ROUTES (Requires JWT)
 // ==========================================
-router.use(authMiddleware);
+
+// Conditional middleware for route authentication scope and method validation
+router.use((req, res, next) => {
+  const publicPaths = [
+    '/auth/register',
+    '/auth/login',
+    '/auth/refresh',
+    '/auth/logout',
+    '/auth/forgot-password',
+    '/auth/reset-password',
+    '/contact',
+    ''
+  ];
+  
+  const normalizedPath = req.path.replace(/\/$/, '');
+  
+  if (publicPaths.includes(normalizedPath)) {
+    return next();
+  }
+  
+  // Valid API resource prefixes
+  const validPrefixes = [
+    '/analytics',
+    '/users',
+    '/classes',
+    '/subjects',
+    '/students',
+    '/teachers',
+    '/parents',
+    '/attendance',
+    '/exams',
+    '/fees',
+    '/timetables',
+    '/library',
+    '/notifications'
+  ];
+  
+  const hasValidPrefix = validPrefixes.some(prefix => normalizedPath.startsWith(prefix));
+  if (!hasValidPrefix) {
+    return res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found.` });
+  }
+
+  authMiddleware(req, res, next);
+});
 
 // Analytics
   router.get('/analytics/summary', getDashboardSummary);

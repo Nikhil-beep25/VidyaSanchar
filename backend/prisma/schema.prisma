@@ -75,6 +75,9 @@ model Student {
   marks           Mark[]
   payments        Payment[]
   bookIssues      BookIssue[]
+
+  @@index([classId])
+  @@index([parentId])
 }
 
 model Teacher {
@@ -117,6 +120,7 @@ model Class {
   fees           Fee[]
   timetables     Timetable[]
   assignments    Assignment[]
+  attendance     Attendance[]
 }
 
 model Subject {
@@ -133,6 +137,9 @@ model Subject {
   exams       Exam[]
   timetables  Timetable[]
   assignments Assignment[]
+
+  @@index([classId])
+  @@index([teacherId])
 }
 
 model Attendance {
@@ -145,6 +152,10 @@ model Attendance {
   studentId String
   student   Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
   classId   String
+  attendanceClass Class      @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@index([studentId, date])
+  @@index([classId])
 }
 
 model Exam {
@@ -171,6 +182,9 @@ model Mark {
   student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   examId        String
   exam          Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([examId])
 }
 
 model Fee {
@@ -198,6 +212,9 @@ model Payment {
   fee           Fee           @relation(fields: [feeId], references: [id])
   studentId     String
   student       Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([feeId])
 }
 
 model Timetable {
@@ -214,6 +231,10 @@ model Timetable {
   subject   Subject  @relation(fields: [subjectId], references: [id])
   teacherId String
   teacher   Teacher  @relation(fields: [teacherId], references: [id])
+
+  @@index([classId])
+  @@index([teacherId])
+  @@index([subjectId])
 }
 
 model Assignment {
@@ -269,6 +290,9 @@ model BookIssue {
   book       LibraryBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
   studentId  String
   student    Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([bookId])
 }
 
 model ContactSubmission {
