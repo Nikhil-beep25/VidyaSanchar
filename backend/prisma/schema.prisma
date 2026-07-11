@@ -24,9 +24,10 @@ enum AttendanceStatus {
 }
 
 enum PaymentStatus {
-  PAID
-  PARTIAL
-  UNPAID
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
 }
 
 enum IssueStatus {
@@ -54,6 +55,7 @@ model School {
   auditLogs    AuditLog[]
   libraryBooks LibraryBook[]
   notifications Notification[]
+  notices      Notice[]
 }
 
 model SubscriptionPlan {
@@ -104,10 +106,14 @@ model User {
   teacherProfile Teacher?
   parentProfile  Parent?
   sentNotifications Notification[] @relation("SentNotifications")
+  userNotifications Notification[] @relation("UserNotifications")
   
   // Messaging
   sentMessages     Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
+  
+  // Notice author
+  createdNotices   Notice[]  @relation("CreatedNotices")
   
   // Auditing
   auditLogs        AuditLog[]
@@ -139,6 +145,9 @@ model Student {
   transport       StudentTransport?
   submissions     AssignmentSubmission[]
   certificates    CertificateIssue[]
+  
+  parentRelations ParentStudentRelation[]
+  homeworkSubmissions HomeworkSubmission[]
 
   @@index([classId])
   @@index([parentId])
@@ -157,6 +166,7 @@ model Teacher {
   classesLed     Class[]     @relation("ClassTeacher")
   subjects       Subject[]
   timetables     Timetable[]
+  homeworks      Homework[]
 }
 
 model Parent {
@@ -168,6 +178,7 @@ model Parent {
   // Relations
   user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   students       Student[]
+  relations      ParentStudentRelation[]
 }
 
 model Class {
@@ -189,6 +200,8 @@ model Class {
   timetables     Timetable[]
   assignments    Assignment[]
   attendance     Attendance[]
+  homeworks      Homework[]
+  notices        Notice[]
 }
 
 model Subject {
@@ -205,6 +218,7 @@ model Subject {
   exams       Exam[]
   timetables  Timetable[]
   assignments Assignment[]
+  homeworks   Homework[]
 
   @@index([classId])
   @@index([teacherId])
@@ -233,6 +247,7 @@ model Exam {
   date         DateTime
   maxMarks     Float
   passingMarks Float
+  isPublished  Boolean     @default(false)
   
   // Relations
   subjectId    String
@@ -269,18 +284,23 @@ model Fee {
 }
 
 model Payment {
-  id            String        @id @default(uuid())
-  amountPaid    Float
-  paymentDate   DateTime      @default(now())
-  paymentMethod String        // Cash, UPI, Card, NetBanking
-  status        PaymentStatus @default(PAID)
-  receiptNumber String        @unique
-  
-  // Relations
-  feeId         String
-  fee           Fee           @relation(fields: [feeId], references: [id])
-  studentId     String
-  student       Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id                String        @id @default(uuid())
+  studentId         String
+  student           Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feeId             String
+  fee               Fee           @relation(fields: [feeId], references: [id])
+  amountPaid        Float         // maps to amount
+  currency          String        @default("INR")
+  paymentMethod     String        @default("ONLINE") // Cash, UPI, Card, NetBanking, etc.
+  transactionId     String?       @unique
+  razorpayOrderId   String?       @unique
+  razorpayPaymentId String?       @unique
+  razorpaySignature String?
+  status            PaymentStatus @default(PENDING)
+  receiptNumber     String        @unique
+  paidAt            DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @default(now()) @updatedAt
 
   @@index([studentId])
   @@index([feeId])
@@ -300,6 +320,8 @@ model Timetable {
   subject   Subject  @relation(fields: [subjectId], references: [id])
   teacherId String
   teacher   Teacher  @relation(fields: [teacherId], references: [id])
+  
+  isDeleted Boolean  @default(false)
 
   @@index([classId])
   @@index([teacherId])
@@ -346,6 +368,7 @@ model Notification {
   message       String
   recipientRole RoleType // All, SUPER_ADMIN, ADMIN, TEACHER, STUDENT, PARENT
   isAnnouncement Boolean @default(false)
+  isRead        Boolean  @default(false)
   createdAt     DateTime @default(now())
   
   // Tenancy relation
@@ -355,6 +378,8 @@ model Notification {
   // Relations
   senderId      String?
   sender        User?    @relation("SentNotifications", fields: [senderId], references: [id])
+  userId        String?
+  user          User?    @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model LibraryBook {
@@ -431,6 +456,7 @@ model Message {
   recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
   content     String
   isRead      Boolean  @default(false)
+  isDeleted   Boolean  @default(false)
   createdAt   DateTime @default(now())
 
   @@index([senderId])
@@ -509,4 +535,100 @@ model StudentTransport {
 
   @@index([routeId])
   @@index([vehicleId])
+}
+
+enum NoticeType {
+  SCHOOL
+  CLASS
+  EXAM
+  FEE
+  EMERGENCY
+}
+
+model ParentStudentRelation {
+  id         String   @id @default(uuid())
+  parentId   String
+  parent     Parent   @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  relation   String   // e.g. FATHER, MOTHER, GUARDIAN
+  createdAt  DateTime @default(now())
+
+  @@unique([parentId, studentId])
+  @@index([parentId])
+  @@index([studentId])
+}
+
+model Notice {
+  id          String     @id @default(uuid())
+  title       String
+  content     String     // rich text content
+  type        NoticeType
+  isPinned    Boolean    @default(false)
+  attachment  String?    // URL/path to file
+  isDeleted   Boolean    @default(false)
+  
+  // Tenancy relation
+  schoolId    String?
+  school      School?    @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+
+  // Target class (null for general school notices)
+  classId     String?
+  targetClass Class?     @relation(fields: [classId], references: [id], onDelete: SetNull)
+  
+  // Creator
+  authorId    String?
+  author      User?      @relation("CreatedNotices", fields: [authorId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([schoolId])
+  @@index([classId])
+  @@index([authorId])
+}
+
+model Homework {
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  dueDate       DateTime
+  attachment    String?  // File URL
+  isDeleted     Boolean  @default(false)
+  
+  // Relations
+  classId       String
+  homeworkClass Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subjectId     String
+  subject       Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacherId     String
+  teacher       Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  
+  submissions   HomeworkSubmission[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([classId])
+  @@index([subjectId])
+  @@index([teacherId])
+}
+
+model HomeworkSubmission {
+  id             String   @id @default(uuid())
+  homeworkId     String
+  homework       Homework @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
+  studentId      String
+  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  submissionDate DateTime @default(now())
+  status         String   // SUBMITTED, GRADED, LATE, PENDING
+  filePath       String?  // File URL
+  marksObtained  Float?
+  feedback       String?
+  isDeleted      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([homeworkId, studentId])
+  @@index([homeworkId])
+  @@index([studentId])
 }

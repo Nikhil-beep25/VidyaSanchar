@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../config/db';
 import PDFDocument from 'pdfkit';
+import * as XLSX from 'xlsx';
 
 /**
  * Helper to generate certificate metadata audit records
@@ -120,9 +121,42 @@ export async function downloadReportCardPDF(req: Request, res: Response, next: N
 
     // Summary calculation
     const percentage = totalMax > 0 ? Math.round((totalObtained / totalMax) * 100) : 0;
+
+    // Find all classmates to compute rank
+    const classmates = await prisma.student.findMany({
+      where: { classId: student.classId },
+      include: {
+        marks: {
+          include: { exam: true }
+        }
+      }
+    });
+
+    const classPerformances = classmates.map(c => {
+      let subMax = 0;
+      let subObtained = 0;
+      c.marks.forEach(m => {
+        subMax += m.exam.maxMarks;
+        subObtained += m.marksObtained;
+      });
+      const avgPercent = subMax > 0 ? (subObtained / subMax) * 100 : 0;
+      return { studentId: c.id, avgPercent };
+    });
+
+    classPerformances.sort((a, b) => b.avgPercent - a.avgPercent);
+    const rankIndex = classPerformances.findIndex(cp => cp.studentId === student.id);
+    const rankSuffix = (r: number) => {
+      const j = r % 10, k = r % 100;
+      if (j == 1 && k != 11) return r + "st";
+      if (j == 2 && k != 12) return r + "nd";
+      if (j == 3 && k != 13) return r + "rd";
+      return r + "th";
+    };
+    const classRankStr = rankIndex !== -1 ? rankSuffix(rankIndex + 1) : '1st';
+
     doc.font('Helvetica-Bold').fillColor('#1F2937');
     doc.text(`Aggregate Percentage: ${percentage}%`, 50, y);
-    doc.text(`Class Rank: 1st Division`, 300, y);
+    doc.text(`Class Rank: ${classRankStr}`, 300, y);
 
     // Signatures footer
     doc.font('Helvetica').fillColor('#9CA3AF').fontSize(9);
@@ -427,6 +461,150 @@ export async function downloadAttendanceReportPDF(req: Request, res: Response, n
     }
 
     doc.end();
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * 5. Download Attendance Report Excel
+ */
+export async function downloadAttendanceReportExcel(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { studentId } = req.params;
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      include: {
+        user: { select: { name: true } },
+        studentClass: true,
+        attendance: { orderBy: { date: 'desc' } }
+      }
+    });
+
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found.' });
+    }
+
+    const data = student.attendance.map(a => ({
+      'Student Name': student.user.name,
+      'Class': `${student.studentClass.name}-${student.studentClass.section}`,
+      'Date': new Date(a.date).toLocaleDateString('en-IN'),
+      'Status': a.status,
+      'Remarks': a.remarks || 'Standard entry'
+    }));
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, 'Attendance History');
+
+    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=Attendance_${student.rollNumber}.xlsx`);
+    return res.send(buf);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * 6. Download Fee Collections Report Excel
+ */
+export async function downloadFeesCollectionExcel(req: Request, res: Response, next: NextFunction) {
+  try {
+    const payments = await prisma.payment.findMany({
+      include: {
+        fee: true,
+        student: {
+          include: {
+            user: { select: { name: true } },
+            studentClass: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const data = payments.map(p => ({
+      'Receipt Number': p.receiptNumber,
+      'Student Name': p.student.user.name,
+      'Class': `${p.student.studentClass.name}-${p.student.studentClass.section}`,
+      'Fee Component': p.fee.title,
+      'Amount Paid (INR)': p.amountPaid,
+      'Payment Date': new Date(p.paidAt || p.createdAt).toLocaleDateString('en-IN'),
+      'Payment Method': p.paymentMethod
+    }));
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, 'Fee Collection Log');
+
+    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=FeeCollections_${Date.now()}.xlsx`);
+    return res.send(buf);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * 7. Download Exam Results Sheets Excel
+ */
+export async function downloadExamsResultExcel(req: Request, res: Response, next: NextFunction) {
+  try {
+    const marks = await prisma.mark.findMany({
+      include: {
+        student: {
+          include: {
+            user: { select: { name: true } },
+            studentClass: true
+          }
+        },
+        exam: {
+          include: {
+            subject: true
+          }
+        }
+      },
+      orderBy: { exam: { date: 'desc' } }
+    });
+
+    const data = marks.map(m => {
+      const percentage = (m.marksObtained / m.exam.maxMarks) * 100;
+      const passed = m.marksObtained >= m.exam.passingMarks;
+      
+      // Dynamic CBSE Letter Grade assignment
+      let grade = 'F';
+      if (percentage >= 90) grade = 'A+';
+      else if (percentage >= 80) grade = 'A';
+      else if (percentage >= 70) grade = 'B';
+      else if (percentage >= 60) grade = 'C';
+      else if (percentage >= 50) grade = 'D';
+      else if (percentage >= 33) grade = 'E';
+
+      return {
+        'Exam Title': m.exam.name,
+        'Subject': m.exam.subject.name,
+        'Class': `${m.student.studentClass.name}-${m.student.studentClass.section}`,
+        'Student Name': m.student.user.name,
+        'Roll Number': m.student.rollNumber,
+        'Marks Obtained': m.marksObtained,
+        'Max Marks': m.exam.maxMarks,
+        'Percentage (%)': Math.round(percentage * 100) / 100,
+        'Grade': grade,
+        'Result': passed ? 'PASSED' : 'FAILED',
+        'Teacher Remarks': m.remarks || ''
+      };
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, 'Academic Results Ledgers');
+
+    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=ExamResults_${Date.now()}.xlsx`);
+    return res.send(buf);
   } catch (error) {
     next(error);
   }

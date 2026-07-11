@@ -1,6 +1,13 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { roleMiddleware } from '../middlewares/roleMiddleware';
+import { validateRequest } from '../middlewares/validationMiddleware';
+import {
+  registerSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema
+} from '../utils/validationSchemas';
 
 import {
   register,
@@ -65,7 +72,10 @@ import {
   getAllExams,
   enterMarks,
   getStudentReportCard,
-  getExamPerformanceReport
+  getExamPerformanceReport,
+  updateExam,
+  deleteExam,
+  publishExamResults
 } from '../controllers/examController';
 
 import {
@@ -79,14 +89,17 @@ import {
   createOrder,
   verifyPayment,
   getPaymentHistory,
-  downloadReceipt
+  getPaymentDetail,
+  downloadReceipt,
+  handleWebhook
 } from '../controllers/paymentController';
 
 import {
   createTimetableSlot,
   getClassTimetable,
   getTeacherTimetable,
-  deleteTimetableSlot
+  deleteTimetableSlot,
+  getMyTimetable
 } from '../controllers/timetableController';
 
 import {
@@ -103,7 +116,8 @@ import {
   createNotification,
   getNotifications,
   submitContactForm,
-  getContactSubmissions
+  getContactSubmissions,
+  markNotificationAsRead
 } from '../controllers/notificationController';
 
 import {
@@ -140,8 +154,19 @@ import {
   downloadReportCardPDF,
   downloadCertificatePDF,
   downloadAdmitCardPDF,
-  downloadAttendanceReportPDF
+  downloadAttendanceReportPDF,
+  downloadAttendanceReportExcel,
+  downloadFeesCollectionExcel,
+  downloadExamsResultExcel
 } from '../controllers/documentController';
+
+import { uploadFile } from '../controllers/uploadController';
+
+// Phase 3 Imports
+import { getChildren, getChildDashboard } from '../controllers/parentController';
+import { getConversations, getMessageHistory, sendMessage as sendDirectMessage, markMessageAsRead } from '../controllers/messageController';
+import { getNotices as getNoticeBoardNotices, createNotice as createNoticeBoardNotice, deleteNotice } from '../controllers/noticeController';
+import { getHomework, createHomework, submitHomework, getHomeworkSubmissions, gradeHomeworkSubmission } from '../controllers/homeworkController';
 
 const router = Router();
 
@@ -159,12 +184,12 @@ router.get('/', (req, res) => {
   });
 });
 
-router.post('/auth/register', register);
-router.post('/auth/login', login);
+router.post('/auth/register', validateRequest(registerSchema), register);
+router.post('/auth/login', validateRequest(loginSchema), login);
 router.post('/auth/refresh', refresh);
 router.post('/auth/logout', logout);
-router.post('/auth/forgot-password', forgotPassword);
-router.post('/auth/reset-password', resetPassword);
+router.post('/auth/forgot-password', validateRequest(forgotPasswordSchema), forgotPassword);
+router.post('/auth/reset-password', validateRequest(resetPasswordSchema), resetPassword);
 
 // Landing page contact submission
 router.post('/contact', submitContactForm);
@@ -183,6 +208,7 @@ router.use((req, res, next) => {
     '/auth/forgot-password',
     '/auth/reset-password',
     '/contact',
+    '/payments/webhook',
     ''
   ];
   
@@ -204,6 +230,7 @@ router.use((req, res, next) => {
     '/attendance',
     '/exams',
     '/fees',
+    '/payments',
     '/timetables',
     '/library',
     '/notifications'
@@ -217,9 +244,12 @@ router.use((req, res, next) => {
   authMiddleware(req, res, next);
 });
 
-// Analytics
+  // Analytics
   router.get('/analytics/summary', getDashboardSummary);
   router.get('/analytics/trends', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), getAdvancedAnalytics);
+
+  // File Uploads
+  router.post('/upload', uploadFile);
 
   // Users profile
   router.get('/users/profile', getUserProfile);
@@ -266,6 +296,9 @@ router.get('/attendance/student/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADM
 // Exams
 router.post('/exams', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createExam);
 router.get('/exams', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), getAllExams);
+router.put('/exams/:id', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), updateExam);
+router.delete('/exams/:id', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), deleteExam);
+router.patch('/exams/:id/publish', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), publishExamResults);
 router.post('/exams/marks', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), enterMarks);
 router.get('/exams/report/student/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), getStudentReportCard);
 router.get('/exams/:examId/performance', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), getExamPerformanceReport);
@@ -277,16 +310,21 @@ router.get('/fees/student/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', '
 router.post('/fees/payment', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), recordPayment);
 
 // Online Fees Checkout via Razorpay
-router.post('/fees/checkout/create-order', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT']), createOrder);
-router.post('/fees/checkout/verify', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT']), verifyPayment);
-router.get('/fees/history', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT', 'STUDENT']), getPaymentHistory);
-router.get('/fees/receipt/:paymentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT', 'STUDENT']), downloadReceipt);
+router.post('/payments/create-order', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT', 'STUDENT']), createOrder);
+router.post('/payments/verify', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT', 'STUDENT']), verifyPayment);
+router.post('/payments/webhook', handleWebhook);
+router.get('/payments/history', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT', 'STUDENT']), getPaymentHistory);
+router.get('/payments/:id', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT', 'STUDENT']), getPaymentDetail);
+router.get('/payments/:paymentId/receipt', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'PARENT', 'STUDENT']), downloadReceipt);
 
-// PDF Document Reports & Certificates
+// PDF & Excel Document Reports & Certificates
 router.get('/reports/report-card/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), downloadReportCardPDF);
 router.get('/reports/certificate/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), downloadCertificatePDF);
 router.get('/reports/admit-card/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'STUDENT', 'PARENT']), downloadAdmitCardPDF);
 router.get('/reports/attendance/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), downloadAttendanceReportPDF);
+router.get('/reports/attendance/:studentId/excel', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), downloadAttendanceReportExcel);
+router.get('/reports/fees/collection/excel', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), downloadFeesCollectionExcel);
+router.get('/reports/exams/results/excel', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), downloadExamsResultExcel);
 
 // Homework & Assignments
 router.post('/assignments', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createAssignment);
@@ -305,6 +343,7 @@ router.get('/transport/student/:studentId', roleMiddleware(['SUPER_ADMIN', 'ADMI
 
 // Timetable
 router.post('/timetables', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), createTimetableSlot);
+router.get('/timetables/my', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), getMyTimetable);
 router.get('/timetables/class/:classId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), getClassTimetable);
 router.get('/timetables/teacher/:teacherId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), getTeacherTimetable);
 router.delete('/timetables/:id', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), deleteTimetableSlot);
@@ -321,13 +360,28 @@ router.put('/library/issues/:id/return', roleMiddleware(['SUPER_ADMIN', 'ADMIN']
 // Notifications & Contact Inquiries
 router.post('/notifications', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createNotification);
 router.get('/notifications', getNotifications);
+router.patch('/notifications/:id/read', markNotificationAsRead);
 router.get('/contact/submissions', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), getContactSubmissions);
 
 // Communication Messaging & School Notices
-router.post('/messages', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), sendMessage);
-router.get('/messages/participants', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getChatParticipants);
-router.get('/messages/:otherUserId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getMessages);
-router.post('/notices', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createNotice);
-router.get('/notices', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getNotices);
+router.get('/messages/conversations', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getConversations);
+router.get('/messages/history/:contactId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getMessageHistory);
+router.post('/messages', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), sendDirectMessage);
+router.patch('/messages/:id/read', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), markMessageAsRead);
+
+router.post('/notices', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createNoticeBoardNotice);
+router.get('/notices', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getNoticeBoardNotices);
+router.delete('/notices/:id', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), deleteNotice);
+
+// Parent Portal
+router.get('/parent/children', roleMiddleware(['PARENT']), getChildren);
+router.get('/parent/children/:studentId/dashboard', roleMiddleware(['PARENT']), getChildDashboard);
+
+// Homework Management
+router.get('/homework', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), getHomework);
+router.post('/homework', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createHomework);
+router.post('/homework/:homeworkId/submit', roleMiddleware(['STUDENT']), submitHomework);
+router.get('/homework/:homeworkId/submissions', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), getHomeworkSubmissions);
+router.patch('/homework/submissions/:submissionId/grade', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), gradeHomeworkSubmission);
 
 export default router;

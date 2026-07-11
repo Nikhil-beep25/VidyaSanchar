@@ -65,6 +65,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuth();
   }, []);
 
+  // Listen for global unauthorized API signals to trigger logout
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      setAccessToken(null);
+      setUser(null);
+      localStorage.removeItem('user');
+    };
+    window.addEventListener('auth-unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth-unauthorized', handleUnauthorized);
+  }, []);
+
   const login = async (email: string, password: string): Promise<UserProfile> => {
     const data = await apiRequest('/auth/login', {
       method: 'POST',

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../config/db';
 import { PaymentStatus } from '@prisma/client';
+import { createAuditLog } from '../utils/audit';
 
 export async function createFee(req: Request, res: Response, next: NextFunction) {
   try {
@@ -56,7 +57,7 @@ export async function getStudentFeeLedger(req: Request, res: Response, next: Nex
       where: { classId: student.classId },
       include: {
         payments: {
-          where: { studentId }
+          where: { studentId, status: PaymentStatus.SUCCESS }
         }
       },
       orderBy: { dueDate: 'asc' }
@@ -66,12 +67,12 @@ export async function getStudentFeeLedger(req: Request, res: Response, next: Nex
     const ledger = fees.map(f => {
       const paidAmount = f.payments.reduce((sum, p) => sum + p.amountPaid, 0);
       const balance = f.amount - paidAmount;
-      let status: PaymentStatus = PaymentStatus.UNPAID;
+      let status: 'PAID' | 'PARTIAL' | 'UNPAID' = 'UNPAID';
 
       if (paidAmount >= f.amount) {
-        status = PaymentStatus.PAID;
+        status = 'PAID';
       } else if (paidAmount > 0) {
-        status = PaymentStatus.PARTIAL;
+        status = 'PARTIAL';
       }
 
       return {
@@ -113,10 +114,8 @@ export async function recordPayment(req: Request, res: Response, next: NextFunct
     const newPaymentAmount = parseFloat(amountPaid);
     const newTotalPaid = totalPaidBefore + newPaymentAmount;
 
-    let status: PaymentStatus = PaymentStatus.PAID;
-    if (newTotalPaid < fee.amount) {
-      status = PaymentStatus.PARTIAL;
-    }
+    const status = PaymentStatus.SUCCESS;
+    const paidAt = new Date();
 
     const receiptNumber = `REC-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -127,6 +126,7 @@ export async function recordPayment(req: Request, res: Response, next: NextFunct
         amountPaid: newPaymentAmount,
         paymentMethod,
         status,
+        paidAt,
         receiptNumber,
       },
       include: {
@@ -138,6 +138,13 @@ export async function recordPayment(req: Request, res: Response, next: NextFunct
         }
       }
     });
+
+    await createAuditLog(
+      req.user?.userId,
+      'PAYMENT_RECORDED',
+      `Collected fee payment of ₹${payment.amountPaid.toLocaleString('en-IN')} for "${payment.fee.title}" from student "${payment.student.user.name}" (Receipt: ${payment.receiptNumber})`,
+      req.user?.schoolId
+    );
 
     return res.status(201).json({
       message: 'Payment recorded successfully.',

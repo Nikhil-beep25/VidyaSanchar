@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { DashboardFooter } from './footer/DashboardFooter';
 import { Avatar } from '../common/Avatar';
+import { NotificationBell } from './NotificationBell';
 import {
   School,
   Sun,
@@ -22,7 +23,9 @@ import {
   ChevronRight,
   LayoutDashboard,
   UserCheck,
-  X
+  X,
+  MessageSquare,
+  ClipboardList
 } from 'lucide-react';
 
 export const DashboardLayout: React.FC = () => {
@@ -85,18 +88,24 @@ export const DashboardLayout: React.FC = () => {
           { name: 'Classes & Sections', path: '/dashboard/admin/classes', icon: <School className="h-5 w-5" /> },
           { name: 'Subjects List', path: '/dashboard/admin/subjects', icon: <BookOpen className="h-5 w-5" /> },
           { name: 'Class Attendance', path: '/dashboard/admin/attendance', icon: <Calendar className="h-5 w-5" /> },
+          { name: 'Exams & Results', path: '/dashboard/admin/exams', icon: <BookOpen className="h-5 w-5" /> },
           { name: 'Class Timetables', path: '/dashboard/admin/timetables', icon: <Clock className="h-5 w-5" /> },
           { name: 'Tuition Fees', path: '/dashboard/admin/fees', icon: <CreditCard className="h-5 w-5" /> },
           { name: 'Library System', path: '/dashboard/admin/library', icon: <Library className="h-5 w-5" /> },
-          { name: 'Announcements', path: '/dashboard/admin/announcements', icon: <Bell className="h-5 w-5" /> },
+          { name: 'Notice Board', path: '/dashboard/notices', icon: <Bell className="h-5 w-5" /> },
+          { name: 'Chat Messages', path: '/dashboard/messages', icon: <MessageSquare className="h-5 w-5" /> },
           { name: 'System Settings', path: '/dashboard/admin/settings', icon: <Settings className="h-5 w-5" /> },
         ];
       case 'TEACHER':
         return [
           { name: 'Teacher Summary', path: '/dashboard/teacher', icon: <LayoutDashboard className="h-5 w-5" /> },
           { name: 'Class Attendance', path: '/dashboard/teacher/attendance', icon: <Calendar className="h-5 w-5" /> },
+          { name: 'Exams & Results', path: '/dashboard/teacher/exams', icon: <BookOpen className="h-5 w-5" /> },
           { name: 'Marks Entry', path: '/dashboard/teacher/marks', icon: <BookOpen className="h-5 w-5" /> },
           { name: 'Schedule Timetable', path: '/dashboard/teacher/timetable', icon: <Clock className="h-5 w-5" /> },
+          { name: 'Homework Hub', path: '/dashboard/homework', icon: <ClipboardList className="h-5 w-5" /> },
+          { name: 'Notice Board', path: '/dashboard/notices', icon: <Bell className="h-5 w-5" /> },
+          { name: 'Chat Messages', path: '/dashboard/messages', icon: <MessageSquare className="h-5 w-5" /> },
         ];
       case 'STUDENT':
         return [
@@ -105,6 +114,9 @@ export const DashboardLayout: React.FC = () => {
           { name: 'Exams & Grades', path: '/dashboard/student/grades', icon: <BookOpen className="h-5 w-5" /> },
           { name: 'Fees Statements', path: '/dashboard/student/fees', icon: <CreditCard className="h-5 w-5" /> },
           { name: 'Schedule List', path: '/dashboard/student/timetable', icon: <Clock className="h-5 w-5" /> },
+          { name: 'Homework Hub', path: '/dashboard/homework', icon: <ClipboardList className="h-5 w-5" /> },
+          { name: 'Notice Board', path: '/dashboard/notices', icon: <Bell className="h-5 w-5" /> },
+          { name: 'Chat Messages', path: '/dashboard/messages', icon: <MessageSquare className="h-5 w-5" /> },
         ];
       case 'PARENT':
         return [
@@ -112,6 +124,9 @@ export const DashboardLayout: React.FC = () => {
           { name: 'Child Attendance', path: '/dashboard/parent/attendance', icon: <Calendar className="h-5 w-5" /> },
           { name: 'Child report card', path: '/dashboard/parent/grades', icon: <BookOpen className="h-5 w-5" /> },
           { name: 'Pending Fees', path: '/dashboard/parent/fees', icon: <CreditCard className="h-5 w-5" /> },
+          { name: 'Homework Tracker', path: '/dashboard/homework', icon: <ClipboardList className="h-5 w-5" /> },
+          { name: 'Notice Board', path: '/dashboard/notices', icon: <Bell className="h-5 w-5" /> },
+          { name: 'Chat Messages', path: '/dashboard/messages', icon: <MessageSquare className="h-5 w-5" /> },
         ];
       default:
         return [];
@@ -328,14 +343,7 @@ export const DashboardLayout: React.FC = () => {
             </button>
 
             {/* Notification Indicator */}
-            <button
-              onClick={() => alert('Notifications Drawer: Loaded from /api/notifications')}
-              className="p-2 rounded-full hover:bg-accent relative"
-              aria-label="Open Notifications"
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />
-            </button>
+            <NotificationBell />
 
             <span className="h-5 w-px bg-border" />
             

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../config/db';
 import { hashPassword } from '../utils/hash';
+import { createAuditLog } from '../utils/audit';
 
 export async function getAllStudents(req: Request, res: Response, next: NextFunction) {
   try {
@@ -169,6 +170,13 @@ export async function createStudent(req: Request, res: Response, next: NextFunct
       return student;
     });
 
+    await createAuditLog(
+      req.user?.userId,
+      'STUDENT_CREATED',
+      `Registered new student: ${result.user.name} (Roll: ${result.rollNumber})`,
+      req.user?.schoolId
+    );
+
     return res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -244,6 +252,13 @@ export async function updateStudent(req: Request, res: Response, next: NextFunct
       return updatedStudent;
     });
 
+    await createAuditLog(
+      req.user?.userId,
+      'STUDENT_UPDATED',
+      `Updated student profile: ${result.user.name} (Roll: ${result.rollNumber})`,
+      req.user?.schoolId
+    );
+
     return res.status(200).json(result);
   } catch (error: any) {
     res.status(400).json({ message: error.message || 'Failed to update student.' });
@@ -259,7 +274,19 @@ export async function deleteStudent(req: Request, res: Response, next: NextFunct
     }
 
     // Deleting user will cascade delete the student profile due to Schema definition
+    const studentUser = await prisma.user.findUnique({
+      where: { id: student.userId },
+      select: { name: true }
+    });
+    
     await prisma.user.delete({ where: { id: student.userId } });
+
+    await createAuditLog(
+      req.user?.userId,
+      'STUDENT_DELETED',
+      `Deleted student profile: ${studentUser?.name || 'Unknown'} (Roll: ${student.rollNumber})`,
+      req.user?.schoolId
+    );
 
     return res.status(200).json({ message: 'Student deleted successfully.' });
   } catch (error) {

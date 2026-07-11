@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../config/db';
 import { AttendanceStatus } from '@prisma/client';
+import { createAuditLog } from '../utils/audit';
 
 export async function recordAttendance(req: Request, res: Response, next: NextFunction) {
   try {
@@ -50,6 +51,19 @@ export async function recordAttendance(req: Request, res: Response, next: NextFu
       }
       results.push(record);
     }
+
+    // Query class name for better audit log readability
+    const classroom = await prisma.class.findUnique({
+      where: { id: classId },
+      select: { name: true, section: true }
+    });
+
+    await createAuditLog(
+      req.user?.userId,
+      'ATTENDANCE_RECORDED',
+      `Marked attendance for ${results.length} students in ${classroom?.name || 'Class'}-${classroom?.section || ''} on ${date}`,
+      req.user?.schoolId
+    );
 
     return res.status(200).json({
       message: 'Attendance recorded successfully.',

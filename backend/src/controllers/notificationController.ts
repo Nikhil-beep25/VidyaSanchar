@@ -30,17 +30,28 @@ export async function createNotification(req: Request, res: Response, next: Next
 export async function getNotifications(req: Request, res: Response, next: NextFunction) {
   try {
     const userRole = req.user?.role;
+    const userId = req.user?.userId;
 
-    if (!userRole) {
-      return res.status(401).json({ message: 'Role not authenticated.' });
+    if (!userRole || !userId) {
+      return res.status(401).json({ message: 'Role or user not authenticated.' });
     }
 
-    // Return notifications targetting this user's role OR targetting all roles
+    // Return notifications targeting this user's role OR direct targeted notifications for this userId
     const notifications = await prisma.notification.findMany({
       where: {
         OR: [
-          { recipientRole: userRole },
-          { recipientRole: 'STUDENT' } // fallback or general public announcements
+          { userId },
+          {
+            AND: [
+              { userId: null },
+              {
+                OR: [
+                  { recipientRole: userRole },
+                  { isAnnouncement: true }
+                ]
+              }
+            ]
+          }
         ]
       },
       include: {
@@ -52,6 +63,25 @@ export async function getNotifications(req: Request, res: Response, next: NextFu
     });
 
     return res.status(200).json(notifications);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function markNotificationAsRead(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+
+    const notification = await prisma.notification.update({
+      where: { id },
+      data: { isRead: true }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Notification marked as read successfully.',
+      notification
+    });
   } catch (error) {
     next(error);
   }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -17,38 +17,48 @@ import { Contact } from '../pages/landing/Contact';
 import { Login } from '../pages/landing/Login';
 import { SignUp } from '../pages/landing/SignUp';
 
-// Dashboard Views
-import { SuperAdminDashboard } from '../pages/dashboard/SuperAdminDashboard';
-import { AdminDashboard } from '../pages/dashboard/AdminDashboard';
-import { TeacherDashboard } from '../pages/dashboard/TeacherDashboard';
-import { StudentDashboard } from '../pages/dashboard/StudentDashboard';
-import { ParentDashboard } from '../pages/dashboard/ParentDashboard';
+// Lazy Loaded Dashboard Views
+const SuperAdminDashboard = lazy(() => import('../pages/dashboard/SuperAdminDashboard').then(module => ({ default: module.SuperAdminDashboard })));
+const AdminDashboard = lazy(() => import('../pages/dashboard/AdminDashboard').then(module => ({ default: module.AdminDashboard })));
+const TeacherDashboard = lazy(() => import('../pages/dashboard/TeacherDashboard').then(module => ({ default: module.TeacherDashboard })));
+const StudentDashboard = lazy(() => import('../pages/dashboard/StudentDashboard').then(module => ({ default: module.StudentDashboard })));
+const ParentDashboard = lazy(() => import('../pages/dashboard/ParentDashboard').then(module => ({ default: module.ParentDashboard })));
 
-// Sub Views (Mocked and Interactive components)
-import { StudentManagement } from '../pages/dashboard/admin/StudentManagement';
-import { TeacherManagement } from '../pages/dashboard/admin/TeacherManagement';
-import { ParentManagement } from '../pages/dashboard/admin/ParentManagement';
-import { ClassManagement } from '../pages/dashboard/admin/ClassManagement';
-import { SubjectManagement } from '../pages/dashboard/admin/SubjectManagement';
-import { AttendanceManagement } from '../pages/dashboard/admin/AttendanceManagement';
-import { TimetableManagement } from '../pages/dashboard/admin/TimetableManagement';
-import { FeeManagement } from '../pages/dashboard/admin/FeeManagement';
-import { LibraryManagement } from '../pages/dashboard/admin/LibraryManagement';
-import { AnnouncementManagement } from '../pages/dashboard/admin/AnnouncementManagement';
-import { SettingsManagement } from '../pages/dashboard/admin/SettingsManagement';
+// Phase 3 Lazy Loaded Pages
+const NoticeBoardPage = lazy(() => import('../pages/dashboard/communication/NoticeBoardPage').then(module => ({ default: module.NoticeBoardPage })));
+const CommunicationCenter = lazy(() => import('../pages/dashboard/communication/CommunicationCenter').then(module => ({ default: module.CommunicationCenter })));
+const HomeworkHub = lazy(() => import('../pages/dashboard/homework/HomeworkHub').then(module => ({ default: module.HomeworkHub })));
+const TimetableGrid = lazy(() => import('../pages/dashboard/timetable/TimetableGrid').then(module => ({ default: module.TimetableGrid })));
 
-import { TeacherAttendance } from '../pages/dashboard/teacher/TeacherAttendance';
-import { TeacherMarks } from '../pages/dashboard/teacher/TeacherMarks';
-import { TeacherSchedule } from '../pages/dashboard/teacher/TeacherSchedule';
+// Lazy Loaded Admin Views
+const StudentManagement = lazy(() => import('../pages/dashboard/admin/StudentManagement').then(module => ({ default: module.StudentManagement })));
+const TeacherManagement = lazy(() => import('../pages/dashboard/admin/TeacherManagement').then(module => ({ default: module.TeacherManagement })));
+const ParentManagement = lazy(() => import('../pages/dashboard/admin/ParentManagement').then(module => ({ default: module.ParentManagement })));
+const ClassManagement = lazy(() => import('../pages/dashboard/admin/ClassManagement').then(module => ({ default: module.ClassManagement })));
+const SubjectManagement = lazy(() => import('../pages/dashboard/admin/SubjectManagement').then(module => ({ default: module.SubjectManagement })));
+const AttendanceManagement = lazy(() => import('../pages/dashboard/admin/AttendanceManagement').then(module => ({ default: module.AttendanceManagement })));
+const TimetableManagement = lazy(() => import('../pages/dashboard/admin/TimetableManagement').then(module => ({ default: module.TimetableManagement })));
+const FeeManagement = lazy(() => import('../pages/dashboard/admin/FeeManagement').then(module => ({ default: module.FeeManagement })));
+const LibraryManagement = lazy(() => import('../pages/dashboard/admin/LibraryManagement').then(module => ({ default: module.LibraryManagement })));
+const AnnouncementManagement = lazy(() => import('../pages/dashboard/admin/AnnouncementManagement').then(module => ({ default: module.AnnouncementManagement })));
+const SettingsManagement = lazy(() => import('../pages/dashboard/admin/SettingsManagement').then(module => ({ default: module.SettingsManagement })));
+const ExamManagement = lazy(() => import('../pages/dashboard/admin/ExamManagement').then(module => ({ default: module.ExamManagement })));
 
-import { StudentAttendance } from '../pages/dashboard/student/StudentAttendance';
-import { StudentGrades } from '../pages/dashboard/student/StudentGrades';
-import { StudentFees } from '../pages/dashboard/student/StudentFees';
-import { StudentSchedule } from '../pages/dashboard/student/StudentSchedule';
+// Lazy Loaded Teacher Views
+const TeacherAttendance = lazy(() => import('../pages/dashboard/teacher/TeacherAttendance').then(module => ({ default: module.TeacherAttendance })));
+const TeacherMarks = lazy(() => import('../pages/dashboard/teacher/TeacherMarks').then(module => ({ default: module.TeacherMarks })));
+const TeacherSchedule = lazy(() => import('../pages/dashboard/teacher/TeacherSchedule').then(module => ({ default: module.TeacherSchedule })));
 
-import { ParentAttendance } from '../pages/dashboard/parent/ParentAttendance';
-import { ParentGrades } from '../pages/dashboard/parent/ParentGrades';
-import { ParentFees } from '../pages/dashboard/parent/ParentFees';
+// Lazy Loaded Student Views
+const StudentAttendance = lazy(() => import('../pages/dashboard/student/StudentAttendance').then(module => ({ default: module.StudentAttendance })));
+const StudentGrades = lazy(() => import('../pages/dashboard/student/StudentGrades').then(module => ({ default: module.StudentGrades })));
+const StudentFees = lazy(() => import('../pages/dashboard/student/StudentFees').then(module => ({ default: module.StudentFees })));
+const StudentSchedule = lazy(() => import('../pages/dashboard/student/StudentSchedule').then(module => ({ default: module.StudentSchedule })));
+
+// Lazy Loaded Parent Views
+const ParentAttendance = lazy(() => import('../pages/dashboard/parent/ParentAttendance').then(module => ({ default: module.ParentAttendance })));
+const ParentGrades = lazy(() => import('../pages/dashboard/parent/ParentGrades').then(module => ({ default: module.ParentGrades })));
+const ParentFees = lazy(() => import('../pages/dashboard/parent/ParentFees').then(module => ({ default: module.ParentFees })));
 
 // Protected Route Wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles: string[] }> = ({
@@ -77,7 +87,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles: string
   return <>{children}</>;
 };
 
-export const AppRoutes: React.FC = () => {
+const AppRoutesInternal: React.FC = () => {
   return (
     <Routes>
       {/* Public Landing Site */}
@@ -95,6 +105,48 @@ export const AppRoutes: React.FC = () => {
 
       {/* Role-based Dashboards */}
       <Route element={<DashboardLayout />}>
+        {/* Phase 3 Shared Routes */}
+        <Route
+          path="/dashboard/notices"
+          element={
+            <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']}>
+              <NoticeBoardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/messages"
+          element={
+            <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']}>
+              <CommunicationCenter />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/homework"
+          element={
+            <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']}>
+              <HomeworkHub />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/student/timetable"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT']}>
+              <TimetableGrid />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/timetable"
+          element={
+            <ProtectedRoute allowedRoles={['PARENT']}>
+              <TimetableGrid />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Super Admin Dashboard */}
         <Route
           path="/dashboard/super-admin"
@@ -228,6 +280,14 @@ export const AppRoutes: React.FC = () => {
           }
         />
         <Route
+          path="/dashboard/admin/exams"
+          element={
+            <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
+              <ExamManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/dashboard/admin/settings"
           element={
             <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
@@ -266,6 +326,14 @@ export const AppRoutes: React.FC = () => {
           element={
             <ProtectedRoute allowedRoles={['TEACHER']}>
               <TeacherSchedule />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/teacher/exams"
+          element={
+            <ProtectedRoute allowedRoles={['TEACHER']}>
+              <ExamManagement />
             </ProtectedRoute>
           }
         />
@@ -350,5 +418,19 @@ export const AppRoutes: React.FC = () => {
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+  );
+};
+
+const PageLoader = () => (
+  <div className="min-h-[50vh] flex items-center justify-center">
+    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+  </div>
+);
+
+export const AppRoutes: React.FC = () => {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <AppRoutesInternal />
+    </Suspense>
   );
 };

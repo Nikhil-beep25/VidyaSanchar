@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
+import { useAuth } from '../../../context/AuthContext';
 import { CreditCard, Receipt, FileDown } from 'lucide-react';
 
 export const StudentFees: React.FC = () => {
+  const { user } = useAuth();
   const [ledger, setLedger] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user?.studentId) return;
+
     async function loadLedger() {
+      setLoading(true);
       try {
-        const data = await apiRequest('/fees/student/s1');
+        const data = await apiRequest(`/fees/student/${user.studentId}`);
         setLedger(data);
       } catch (err) {
         setLedger([
@@ -21,7 +27,7 @@ export const StudentFees: React.FC = () => {
             balance: 0,
             status: 'PAID',
             payments: [
-              { id: 'pay1', amountPaid: 32000, paymentDate: '2026-07-02T10:00:00.000Z', paymentMethod: 'UPI', receiptNumber: 'REC-2026-0941' }
+              { id: 'pay1', amountPaid: 32000, createdAt: '2026-07-02T10:00:00.000Z', paymentMethod: 'UPI', receiptNumber: 'REC-2026-0941' }
             ]
           },
           {
@@ -35,23 +41,47 @@ export const StudentFees: React.FC = () => {
             payments: []
           }
         ]);
+      } finally {
+        setLoading(false);
       }
     }
     loadLedger();
-  }, []);
+  }, [user?.studentId]);
 
-  const handlePrintMockReceipt = (receipt: any) => {
-    alert(`----------------------------------------
-       FEE PAYMENT RECEIPT
-----------------------------------------
-Receipt No: ${receipt.receiptNumber}
-Date: ${new Date(receipt.paymentDate).toLocaleDateString('en-IN')}
-Method: ${receipt.paymentMethod}
-Amount Paid: INR ${receipt.amountPaid.toLocaleString('en-IN')}
-Status: Fully Logged
-----------------------------------------
-Thank you for your payment!
-----------------------------------------`);
+  if (loading) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  const handleDownloadReceipt = async (paymentId: string, receiptNumber: string) => {
+    try {
+      let apiBase = (import.meta.env.VITE_API_URL as string) || '';
+      if (apiBase.endsWith('/')) {
+        apiBase = apiBase.slice(0, -1);
+      }
+      const token = localStorage.getItem('accessToken');
+      
+      const response = await fetch(`${apiBase}/api/payments/${paymentId}/receipt`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error('Receipt generation failed.');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Receipt_${receiptNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Error downloading receipt PDF.');
+    }
   };
 
   return (
@@ -106,11 +136,11 @@ Thank you for your payment!
                   {fee.payments.map((p: any) => (
                     <button
                       key={p.id}
-                      onClick={() => handlePrintMockReceipt(p)}
+                      onClick={() => handleDownloadReceipt(p.id, p.receiptNumber)}
                       className="inline-flex items-center text-xs text-primary font-semibold hover:underline bg-card border px-2.5 py-1 rounded w-full justify-center"
                     >
                       <Receipt className="h-3 w-3 mr-1" />
-                      Receipt Reference
+                      Download Receipt (PDF)
                     </button>
                   ))}
                 </div>

@@ -52,33 +52,40 @@ export async function apiRequest<T = any>(
   });
 
   // Handle Token Expiry & Automatic Refresh
-  if (response.status === 401 && token && !skipAuth) {
-    try {
-      // Attempt token refresh
-      const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      if (refreshResponse.ok) {
-        const data = await refreshResponse.json();
-        const newAccessToken = data.accessToken;
-        setAccessToken(newAccessToken);
-
-        // Retry original request with new token
-        requestHeaders.set('Authorization', `Bearer ${newAccessToken}`);
-        response = await fetch(url, {
-          headers: requestHeaders,
+  if (response.status === 401 && !skipAuth) {
+    if (token) {
+      try {
+        // Attempt token refresh
+        const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
+          method: 'POST',
           credentials: 'include',
-          ...restOptions,
         });
-      } else {
-        // Refresh token failed, clear access token
+
+        if (refreshResponse.ok) {
+          const data = await refreshResponse.json();
+          const newAccessToken = data.accessToken;
+          setAccessToken(newAccessToken);
+
+          // Retry original request with new token
+          requestHeaders.set('Authorization', `Bearer ${newAccessToken}`);
+          response = await fetch(url, {
+            headers: requestHeaders,
+            credentials: 'include',
+            ...restOptions,
+          });
+        } else {
+          // Refresh token failed, clear access token and notify context
+          setAccessToken(null);
+          window.dispatchEvent(new Event('auth-unauthorized'));
+        }
+      } catch (refreshError) {
+        console.error('Failed to automatically refresh access token:', refreshError);
         setAccessToken(null);
+        window.dispatchEvent(new Event('auth-unauthorized'));
       }
-    } catch (refreshError) {
-      console.error('Failed to automatically refresh access token:', refreshError);
-      setAccessToken(null);
+    } else {
+      // No token present, but request was unauthorized
+      window.dispatchEvent(new Event('auth-unauthorized'));
     }
   }
 

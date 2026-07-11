@@ -1,32 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
+import { useAuth } from '../../../context/AuthContext';
 import { Calendar, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 
 export const StudentAttendance: React.FC = () => {
+  const { user } = useAuth();
   const [attendance, setAttendance] = useState<any>({
-    summary: { totalDays: 4, presentDays: 4, absentDays: 0, lateDays: 0, excusedDays: 0, percentage: 100 },
+    summary: { totalDays: 0, presentDays: 0, absentDays: 0, lateDays: 0, excusedDays: 0, percentage: 100 },
     records: []
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user?.studentId) return;
+
     async function loadAttendance() {
+      setLoading(true);
       try {
-        const data = await apiRequest('/attendance/student/s1');
+        const data = await apiRequest(`/attendance/student/${user.studentId}`);
         setAttendance(data);
       } catch (err) {
         setAttendance({
           summary: { totalDays: 4, presentDays: 3, absentDays: 1, lateDays: 0, excusedDays: 0, percentage: 75 },
           records: [
-            { id: '1', date: '2026-07-04T00:00:00.000Z', status: 'PRESENT', remarks: 'Active' },
-            { id: '2', date: '2026-07-03T00:00:00.000Z', status: 'PRESENT', remarks: 'Attentive' },
+            { id: '1', date: '2026-07-04T00:00:00.000Z', status: 'PRESENT', remarks: 'Punctual' },
+            { id: '2', date: '2026-07-03T00:00:00.000Z', status: 'PRESENT', remarks: 'Active' },
             { id: '3', date: '2026-07-02T00:00:00.000Z', status: 'ABSENT', remarks: 'Unwell' },
-            { id: '4', date: '2026-07-01T00:00:00.000Z', status: 'PRESENT', remarks: 'Punctual' }
+            { id: '4', date: '2026-07-01T00:00:00.000Z', status: 'PRESENT', remarks: 'Attentive' }
           ]
         });
+      } finally {
+        setLoading(false);
       }
     }
     loadAttendance();
-  }, []);
+  }, [user?.studentId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   const getStatusIcon = (status: string) => {
     switch (status) {

@@ -14,6 +14,7 @@ export async function createTimetableSlot(req: Request, res: Response, next: Nex
       where: {
         teacherId,
         dayOfWeek,
+        isDeleted: false,
         OR: [
           {
             startTime: { lte: startTime },
@@ -43,6 +44,7 @@ export async function createTimetableSlot(req: Request, res: Response, next: Nex
         where: {
           roomNumber,
           dayOfWeek,
+          isDeleted: false,
           OR: [
             {
               startTime: { lte: startTime },
@@ -89,7 +91,7 @@ export async function getClassTimetable(req: Request, res: Response, next: NextF
   try {
     const { classId } = req.params;
     const slots = await prisma.timetable.findMany({
-      where: { classId },
+      where: { classId, isDeleted: false },
       include: {
         subject: true,
         teacher: {
@@ -113,7 +115,7 @@ export async function getTeacherTimetable(req: Request, res: Response, next: Nex
   try {
     const { teacherId } = req.params;
     const slots = await prisma.timetable.findMany({
-      where: { teacherId },
+      where: { teacherId, isDeleted: false },
       include: {
         subject: true,
         timetableClass: true
@@ -129,11 +131,95 @@ export async function getTeacherTimetable(req: Request, res: Response, next: Nex
   }
 }
 
+/**
+ * Resolve dynamic user timetable based on authenticated role context
+ */
+export async function getMyTimetable(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.user?.userId;
+    const userRole = req.user?.role;
+    if (!userId || !userRole) {
+      return res.status(401).json({ message: 'User context missing.' });
+    }
+
+    if (userRole === 'STUDENT') {
+      const student = await prisma.student.findUnique({ where: { userId } });
+      if (!student) return res.status(404).json({ message: 'Student profile not found.' });
+
+      const slots = await prisma.timetable.findMany({
+        where: { classId: student.classId, isDeleted: false },
+        include: {
+          subject: true,
+          teacher: { include: { user: { select: { name: true } } } }
+        },
+        orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }]
+      });
+      return res.status(200).json(slots);
+    }
+
+    if (userRole === 'TEACHER') {
+      const teacher = await prisma.teacher.findUnique({ where: { userId } });
+      if (!teacher) return res.status(404).json({ message: 'Teacher profile not found.' });
+
+      const slots = await prisma.timetable.findMany({
+        where: { teacherId: teacher.id, isDeleted: false },
+        include: {
+          subject: true,
+          timetableClass: true
+        },
+        orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }]
+      });
+      return res.status(200).json(slots);
+    }
+
+    if (userRole === 'PARENT') {
+      const parent = await prisma.parent.findUnique({
+        where: { userId },
+        include: {
+          students: { select: { classId: true, id: true, user: { select: { name: true } } } },
+          relations: { include: { student: { select: { classId: true, id: true, user: { select: { name: true } } } } } }
+        }
+      });
+      if (!parent) return res.status(404).json({ message: 'Parent profile not found.' });
+
+      const childClasses = new Map<string, string>(); // classId -> childName
+      parent.students.forEach(s => childClasses.set(s.classId, s.user.name));
+      parent.relations.forEach(r => childClasses.set(r.student.classId, r.student.user.name));
+
+      const classIds = Array.from(childClasses.keys());
+      const slots = await prisma.timetable.findMany({
+        where: { classId: { in: classIds }, isDeleted: false },
+        include: {
+          subject: true,
+          timetableClass: true,
+          teacher: { include: { user: { select: { name: true } } } }
+        },
+        orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }]
+      });
+
+      // Group slots by child / class
+      const grouped = slots.map(slot => ({
+        ...slot,
+        childName: childClasses.get(slot.classId) || 'Child'
+      }));
+
+      return res.status(200).json(grouped);
+    }
+
+    return res.status(400).json({ message: 'Dynamic schedule resolve not supported for Admins. Query class or teacher directly.' });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function deleteTimetableSlot(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
-    await prisma.timetable.delete({ where: { id } });
-    return res.status(200).json({ message: 'Slot deleted successfully.' });
+    await prisma.timetable.update({
+      where: { id },
+      data: { isDeleted: true }
+    });
+    return res.status(200).json({ message: 'Slot soft-deleted successfully.' });
   } catch (error) {
     next(error);
   }

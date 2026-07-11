@@ -22,7 +22,7 @@ export const ParentFees: React.FC = () => {
     if (success) {
       try {
         const mockPaymentId = `pay_mock_${Date.now()}`;
-        const verificationResult = await apiRequest('/fees/checkout/verify', {
+        const verificationResult = await apiRequest('/payments/verify', {
           method: 'POST',
           body: JSON.stringify({
             razorpay_order_id: orderData.orderId,
@@ -104,7 +104,7 @@ export const ParentFees: React.FC = () => {
 
   const loadHistory = async (studentId: string) => {
     try {
-      const data = await apiRequest(`/fees/history?studentId=${studentId}`);
+      const data = await apiRequest(`/payments/history?studentId=${studentId}`);
       setHistory(data || []);
     } catch (err) {
       console.error('Failed to load history:', err);
@@ -136,7 +136,7 @@ export const ParentFees: React.FC = () => {
       }
 
       // 1. Create order on backend
-      const orderData = await apiRequest('/fees/checkout/create-order', {
+      const orderData = await apiRequest('/payments/create-order', {
         method: 'POST',
         body: JSON.stringify({
           studentId: selectedChildId,
@@ -172,7 +172,7 @@ export const ParentFees: React.FC = () => {
         handler: async function (response: any) {
           try {
             // 3. Verify signature on backend
-            const verificationResult = await apiRequest('/fees/checkout/verify', {
+            const verificationResult = await apiRequest('/payments/verify', {
               method: 'POST',
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
@@ -236,7 +236,7 @@ export const ParentFees: React.FC = () => {
       }
       const token = localStorage.getItem('accessToken');
       
-      const response = await fetch(`${apiBase}/api/fees/receipt/${paymentId}`, {
+      const response = await fetch(`${apiBase}/api/payments/${paymentId}/receipt`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -461,7 +461,7 @@ export const ParentFees: React.FC = () => {
                         </span>
                       </td>
                       <td className="p-4 text-xs text-muted-foreground">
-                        {new Date(pay.paymentDate).toLocaleDateString('en-IN', {
+                        {new Date(pay.paidAt || pay.createdAt).toLocaleDateString('en-IN', {
                           day: '2-digit',
                           month: 'short',
                           year: 'numeric'

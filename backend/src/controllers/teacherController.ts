@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../config/db';
 import { hashPassword } from '../utils/hash';
+import { createAuditLog } from '../utils/audit';
 
 export async function getAllTeachers(req: Request, res: Response, next: NextFunction) {
   try {
@@ -140,6 +141,13 @@ export async function createTeacher(req: Request, res: Response, next: NextFunct
       return teacher;
     });
 
+    await createAuditLog(
+      req.user?.userId,
+      'TEACHER_CREATED',
+      `Registered new teacher: ${result.user.name} (ID: ${result.employeeId})`,
+      req.user?.schoolId
+    );
+
     return res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -234,6 +242,13 @@ export async function updateTeacher(req: Request, res: Response, next: NextFunct
       return updatedTeacher;
     });
 
+    await createAuditLog(
+      req.user?.userId,
+      'TEACHER_UPDATED',
+      `Updated teacher profile: ${result.user.name} (ID: ${result.employeeId})`,
+      req.user?.schoolId
+    );
+
     return res.status(200).json(result);
   } catch (error: any) {
     res.status(400).json({ message: error.message || 'Failed to update teacher.' });
@@ -248,7 +263,19 @@ export async function deleteTeacher(req: Request, res: Response, next: NextFunct
       return res.status(404).json({ message: 'Teacher not found.' });
     }
 
+    const teacherUser = await prisma.user.findUnique({
+      where: { id: teacher.userId },
+      select: { name: true }
+    });
+
     await prisma.user.delete({ where: { id: teacher.userId } });
+
+    await createAuditLog(
+      req.user?.userId,
+      'TEACHER_DELETED',
+      `Deleted teacher profile: ${teacherUser?.name || 'Unknown'} (ID: ${teacher.employeeId})`,
+      req.user?.schoolId
+    );
 
     return res.status(200).json({ message: 'Teacher deleted successfully.' });
   } catch (error) {
