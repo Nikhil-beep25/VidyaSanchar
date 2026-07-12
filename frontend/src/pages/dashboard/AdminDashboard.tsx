@@ -339,7 +339,7 @@ const AdminDashboardComponent: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="text-left">
-        <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-violet-600 bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold tracking-tight text-gradient-theme">
           Admin Dashboard Summary
         </h1>
         <p className="text-sm text-muted-foreground">Real-time school enterprise resource planning telemetry.</p>

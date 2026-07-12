@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star } from 'lucide-react';
+import { Star, Quote, Sparkles } from 'lucide-react';
 
 export const Testimonials: React.FC = () => {
   const reviews = [
@@ -34,11 +34,19 @@ export const Testimonials: React.FC = () => {
   ];
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 py-16 space-y-16">
+    <div className="layout-container py-8 sm:py-12 space-y-12 relative text-left">
+      {/* Background Ambient Decorative Lights */}
+      <div className="absolute top-[15%] left-[-15%] w-[450px] h-[450px] rounded-full bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
+      <div className="absolute top-[40%] right-[-10%] w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px] pointer-events-none dark:block hidden" />
+
       {/* Intro */}
       <section className="text-center max-w-3xl mx-auto space-y-4">
-        <h1 className="text-4xl font-extrabold tracking-tight">On the Ground Feedback</h1>
-        <p className="text-lg text-muted-foreground">
+        <div className="inline-flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
+          <Sparkles className="h-3.5 w-3.5 text-primary" />
+          <span>Real Reviews</span>
+        </div>
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight Outfit">On the Ground Feedback</h1>
+        <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
           Hear from administrators, educators, and parents who are using VidyaSanchar.
         </p>
       </section>
@@ -46,20 +54,32 @@ export const Testimonials: React.FC = () => {
       {/* Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {reviews.map((r, index) => (
-          <div key={index} className="border rounded-2xl p-8 bg-card shadow-sm space-y-4 hover:shadow-md transition-shadow">
+          <div 
+            key={index} 
+            className="border border-white/[0.06] rounded-3xl p-6 sm:p-10 bg-card/45 backdrop-blur-sm space-y-6 hover:border-primary/20 hover:shadow-xl transition-all duration-300 relative group text-left"
+          >
+            {/* Top quote mark icon */}
+            <div className="absolute top-6 right-8 text-white/[0.02] dark:text-white/[0.02] group-hover:text-primary/[0.05] transition-colors pointer-events-none">
+              <Quote className="h-16 w-16 rotate-180" />
+            </div>
+
             <div className="flex items-center space-x-1 text-yellow-500">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-4 w-4 ${i < r.rating ? 'fill-yellow-500' : 'text-muted-foreground'}`}
+                  className={`h-4.5 w-4.5 ${i < r.rating ? 'fill-yellow-500' : 'text-muted-foreground/30'}`}
                 />
               ))}
             </div>
-            <p className="italic text-muted-foreground leading-relaxed">"{r.text}"</p>
-            <div className="flex items-center space-x-4 pt-4 border-t">
-              <img src={r.avatar} alt={r.name} className="h-12 w-12 rounded-full object-cover border" />
+            <p className="italic text-muted-foreground leading-relaxed text-sm sm:text-base">"{r.text}"</p>
+            <div className="flex items-center space-x-4 pt-6 border-t border-white/[0.05]">
+              <img 
+                src={r.avatar} 
+                alt={r.name} 
+                className="h-12 w-12 rounded-full object-cover border border-white/10 bg-slate-900" 
+              />
               <div>
-                <h4 className="font-bold text-sm">{r.name}</h4>
+                <h4 className="font-extrabold text-sm text-foreground">{r.name}</h4>
                 <p className="text-xs text-muted-foreground">{r.role}</p>
               </div>
             </div>

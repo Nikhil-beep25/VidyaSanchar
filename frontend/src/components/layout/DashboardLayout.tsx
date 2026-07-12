@@ -156,7 +156,7 @@ export const DashboardLayout: React.FC = () => {
                 <div className="p-1.5 rounded-lg bg-primary text-primary-foreground flex-shrink-0">
                   <School className="h-5 w-5" />
                 </div>
-                <span className="font-extrabold text-sm tracking-tight bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
+                <span className="font-extrabold text-sm tracking-tight text-gradient-theme">
                   VidyaSanchar
                 </span>
               </NavLink>
@@ -256,7 +256,7 @@ export const DashboardLayout: React.FC = () => {
               <div className="p-1.5 rounded-lg bg-primary text-primary-foreground flex-shrink-0">
                 <School className="h-5 w-5" />
               </div>
-              <span className="font-extrabold text-sm tracking-tight bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
+              <span className="font-extrabold text-sm tracking-tight text-gradient-theme">
                 VidyaSanchar
               </span>
             </NavLink>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { apiRequest } from '../../lib/api';
-import { MapPin, Mail, Phone, Send } from 'lucide-react';
+import { MapPin, Mail, Phone, Send, Sparkles, Github, Linkedin, Briefcase, ExternalLink } from 'lucide-react';
+import { Card } from '../../components/common/Card';
 import { ConnectWithUsSection } from '../../components/layout/footer/ConnectWithUsSection';
 
 export const Contact: React.FC = () => {
@@ -14,10 +15,23 @@ export const Contact: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
+  const validateEmail = (emailStr: string) => {
+    return /\S+@\S+\.\S+/.test(emailStr);
+  };
+
+  const isEmailValid = email === '' || validateEmail(email);
+  const isNameValid = name === '' || name.trim().length >= 2;
+  const isSubjectValid = subject === '' || subject.trim().length >= 4;
+  const isMessageValid = message === '' || message.trim().length >= 10;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !subject || !message) {
       setError('Please fill in all required fields.');
+      return;
+    }
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address.');
       return;
     }
 
@@ -45,165 +59,281 @@ export const Contact: React.FC = () => {
   };
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 py-16 space-y-16">
+    <div className="layout-container py-8 sm:py-12 space-y-14 relative text-left">
+      {/* Background Ambient Decorative Lights */}
+      <div className="absolute top-[10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
+      <div className="absolute top-[40%] right-[-15%] w-[450px] h-[450px] rounded-full bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
+
       {/* Intro */}
-      <section className="text-center max-w-3xl mx-auto space-y-4">
-        <h1 className="text-4xl font-extrabold tracking-tight">Contact Our Team</h1>
-        <p className="text-lg text-muted-foreground">
-          Have questions about self-hosting or managed subscriptions? Get in touch with us.
+      <section className="text-center max-w-3xl mx-auto space-y-4 reveal reveal-fade-up">
+        <div className="inline-flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
+          <Sparkles className="h-3.5 w-3.5 text-primary" />
+          <span>Support & Enquiries</span>
+        </div>
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight Outfit text-foreground font-sans">Contact Our Team</h1>
+        <p className="text-base sm:text-lg text-muted-foreground leading-relaxed font-semibold">
+          Have questions about self-hosting, custom features, or custom SaaS deployments? Get in touch with us.
         </p>
       </section>
 
-      {/* Grid */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        {/* Info Column */}
-        <div className="lg:col-span-1 space-y-8">
-          <div className="flex items-start space-x-4">
-            <div className="p-3 bg-primary/10 text-primary rounded-lg flex-shrink-0">
-              <MapPin className="h-6 w-6" />
+      {/* Main layout */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch reveal reveal-fade-up">
+        
+        {/* LEFT COLUMN: Info Cards & Professional Links */}
+        <div className="lg:col-span-5 flex flex-col justify-between space-y-6 reveal reveal-left">
+          
+          {/* Availability Status Card */}
+          <div className="flex items-start space-x-4 border border-emerald-500/20 bg-emerald-500/5 p-6 rounded-2xl group card-hover-saas">
+            <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl flex-shrink-0 border border-emerald-500/20 shadow-[0_2px_12px_-3px_rgba(16,185,129,0.25)] transition-transform duration-300 group-hover:scale-110">
+              <Briefcase className="h-5 w-5 icon-rotate-hover" />
             </div>
             <div>
-              <h3 className="font-bold text-lg">Our Locations</h3>
-              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                <strong>Delhi:</strong> B-12, Sector 4, Dwarka, New Delhi - 110075
+              <h3 className="font-extrabold text-base Outfit text-foreground">Availability Status</h3>
+              <p className="text-xs text-emerald-500 font-extrabold flex items-center gap-1.5 mt-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                Open to Role Offers & Consulting Contracts
               </p>
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                <strong>Bengaluru:</strong> Flat 402, Indiranagar, Bengaluru, Karnataka - 560038
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed font-medium">
+                Available to integrate VidyaSanchar ERP or configure custom dashboards on remote servers.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start space-x-4">
-            <div className="p-3 bg-primary/10 text-primary rounded-lg flex-shrink-0">
-              <Mail className="h-6 w-6" />
+          {/* Social Profiles Connection Card */}
+          <div className="flex items-start space-x-4 border border-border/80 bg-card p-6 rounded-2xl group card-hover-saas">
+            <div className="p-3 bg-primary/10 text-primary rounded-xl flex-shrink-0 border border-primary/20 shadow-[0_2px_12px_-3px_hsl(var(--primary)/0.25)] transition-transform duration-300 group-hover:scale-110">
+              <Github className="h-5 w-5 icon-rotate-hover" />
             </div>
-            <div>
-              <h3 className="font-bold text-lg">Email Inquiries</h3>
-              <a href="mailto:info@vidyasanchar.in" className="text-sm text-primary hover:underline block mt-2">
-                info@vidyasanchar.in
-              </a>
-              <a href="mailto:support@vidyasanchar.in" className="text-sm text-primary hover:underline block mt-1">
-                support@vidyasanchar.in
-              </a>
+            <div className="space-y-3 w-full">
+              <h3 className="font-extrabold text-base Outfit text-foreground">Developer Channels</h3>
+              <div className="text-xs sm:text-sm mt-2.5 space-y-2.5 font-bold">
+                <a 
+                  href="https://github.com/nikhilbhadauriya" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center justify-between text-muted-foreground hover:text-primary transition-all pb-2 border-b border-border/60"
+                >
+                  <span className="flex items-center gap-2"><Github className="h-4 w-4" /> GitHub Portfolio</span>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+                <a 
+                  href="https://linkedin.com/in/nikhilbhadauriya" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center justify-between text-muted-foreground hover:text-primary transition-all"
+                >
+                  <span className="flex items-center gap-2"><Linkedin className="h-4 w-4" /> LinkedIn Profile</span>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-start space-x-4">
-            <div className="p-3 bg-primary/10 text-primary rounded-lg flex-shrink-0">
-              <Phone className="h-6 w-6" />
+          {/* Contact Details stack */}
+          <div className="space-y-6 flex-grow">
+            {/* Location Card */}
+            <div className="flex items-start space-x-4 border border-border/80 bg-card p-6 rounded-2xl group hover:border-primary/20 hover:shadow-md transition-all duration-300">
+              <div className="p-3 bg-primary/10 text-primary rounded-xl flex-shrink-0 border border-primary/20 shadow-[0_2px_12px_-3px_hsl(var(--primary)/0.25)]">
+                <MapPin className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-base Outfit text-foreground">Our Locations</h3>
+                <div className="text-xs sm:text-sm text-muted-foreground mt-2.5 space-y-2 leading-relaxed">
+                  <p>
+                    <strong className="text-foreground/80 block font-bold">Delhi NCR:</strong> Dwarka, New Delhi - 110075
+                  </p>
+                  <p>
+                    <strong className="text-foreground/80 block font-bold">Bengaluru Hub:</strong> Indiranagar, Bengaluru, Karnataka - 560038
+                  </p>
+                </div>
+              </div>
             </div>
-            <div>
-              <h3 className="font-bold text-lg">Call Support</h3>
-              <p className="text-sm text-muted-foreground mt-2 block">
-                Office Landline: +91 11 2507 4600
-              </p>
-              <p className="text-sm text-muted-foreground mt-1 block">
-                Mon - Sat (9:00 AM - 6:00 PM IST)
-              </p>
+
+            {/* Email Support */}
+            <div className="flex items-start space-x-4 border border-border/80 bg-card p-6 rounded-2xl group hover:border-primary/20 hover:shadow-md transition-all duration-300">
+              <div className="p-3 bg-primary/10 text-primary rounded-xl flex-shrink-0 border border-primary/20 shadow-[0_2px_12px_-3px_hsl(var(--primary)/0.25)]">
+                <Mail className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-base Outfit text-foreground">Email Support</h3>
+                <div className="text-xs sm:text-sm mt-2.5 space-y-2.5 font-semibold">
+                  <div className="flex justify-between gap-4">
+                    <span className="text-muted-foreground font-medium">General:</span>
+                    <a href="mailto:info@vidyasanchar.in" className="text-primary hover:underline">info@vidyasanchar.in</a>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <span className="text-muted-foreground font-medium">Technical:</span>
+                    <a href="mailto:support@vidyasanchar.in" className="text-primary hover:underline">support@vidyasanchar.in</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Phone Support */}
+            <div className="flex items-start space-x-4 border border-border/80 bg-card p-6 rounded-2xl group hover:border-primary/20 hover:shadow-md transition-all duration-300">
+              <div className="p-3 bg-primary/10 text-primary rounded-xl flex-shrink-0 border border-primary/20 shadow-[0_2px_12px_-3px_hsl(var(--primary)/0.25)]">
+                <Phone className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-base Outfit text-foreground">Call Channels</h3>
+                <div className="text-xs sm:text-sm text-muted-foreground mt-2.5 space-y-1">
+                  <p className="font-bold text-foreground/85">Office Hotline: +91 11 2507 4600</p>
+                  <p className="font-medium">Mon - Sat (9:00 AM - 6:00 PM IST)</p>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
 
-        {/* Form Column */}
-        <div className="lg:col-span-2 border rounded-2xl p-8 bg-card shadow-lg">
-          <h3 className="font-bold text-xl mb-6">Send us a Message</h3>
+        {/* RIGHT COLUMN: Modern Glass Form */}
+        <Card className="lg:col-span-7 p-6 sm:p-10 shadow-2xl relative flex flex-col justify-center border-border/80 reveal reveal-right">
+          <div className="space-y-1 mb-8">
+            <h3 className="font-extrabold text-xl Outfit text-foreground">Send us a Message</h3>
+            <p className="text-xs text-muted-foreground">Fill in the fields below. Labels float up as you type.</p>
+          </div>
 
           {success && (
-            <div className="p-4 mb-6 rounded-lg bg-green-500/15 border border-green-500/30 text-green-500 text-sm">
+            <div className="p-3.5 mb-6 rounded-xl bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-300 text-xs sm:text-sm font-semibold text-center animate-in fade-in duration-200">
               ✓ Message sent successfully! Our administrative team will review it and reply shortly.
             </div>
           )}
 
           {error && (
-            <div className="p-4 mb-6 rounded-lg bg-destructive/15 border border-destructive/30 text-destructive text-sm">
+            <div className="p-3.5 mb-6 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs sm:text-sm font-semibold text-center animate-in fade-in duration-200">
               ✗ {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                  Your Name *
-                </label>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Floating label 1: Name */}
+              <div className="relative">
                 <input
                   type="text"
                   required
+                  id="contact-name"
+                  placeholder=" "
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full h-10 px-3 py-2 rounded-md border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  placeholder="e.g. Ramesh Chandra"
+                  className={`peer block w-full px-4 pt-6 pb-2 text-sm bg-background border rounded-xl focus:outline-none focus-glow text-foreground placeholder-transparent transition-all ${
+                    !isNameValid ? 'border-destructive focus:ring-destructive focus:border-destructive' : 'border-border/80'
+                  }`}
                 />
+                <label
+                  htmlFor="contact-name"
+                  className="absolute left-4 top-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-muted-foreground/50 peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                >
+                  Your Name *
+                </label>
+                {!isNameValid && (
+                  <p className="text-[10px] text-destructive font-bold mt-1.5 ml-1">Must be at least 2 characters.</p>
+                )}
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                  Email Address *
-                </label>
+              {/* Floating label 2: Email */}
+              <div className="relative">
                 <input
                   type="email"
                   required
+                  id="contact-email"
+                  placeholder=" "
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-10 px-3 py-2 rounded-md border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  placeholder="e.g. ramesh@example.com"
+                  className={`peer block w-full px-4 pt-6 pb-2 text-sm bg-background border rounded-xl focus:outline-none focus-glow text-foreground placeholder-transparent transition-all ${
+                    !isEmailValid ? 'border-destructive focus:ring-destructive focus:border-destructive' : 'border-border/80'
+                  }`}
                 />
+                <label
+                  htmlFor="contact-email"
+                  className="absolute left-4 top-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-muted-foreground/50 peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                >
+                  Email Address *
+                </label>
+                {!isEmailValid && (
+                  <p className="text-[10px] text-destructive font-bold mt-1.5 ml-1">Please enter a valid email address.</p>
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                  Phone (Optional)
-                </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Floating label 3: Phone */}
+              <div className="relative">
                 <input
                   type="tel"
+                  id="contact-phone"
+                  placeholder=" "
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full h-10 px-3 py-2 rounded-md border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  placeholder="e.g. +91 9876543210"
+                  className="peer block w-full px-4 pt-6 pb-2 text-sm bg-background border border-border/80 rounded-xl focus:outline-none focus-glow text-foreground placeholder-transparent transition-all"
                 />
+                <label
+                  htmlFor="contact-phone"
+                  className="absolute left-4 top-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-muted-foreground/50 peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                >
+                  Phone (Optional)
+                </label>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                  Subject *
-                </label>
+              {/* Floating label 4: Subject */}
+              <div className="relative">
                 <input
                   type="text"
                   required
+                  id="contact-subject"
+                  placeholder=" "
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full h-10 px-3 py-2 rounded-md border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  placeholder="e.g. Setup issue on local server"
+                  className={`peer block w-full px-4 pt-6 pb-2 text-sm bg-background border rounded-xl focus:outline-none focus-glow text-foreground placeholder-transparent transition-all ${
+                    !isSubjectValid ? 'border-destructive focus:ring-destructive focus:border-destructive' : 'border-border/80'
+                  }`}
                 />
+                <label
+                  htmlFor="contact-subject"
+                  className="absolute left-4 top-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-muted-foreground/50 peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                >
+                  Subject *
+                </label>
+                {!isSubjectValid && (
+                  <p className="text-[10px] text-destructive font-bold mt-1.5 ml-1">Must be at least 4 characters.</p>
+                )}
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                Your Message *
-              </label>
+            {/* Floating label 5: Message */}
+            <div className="relative">
               <textarea
                 required
+                id="contact-message"
+                placeholder=" "
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={5}
-                className="w-full px-3 py-2 rounded-md border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                placeholder="e.g. We are installing the docker containers on our server and wanted to ask about configuring the environment variables for postgres..."
+                className={`peer block w-full px-4 pt-6 pb-2 text-sm bg-background border rounded-xl focus:outline-none focus-glow text-foreground placeholder-transparent transition-all ${
+                  !isMessageValid ? 'border-destructive focus:ring-destructive focus:border-destructive' : 'border-border/80'
+                }`}
               />
+              <label
+                htmlFor="contact-message"
+                className="absolute left-4 top-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-muted-foreground/50 peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+              >
+                Your Message *
+              </label>
+              {!isMessageValid && (
+                <p className="text-[10px] text-destructive font-bold mt-1.5 ml-1">Must be at least 10 characters.</p>
+              )}
             </div>
 
             <button
               type="submit"
-              disabled={submitting}
-              className="w-full h-10 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              disabled={submitting || !isNameValid || !isEmailValid || !isSubjectValid || !isMessageValid}
+              className="w-full h-11 inline-flex items-center justify-center rounded-xl text-sm font-bold tracking-wide transition-all bg-primary text-primary-foreground hover:opacity-95 disabled:opacity-50 shadow-md shadow-primary/25 pt-0.5 btn-saas"
             >
               {submitting ? 'Sending message...' : 'Send Message'}
               <Send className="ml-2 h-4 w-4" />
             </button>
           </form>
-        </div>
+        </Card>
       </section>
 
       {/* Connect With Us Section */}

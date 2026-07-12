@@ -4,86 +4,669 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
-
-    --card: 0 0% 100%;
+    /* Base HSL values for Tailwind theme mapping (Light mode) */
+    --background: 220 15% 98.2%; /* #FAFBFC background */
+    --foreground: 224 71.4% 4.1%; /* #111827 primary text */
+    
+    --card: 0 0% 100%; /* #FFFFFF card */
     --card-foreground: 224 71.4% 4.1%;
-
+    
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-
-    --primary: 262.1 83.3% 57.8%;
-    --primary-foreground: 210 20% 98%;
-
+    
+    --border: 220 13% 92%; /* #E5E7EB border */
+    --input: 220 13% 92%;
+    
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 9% 34.3%; /* #4B5563 secondary text (increased contrast from #6B7280) */
+    
     --secondary: 220 14.3% 95.9%;
     --secondary-foreground: 220.9 39.3% 11%;
-
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-
+    
     --accent: 220 14.3% 95.9%;
     --accent-foreground: 220.9 39.3% 11%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
+    --radius: 1rem;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 262.1 83.3% 57.8%;
+    /* Exact user-requested HEX CSS Variables (Light Mode) */
+    --surface: #FAFBFC;
+    --surface-secondary: #FFFFFF;
+    --border-color: #E5E7EB;
+    --text-primary: #111827;
+    --text-secondary: #4B5563; /* Increased contrast from #6B7280 */
 
-    --radius: 0.5rem;
+    /* Theme Presets Base Values (Light mode) */
+    /* Purple */
+    --theme-primary-purple: #7C3AED;
+    --theme-primary-light-purple: #EDE9FE;
+    --theme-primary-dark-purple: #5B21B6;
+    --hsl-purple: 262.1 83.3% 57.8%;
+
+    /* Blue */
+    --theme-primary-blue: #3B82F6;
+    --theme-primary-light-blue: #DBEAFE;
+    --theme-primary-dark-blue: #1D4ED8;
+    --hsl-blue: 221.2 83.2% 53.3%;
+
+    /* Emerald */
+    --theme-primary-emerald: #10B981;
+    --theme-primary-light-emerald: #D1FAE5;
+    --theme-primary-dark-emerald: #047857;
+    --hsl-emerald: 162.2 89% 24.3%; /* Optimized for WCAG AA >= 4.5:1 text contrast in light mode */
+
+    /* Orange */
+    --theme-primary-orange: #F97316;
+    --theme-primary-light-orange: #FFEDD5;
+    --theme-primary-dark-orange: #C2410C;
+    --hsl-orange: 24.6 95% 40%; /* Optimized for WCAG AA >= 4.5:1 text contrast in light mode */
+
+    /* Rose */
+    --theme-primary-rose: #F43F5E;
+    --theme-primary-light-rose: #FFE4E6;
+    --theme-primary-dark-rose: #BE123C;
+    --hsl-rose: 346.8 84.1% 37.3%; /* Optimized for WCAG AA >= 4.5:1 text contrast in light mode */
+
+    /* Obsidian Preset */
+    --theme-primary-obsidian: #1E293B;
+    --theme-primary-light-obsidian: #F1F5F9;
+    --theme-primary-dark-obsidian: #0F172A;
+    --hsl-obsidian: 215 25% 27%;
+
+    /* Mode-aware Text Gradients & Button Variables */
+    --text-gradient-start: var(--primary-dark);
+    --text-gradient-end: hsl(var(--primary));
+    --button-bg: var(--primary-dark);
+    --button-fg: #ffffff;
   }
 
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-
-    --card: 224 71.4% 4.1%;
+    /* Base HSL values for Tailwind theme mapping (Dark mode) */
+    --background: 229 64% 5%; /* #050816 background */
+    --foreground: 210 20% 98%; /* #F9FAFB text */
+    
+    --card: 223 47% 11%; /* #111827 card */
     --card-foreground: 210 20% 98%;
-
-    --popover: 224 71.4% 4.1%;
+    
+    --popover: 222 47% 8%; /* #0B1120 surface */
     --popover-foreground: 210 20% 98%;
-
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 210 20% 98%;
-
-    --secondary: 215 27.9% 16.9%;
+    
+    --border: 223 47% 20% / 0.4; /* rgba(255,255,255,0.08) */
+    --input: 222 47% 20%;
+    
+    --muted: 222 47% 8%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --secondary: 222 47% 8%;
     --secondary-foreground: 210 20% 98%;
-
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-
-    --accent: 215 27.9% 16.9%;
+    
+    --accent: 222 47% 8%;
     --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
+    /* Exact user-requested HEX CSS Variables (Dark Mode) */
+    --surface: #050816;
+    --surface-secondary: #0B1120;
+    --border-color: rgba(255,255,255,0.08);
+    --text-primary: #F9FAFB;
+    --text-secondary: #9CA3AF;
 
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 263.4 70% 50.4%;
+    /* Theme Presets Base Values (Dark mode offset) */
+    /* Purple */
+    --theme-primary-light-purple: #2E1065;
+    --theme-primary-dark-purple: #C084FC;
+
+    /* Blue */
+    --theme-primary-light-blue: #1E3A8A;
+    --theme-primary-dark-blue: #93C5FD;
+
+    /* Emerald */
+    --theme-primary-light-emerald: #064E3B;
+    --theme-primary-dark-emerald: #6EE7B7;
+
+    /* Orange */
+    --theme-primary-light-orange: #7C2D12;
+    --theme-primary-dark-orange: #FDBA74;
+
+    /* Rose */
+    --theme-primary-light-rose: #881337;
+    --theme-primary-dark-rose: #FDA4AF;
+
+    /* Obsidian Preset */
+    --theme-primary-obsidian: #E2E8F0;
+    --theme-primary-light-obsidian: #0F172A;
+    --theme-primary-dark-obsidian: #F8FAFC;
+    --hsl-obsidian: 215 20% 85%;
+
+    /* Dark Mode specific HSL overrides for high contrast text */
+    --hsl-purple: 262.1 83.3% 57.8%;
+    --hsl-blue: 221.2 83.2% 53.3%;
+    --hsl-emerald: 142.1 70.6% 45.3%;
+    --hsl-orange: 24.6 95% 53.1%;
+    --hsl-rose: 346.8 84.1% 49.8%;
+
+    /* Mode-aware Text Gradients & Button Variables */
+    --text-gradient-start: hsl(var(--primary));
+    --text-gradient-end: var(--primary-dark);
+    --button-bg: var(--primary-dark);
+    --button-fg: var(--surface);
   }
+}
+
+/* Preset Mappings on Root Node */
+.preset-purple {
+  --primary: var(--theme-primary-purple);
+  --primary-light: var(--theme-primary-light-purple);
+  --primary-dark: var(--theme-primary-dark-purple);
+  --hsl-primary: var(--hsl-purple);
+  --ring: var(--theme-primary-purple);
+}
+.preset-blue {
+  --primary: var(--theme-primary-blue);
+  --primary-light: var(--theme-primary-light-blue);
+  --primary-dark: var(--theme-primary-dark-blue);
+  --hsl-primary: var(--hsl-blue);
+  --ring: var(--theme-primary-blue);
+}
+.preset-emerald {
+  --primary: var(--theme-primary-emerald);
+  --primary-light: var(--theme-primary-light-emerald);
+  --primary-dark: var(--theme-primary-dark-emerald);
+  --hsl-primary: var(--hsl-emerald);
+  --ring: var(--theme-primary-emerald);
+  --primary-foreground: 224 71.4% 4.1%; /* Dark text for Emerald in Light Mode */
+}
+.preset-orange {
+  --primary: var(--theme-primary-orange);
+  --primary-light: var(--theme-primary-light-orange);
+  --primary-dark: var(--theme-primary-dark-orange);
+  --hsl-primary: var(--hsl-orange);
+  --ring: var(--theme-primary-orange);
+  --primary-foreground: 224 71.4% 4.1%; /* Dark text for Orange in Light Mode */
+}
+.preset-rose {
+  --primary: var(--theme-primary-rose);
+  --primary-light: var(--theme-primary-light-rose);
+  --primary-dark: var(--theme-primary-dark-rose);
+  --hsl-primary: var(--hsl-rose);
+  --ring: var(--theme-primary-rose);
+}
+.preset-obsidian {
+  --primary: var(--theme-primary-obsidian);
+  --primary-light: var(--theme-primary-light-obsidian);
+  --primary-dark: var(--theme-primary-dark-obsidian);
+  --hsl-primary: var(--hsl-obsidian);
+  --ring: var(--theme-primary-obsidian);
+}
+
+/* Route HSL Primary back into Tailwind */
+:root {
+  --primary: var(--hsl-primary);
+  --primary-foreground: 210 20% 98%; /* Default light text */
+}
+
+.dark {
+  --primary: var(--hsl-primary);
+  --primary-foreground: 210 20% 98%; /* Default light text in dark mode */
+}
+
+/* Override rules for Dark Mode resets and exceptions */
+.dark.preset-emerald, .dark .preset-emerald {
+  --primary-foreground: 210 20% 98%; /* Light text for Emerald in Dark Mode */
+}
+.dark.preset-orange, .dark .preset-orange {
+  --primary-foreground: 210 20% 98%; /* Light text for Orange in Dark Mode */
+}
+.dark.preset-obsidian, .dark .preset-obsidian {
+  --primary-foreground: 224 71.4% 4.1%; /* Dark text for Obsidian in Dark Mode (light primary) */
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+  html, body {
+    overflow-x: hidden;
+  }
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: 'Plus Jakarta Sans', 'Outfit', system-ui, -apple-system, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
   }
 }
 
-/* Custom Scrollbar for modern dashboards */
+/* Premium Focus Outline styles for WCAG AA compliance */
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible {
+  @apply outline-none ring-2 ring-primary/60 ring-offset-2 ring-offset-background;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   @apply bg-transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/45 transition-colors;
+  @apply bg-muted-foreground/15 rounded-full hover:bg-muted-foreground/30 transition-colors;
 }
+
+/* Glassmorphism panel definitions */
+.glass-panel {
+  @apply bg-card/60 backdrop-blur-md border border-border/80 shadow-md;
+}
+
+.glow-theme {
+  box-shadow: 0 0 40px -5px hsla(var(--primary) / 0.15); /* Fixed rgba to hsla */
+}
+
+/* Dynamic theme gradients */
+.text-gradient-theme {
+  background: linear-gradient(to right, var(--text-gradient-start), var(--text-gradient-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* Subtle drop shadow filter for premium SaaS text depth */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
+}
+.dark .text-gradient-theme {
+  filter: drop-shadow(0 1px 4px rgba(255, 255, 255, 0.05));
+}
+
+/* Custom avatar gradient background (optimized dark gradient for white text) */
+.avatar-gradient {
+  background: linear-gradient(135deg, var(--avatar-grad-start), var(--avatar-grad-end));
+}
+:root {
+  --avatar-grad-start: var(--primary-dark);
+  --avatar-grad-end: hsl(var(--primary));
+}
+.dark {
+  --avatar-grad-start: var(--primary-light);
+  --avatar-grad-end: hsl(var(--primary));
+}
+
+/* Premium solid theme button class for high contrast Portal Login CTAs */
+.btn-portal {
+  background-color: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+}
+.btn-portal:hover {
+  filter: brightness(1.08);
+}
+.dark .btn-portal:hover {
+  filter: brightness(0.92);
+}
+
+/* Custom keyframes & micro-interactions */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s ease-in-out infinite;
+}
+
+/* Theme switching smooth transition */
+.theme-transition {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   NAVBAR ANIMATIONS — Premium SaaS (Linear / Vercel / Stripe)
+   ============================================================ */
+
+/* Entrance: fade + slide-down on initial render */
+@keyframes navbar-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.navbar-enter {
+  animation: navbar-slide-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Nav Item — Base hover micro-animation */
+.nav-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: color 0.2s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, color;
+}
+.nav-item:hover {
+  transform: scale(1.04) translateY(-0.5px);
+}
+.nav-item.active {
+  transform: scale(1.02);
+}
+
+/* Nav Underline — slides strictly left → right */
+.nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: hsl(var(--primary));
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left center; /* always left-to-right */
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-item:hover::after {
+  transform: scaleX(1);
+}
+.nav-item.active::after {
+  transform: scaleX(1);
+  opacity: 0; /* active uses pill glow instead */
+}
+
+/* Active page glow line below pill */
+.nav-active-line {
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  border-radius: 2px;
+  background: hsl(var(--primary));
+  box-shadow: 0 0 8px 1px hsl(var(--primary) / 0.5);
+  animation: active-line-pulse 3s ease-in-out infinite;
+}
+
+@keyframes active-line-pulse {
+  0%, 100% { opacity: 0.7; box-shadow: 0 0 6px 0px hsl(var(--primary) / 0.4); }
+  50%       { opacity: 1;   box-shadow: 0 0 12px 2px hsl(var(--primary) / 0.6); }
+}
+
+/* Active pill glow (used on active NavLink wrapper) */
+.active-pill-glow {
+  box-shadow: 0 1px 10px -2px hsl(var(--primary) / 0.25);
+  animation: active-glow-pulse 4s ease-in-out infinite;
+}
+
+@keyframes active-glow-pulse {
+  0%, 100% { box-shadow: 0 1px 10px -2px hsl(var(--primary) / 0.2); }
+  50%       { box-shadow: 0 1px 18px 0px hsl(var(--primary) / 0.35); }
+}
+
+/* Legacy nav-link-hover (kept for backward compat, unused on landing nav) */
+.nav-link-hover {
+  position: relative;
+}
+.nav-link-hover::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: hsl(var(--primary));
+  transform-origin: left center; /* fixed: always left-to-right */
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-link-hover:hover::after {
+  transform: scaleX(1);
+}
+
+/* Button Shine Effect */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.25) 45%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.25) 55%,
+    transparent 70%,
+    transparent 100%
+  );
+  transition: none;
+}
+.btn-shine:hover::before {
+  left: 150%;
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Button Glow Effect */
+.btn-glow {
+  box-shadow: 0 3px 14px -4px hsl(var(--primary) / 0.28);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-glow:hover {
+  box-shadow: 0 4px 24px -2px hsl(var(--primary) / 0.45);
+  transform: translateY(-1px);
+}
+.btn-glow:active {
+  transform: translateY(0px);
+}
+
+/* Animated gradient outline borders */
+.animated-gradient-border {
+  position: relative;
+}
+.animated-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    90deg, 
+    hsl(var(--primary)), 
+    hsl(var(--primary) / 0.3), 
+    hsl(var(--primary) / 0.08), 
+    hsl(var(--primary) / 0.3), 
+    hsl(var(--primary))
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.65;
+  transition: opacity 0.3s ease;
+}
+.animated-gradient-border:hover::before {
+  opacity: 1;
+}
+
+/* Unified Layout Container System */
+.layout-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem; /* px-4 */
+}
+@media (min-width: 640px) {
+  .layout-container {
+    padding-left: 1.5rem; /* px-6 */
+    padding-right: 1.5rem; /* px-6 */
+  }
+}
+@media (min-width: 1024px) {
+  .layout-container {
+    max-width: 1280px; /* Desktop: 1280px */
+    padding-left: 2rem; /* px-8 */
+    padding-right: 2rem; /* px-8 */
+  }
+}
+@media (min-width: 1440px) {
+  .layout-container {
+    max-width: 1400px; /* Large Desktop: 1400px */
+  }
+}
+
+/* Mesh Gradient for Auth Page Left Branding Panel */
+.auth-branding-mesh {
+  background-color: #1A103D;
+  background-image: 
+    radial-gradient(at 0% 0%, #1A103D 0px, transparent 55%),
+    radial-gradient(at 80% 0%, #312E81 0px, transparent 60%),
+    radial-gradient(at 100% 100%, #5B21B6 0px, transparent 65%),
+    radial-gradient(at 0% 100%, #312E81 0px, transparent 55%);
+}
+
+/* 1. GPU Floating Animations */
+@keyframes float-slow-1 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes float-slow-2 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes float-slow-3 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+.animate-float-slow-1 {
+  animation: float-slow-1 8s ease-in-out infinite;
+}
+.animate-float-slow-2 {
+  animation: float-slow-2 8s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+.animate-float-slow-3 {
+  animation: float-slow-3 8s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+/* 2. Infinite Marquee Animation */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* 3. Global Scroll Reveal Animations */
+.reveal {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.reveal-fade-up {
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale {
+  transform: scale(0.96);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-left {
+  transform: translateX(-40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-right {
+  transform: translateX(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active {
+  opacity: 1;
+  transform: translate(0) scale(1);
+}
+
+/* 4. Page Transition Animation */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.985) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.page-transition-enter {
+  animation: page-enter 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 5. Focus & Hover Micro-interactions */
+.focus-glow:focus-within, .focus-glow:focus {
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary-light), 0 4px 20px rgba(168, 85, 247, 0.15);
+  border-color: var(--primary) !important;
+}
+
+/* Card Premium Hover Glows & Lift */
+.card-hover-saas {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover-saas:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.25) !important;
+}
+
+/* Rotate icon slightly on parent hover */
+.group:hover .icon-rotate-hover {
+  transform: rotate(8deg);
+}
+.icon-rotate-hover {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Button micro-interactions */
+.btn-saas {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-saas:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.25);
+  filter: brightness(1.05);
+}
+.btn-saas:active {
+  transform: translateY(0px) scale(0.97);
+}
+
+/* Respect user prefers-reduced-motion setting */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-slow-1, .animate-float-slow-2, .animate-float-slow-3, .animate-marquee, .reveal, .page-transition-enter {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+

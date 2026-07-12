@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, Sparkles } from 'lucide-react';
+import { Card } from '../../components/common/Card';
 
 interface FAQItemProps {
   question: string;
@@ -10,19 +11,30 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer }) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b py-4">
+    <div className="border-b border-border/60 py-4 last:border-b-0">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex justify-between items-center text-left py-2 font-semibold text-lg hover:text-primary transition-colors focus:outline-none"
+        className="w-full flex justify-between items-center text-left py-3 font-semibold text-base sm:text-lg hover:text-primary transition-all duration-300 focus:outline-none group"
       >
-        <span>{question}</span>
-        {open ? <ChevronUp className="h-5 w-5 text-primary" /> : <ChevronDown className="h-5 w-5" />}
+        <span className="text-foreground/90 group-hover:text-primary transition-colors">{question}</span>
+        <div className={`p-1.5 rounded-lg border border-border/80 bg-background text-muted-foreground group-hover:text-primary group-hover:border-primary/20 transition-all ${open ? 'rotate-180 bg-primary/5 text-primary border-primary/20' : ''}`}>
+          <ChevronDown className="h-4 w-4" />
+        </div>
       </button>
-      {open && (
-        <p className="mt-2 text-sm text-muted-foreground leading-relaxed transition-all duration-300">
-          {answer}
-        </p>
-      )}
+      
+      {/* Accordion Smooth Spring Slide transition block */}
+      <div 
+        className={`grid transition-all duration-300 ${open ? 'grid-rows-[1fr] opacity-100 mt-2' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`}
+        style={{
+          transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)'
+        }}
+      >
+        <div className="overflow-hidden">
+          <p className="pb-4 text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium">
+            {answer}
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
@@ -52,21 +64,30 @@ export const FAQ: React.FC = () => {
   ];
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-16 space-y-12">
+    <div className="layout-container py-8 sm:py-12 space-y-10 relative text-left">
+      {/* Background Ambient Decorative Lights */}
+      <div className="absolute top-[10%] left-[-20%] w-[400px] h-[400px] rounded-full bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
+
       {/* Intro */}
-      <section className="text-center space-y-4">
-        <h1 className="text-4xl font-extrabold tracking-tight">Frequently Asked Questions</h1>
-        <p className="text-lg text-muted-foreground">
+      <section className="text-center space-y-4 reveal reveal-fade-up">
+        <div className="inline-flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
+          <Sparkles className="h-3.5 w-3.5 text-primary" />
+          <span>F.A.Q.</span>
+        </div>
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight Outfit text-foreground">Frequently Asked Questions</h1>
+        <p className="text-base sm:text-lg text-muted-foreground font-semibold">
           Find answers to common questions about setting up and running VidyaSanchar.
         </p>
       </section>
 
-      {/* List */}
-      <section className="border rounded-2xl p-6 md:p-8 bg-card shadow-sm space-y-2">
-        {faqs.map((f, i) => (
-          <FAQItem key={i} question={f.q} answer={f.a} />
-        ))}
-      </section>
+      {/* List using Card Component */}
+      <Card className="p-6 sm:p-10 shadow-2xl relative reveal reveal-scale">
+        <div className="divide-y divide-border/60">
+          {faqs.map((f, i) => (
+            <FAQItem key={i} question={f.q} answer={f.a} />
+          ))}
+        </div>
+      </Card>
     </div>
   );
 };
