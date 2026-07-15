@@ -159,7 +159,7 @@ export const LandingLayout: React.FC = () => {
     const container = navRef.current;
     if (!container) return;
 
-    const targetIndex = hoveredIndex !== null ? hoveredIndex : activeIndex;
+    const targetIndex = hoveredIndex;
     if (targetIndex !== null) {
       const linkElements = container.querySelectorAll('.nav-link-item');
       const targetEl = linkElements[targetIndex] as HTMLElement;
@@ -175,14 +175,14 @@ export const LandingLayout: React.FC = () => {
     } else {
       setPillStyle((prev) => ({ ...prev, opacity: 0 }));
     }
-  }, [hoveredIndex, activeIndex]);
+  }, [hoveredIndex]);
 
   // Handle window resizing to adjust pill coordinates
   useEffect(() => {
     const handleResize = () => {
       const container = navRef.current;
       if (!container) return;
-      const targetIndex = hoveredIndex !== null ? hoveredIndex : activeIndex;
+      const targetIndex = hoveredIndex;
       if (targetIndex !== null) {
         const linkElements = container.querySelectorAll('.nav-link-item');
         const targetEl = linkElements[targetIndex] as HTMLElement;
@@ -199,7 +199,7 @@ export const LandingLayout: React.FC = () => {
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [hoveredIndex, activeIndex]);
+  }, [hoveredIndex]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300 relative theme-transition font-sans">
@@ -209,13 +209,11 @@ export const LandingLayout: React.FC = () => {
 
       {/* Premium Fixed SaaS Navbar */}
       <header 
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ease-in-out border-b ${
-          scrolled 
-            ? 'bg-background/80 backdrop-blur-[20px] border-border/40 dark:border-white/[0.08] shadow-sm' 
-            : 'bg-transparent border-transparent'
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ease-in-out border-b bg-white/90 dark:bg-[#050816]/90 backdrop-blur-md border-[#E5E7EB] dark:border-white/[0.08] ${
+          scrolled ? 'shadow-sm' : 'shadow-none'
         }`}
       >
-        <div className="layout-container w-full h-16 md:h-[72px] flex items-center justify-between relative navbar-enter">
+        <div className="max-w-[1280px] mx-auto w-full h-[72px] px-6 sm:px-8 flex items-center justify-between relative navbar-enter">
           
           {/* Left Brand Section */}
           <Link to="/" className="flex items-center space-x-1.5 group z-10 relative flex-shrink-0 transition-transform duration-200 hover:scale-[1.01]">
@@ -223,10 +221,10 @@ export const LandingLayout: React.FC = () => {
               <School className="h-4 w-4" />
             </div>
             <div className="flex flex-col text-left">
-              <span className="font-extrabold text-[14.5px] sm:text-[15px] tracking-tight text-foreground leading-none font-sans group-hover:text-primary transition-colors duration-200">
+              <span className="font-extrabold text-[14.5px] sm:text-[15px] tracking-tight text-[#0F172A] dark:text-[#F9FAFB] leading-none font-sans group-hover:text-primary transition-colors duration-200">
                 VidyaSanchar
               </span>
-              <span className="text-[6.5px] font-semibold tracking-[0.15em] text-primary/80 uppercase mt-0.5 opacity-90">
+              <span className="text-[7.5px] font-bold tracking-[0.15em] text-[#64748B] dark:text-slate-400 uppercase mt-0.5">
                 School ERP
               </span>
             </div>
@@ -235,40 +233,39 @@ export const LandingLayout: React.FC = () => {
           {/* Center Navigation Menu — Premium SaaS style with sliding pill */}
           <nav 
             ref={navRef}
-            className="hidden xl:flex items-center space-x-1 absolute left-1/2 -translate-x-1/2 z-10 p-1 bg-muted/10 border border-border/10 rounded-full"
+            className="hidden xl:flex items-center space-x-1 absolute left-1/2 -translate-x-1/2 z-10 p-1 bg-[#F1F5F9]/60 dark:bg-slate-900/60 border border-[#E5E7EB] dark:border-slate-800/80 rounded-2xl"
             role="navigation" 
             aria-label="Main navigation"
             onMouseLeave={() => setHoveredIndex(null)}
           >
             {/* Sliding Pill Background */}
             <div 
-              className="absolute rounded-full transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+              className="absolute rounded-[12px] transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
               style={{
                 left: pillStyle.left,
                 width: pillStyle.width,
                 height: pillStyle.height,
                 top: pillStyle.top,
                 opacity: pillStyle.opacity,
-                backgroundColor: hoveredIndex !== null 
-                  ? 'hsl(var(--primary) / 0.08)' 
-                  : 'hsl(var(--primary) / 0.12)',
-                boxShadow: hoveredIndex !== null
-                  ? '0 2px 10px -2px hsl(var(--primary) / 0.15), 0 0 6px 1px hsl(var(--primary) / 0.08)'
-                  : '0 1px 8px -2px hsl(var(--primary) / 0.2)',
-                transform: hoveredIndex !== null ? 'translateY(-0.5px) scale(1.01)' : 'translateY(0) scale(1)',
-                border: '1px solid hsl(var(--primary) / 0.15)',
+                backgroundColor: theme === 'dark' ? 'rgba(168, 85, 247, 0.08)' : 'rgba(124, 58, 237, 0.06)',
+                boxShadow: theme === 'dark'
+                  ? '0 4px 12px -2px rgba(168, 85, 247, 0.15)'
+                  : '0 4px 12px -2px rgba(124, 58, 237, 0.08)',
+                border: theme === 'dark'
+                  ? '1px solid rgba(168, 85, 247, 0.15)'
+                  : '1px solid rgba(124, 58, 237, 0.12)',
               }}
             />
-
+ 
             {navLinks.map((link, idx) => (
               <NavLink
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `nav-link-item relative py-1.5 px-3 rounded-full text-[11.5px] font-semibold tracking-[0.015em] transition-colors duration-200 z-10 ${
+                  `nav-link-item relative py-2.5 px-4 rounded-[12px] text-xs transition-all duration-200 z-10 ${
                     isActive 
-                      ? 'text-primary' 
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300 font-semibold shadow-sm' 
+                      : 'text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 font-medium'
                   }`
                 }
                 onMouseEnter={() => setHoveredIndex(idx)}
@@ -279,129 +276,123 @@ export const LandingLayout: React.FC = () => {
           </nav>
 
           {/* Right Control Section */}
-          <div className="hidden xl:flex items-center space-x-2.5 z-10 relative flex-shrink-0">
-            {/* Grouped Utility Selector Pill */}
-            <div className="flex items-center space-x-1 bg-muted/40 border border-border/40 p-1 rounded-xl">
-              
-              {/* Language Switcher */}
-              <div 
-                className="relative"
-                onMouseEnter={handleLangEnter}
-                onMouseLeave={handleLangLeave}
-                onClick={(e) => e.stopPropagation()}
+          <div className="hidden xl:flex items-center space-x-3.5 z-10 relative flex-shrink-0">
+            
+            {/* Language Switcher Button */}
+            <div 
+              className="relative"
+              onMouseEnter={handleLangEnter}
+              onMouseLeave={handleLangLeave}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={toggleLangClick}
+                aria-label={`Language: ${selectedLang.name}`}
+                className="inline-flex items-center space-x-1.5 h-10 px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30"
               >
-                <button
-                  onClick={toggleLangClick}
-                  aria-label={`Language: ${selectedLang.name}`}
-                  className="inline-flex items-center space-x-1 px-2 py-1 rounded-lg hover:bg-muted text-xs font-semibold transition-all active:scale-[0.97] text-muted-foreground hover:text-foreground"
-                >
-                  <Globe className="h-3.5 w-3.5" />
-                  <span className="text-[10px] leading-none font-bold uppercase">{selectedLang.code}</span>
-                  <ChevronDown className={`h-2.5 w-2.5 transition-transform duration-200 ${langMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {langMenuOpen && (
-                  <div className="absolute right-0 mt-2.5 w-32 rounded-xl border border-border/80 bg-card/95 backdrop-blur-md p-1 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
-                    {languages.map((l) => (
+                <Globe className="h-3.5 w-3.5" />
+                <span className="text-[10px] leading-none font-bold uppercase">{selectedLang.code}</span>
+                <ChevronDown className={`h-2.5 w-2.5 transition-transform duration-200 ${langMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {langMenuOpen && (
+                <div className="absolute right-0 mt-2.5 w-32 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white dark:bg-slate-950 p-1 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
+                  {languages.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => selectLang(l.code)}
+                      className={`w-full flex items-center space-x-2 px-2.5 py-2 rounded-lg text-left text-xs font-semibold transition-all ${
+                        lang === l.code 
+                          ? 'bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300 font-bold' 
+                          : 'text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:bg-slate-50 dark:hover:bg-slate-900/50'
+                      }`}
+                    >
+                      <span>{l.flag}</span>
+                      <span>{l.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Appearance Selector Button */}
+            <div 
+              className="relative"
+              onMouseEnter={handleAppearanceEnter}
+              onMouseLeave={handleAppearanceLeave}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={toggleAppearanceClick}
+                className="inline-flex items-center space-x-1.5 h-10 px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30"
+                aria-label="Customize Appearance"
+              >
+                <Palette className="h-3.5 w-3.5 text-[#7C3AED] dark:text-purple-400" />
+                <ChevronDown className={`h-2.5 w-2.5 transition-transform duration-200 ${appearanceOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {appearanceOpen && (
+                <div className="absolute right-0 mt-2.5 w-60 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white dark:bg-slate-950 p-3.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-left space-y-3.5">
+                  
+                  {/* SECTION 1: MODE */}
+                  <div className="space-y-1.5">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-1 block">
+                      Mode
+                    </span>
+                    <div className="p-0.5 bg-[#F1F5F9]/60 dark:bg-slate-900/60 flex border border-[#E5E7EB] dark:border-slate-800 rounded-lg relative">
+                      <div 
+                        className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-white dark:bg-slate-900 border border-[#E5E7EB] dark:border-slate-800/60 rounded-md shadow-sm transition-all duration-300 ${
+                          theme === 'dark' ? 'left-[calc(50%+1px)]' : 'left-[1px]'
+                        }`}
+                      />
                       <button
-                        key={l.code}
-                        onClick={() => selectLang(l.code)}
-                        className={`w-full flex items-center space-x-2 px-2.5 py-2 rounded-lg text-left text-xs font-semibold transition-all ${
-                          lang === l.code 
-                            ? 'bg-primary/10 text-primary font-bold' 
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        onClick={() => setThemeMode('light')}
+                        className={`flex-1 py-1 rounded-md text-[11px] font-bold transition-all relative z-10 flex items-center justify-center gap-1 ${
+                          theme === 'light' ? 'text-[#7C3AED]' : 'text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
                         }`}
                       >
-                        <span>{l.flag}</span>
-                        <span>{l.name}</span>
+                        <Sun className="h-3 w-3" />
+                        <span>Light</span>
                       </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Separator line inside group */}
-              <div className="h-4 w-px bg-border/60 self-center" />
-
-              {/* Appearance Selector */}
-              <div 
-                className="relative"
-                onMouseEnter={handleAppearanceEnter}
-                onMouseLeave={handleAppearanceLeave}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  onClick={toggleAppearanceClick}
-                  className="inline-flex items-center space-x-0.5 px-2 py-1 rounded-lg hover:bg-muted text-xs font-semibold transition-all active:scale-[0.97] text-muted-foreground hover:text-foreground"
-                  aria-label="Customize Appearance"
-                >
-                  <Palette className="h-3.5 w-3.5 text-primary" />
-                  <ChevronDown className={`h-2.5 w-2.5 transition-transform duration-200 ${appearanceOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {appearanceOpen && (
-                  <div className="absolute right-0 mt-2.5 w-60 rounded-xl border border-border/80 bg-card/95 backdrop-blur-md p-3.5 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-left space-y-3.5">
-                    
-                    {/* SECTION 1: MODE */}
-                    <div className="space-y-1.5">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground px-1 block">
-                        Mode
-                      </span>
-                      <div className="p-0.5 bg-muted/60 flex border border-border/60 rounded-lg relative">
-                        <div 
-                          className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-card border border-border/60 rounded-md shadow-sm transition-all duration-300 ${
-                            theme === 'dark' ? 'left-[calc(50%+1px)]' : 'left-[1px]'
-                          }`}
-                        />
-                        <button
-                          onClick={() => setThemeMode('light')}
-                          className={`flex-1 py-1 rounded-md text-[11px] font-bold transition-all relative z-10 flex items-center justify-center gap-1 ${
-                            theme === 'light' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-                          }`}
-                        >
-                          <Sun className="h-3 w-3" />
-                          <span>Light</span>
-                        </button>
-                        <button
-                          onClick={() => setThemeMode('dark')}
-                          className={`flex-1 py-1 rounded-md text-[11px] font-bold transition-all relative z-10 flex items-center justify-center gap-1 ${
-                            theme === 'dark' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-                          }`}
-                        >
-                          <Moon className="h-3 w-3" />
-                          <span>Dark</span>
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => setThemeMode('dark')}
+                        className={`flex-1 py-1 rounded-md text-[11px] font-bold transition-all relative z-10 flex items-center justify-center gap-1 ${
+                          theme === 'dark' ? 'text-[#7C3AED] dark:text-purple-300' : 'text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
+                        }`}
+                      >
+                        <Moon className="h-3 w-3" />
+                        <span>Dark</span>
+                      </button>
                     </div>
-
-                    {/* SECTION 2: THEME COLORS */}
-                    <div className="space-y-1.5">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground px-1 block">
-                        Theme Colors
-                      </span>
-                      <div className="grid grid-cols-2 gap-1">
-                        {presetsList.map((t) => {
-                          const isSelected = preset === t.code;
-                          return (
-                            <button
-                              key={t.code}
-                              onClick={() => setThemePreset(t.code)}
-                              className={`flex items-center space-x-1.5 px-2 py-1 rounded-lg text-[10px] font-bold border transition-all text-left ${
-                                isSelected 
-                                  ? 'bg-primary/10 text-primary border-primary/20 shadow-sm' 
-                                  : 'border-border hover:bg-muted/50 text-muted-foreground hover:text-foreground font-medium'
-                              }`}
-                            >
-                              <span className={`w-2.5 h-2.5 rounded-full ${t.dotColor} flex-shrink-0`} />
-                              <span className="truncate">{t.name}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
                   </div>
-                )}
-              </div>
+
+                  {/* SECTION 2: THEME COLORS */}
+                  <div className="space-y-1.5">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-1 block">
+                      Theme Colors
+                    </span>
+                    <div className="grid grid-cols-2 gap-1">
+                      {presetsList.map((t) => {
+                        const isSelected = preset === t.code;
+                        return (
+                          <button
+                            key={t.code}
+                            onClick={() => setThemePreset(t.code)}
+                            className={`flex items-center space-x-1.5 px-2 py-1 rounded-lg text-[10px] font-bold border transition-all text-left ${
+                              isSelected 
+                                ? 'bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300 border-[#7C3AED]/20 shadow-sm' 
+                                : 'border-[#E5E7EB] dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400 font-medium'
+                            }`}
+                          >
+                            <span className={`w-2.5 h-2.5 rounded-full ${t.dotColor} flex-shrink-0`} />
+                            <span className="truncate">{t.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                </div>
+              )}
             </div>
 
             {/* Portal Login CTA */}
@@ -414,17 +405,17 @@ export const LandingLayout: React.FC = () => {
                   else if (user.role === 'STUDENT') navigate('/dashboard/student');
                   else if (user.role === 'PARENT') navigate('/dashboard/parent');
                 }}
-                className="inline-flex items-center justify-center rounded-full text-[11px] font-bold tracking-wide transition-all btn-portal h-8.5 px-4.5 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_hsl(var(--primary)/0.3)] active:scale-[0.97] z-10"
+                className="inline-flex items-center justify-center rounded-xl text-xs font-bold tracking-wide transition-all bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md hover:shadow-lg active:scale-[0.97] h-10 px-4.5 z-10"
               >
-                <Lock className="mr-1.5 h-3 w-3" />
+                <Lock className="mr-1.5 h-3.5 w-3.5" />
                 Dashboard
               </button>
             ) : (
               <Link
                 to="/login"
-                className="inline-flex items-center justify-center rounded-full text-[11px] font-bold tracking-wide transition-all btn-portal h-8.5 px-4.5 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_hsl(var(--primary)/0.3)] active:scale-[0.97] z-10"
+                className="inline-flex items-center justify-center rounded-xl text-xs font-bold tracking-wide transition-all bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md hover:shadow-lg active:scale-[0.97] h-10 px-4.5 z-10"
               >
-                <Lock className="mr-1.5 h-3 w-3" />
+                <Lock className="mr-1.5 h-3.5 w-3.5" />
                 Portal Login
               </Link>
             )}
@@ -460,8 +451,6 @@ export const LandingLayout: React.FC = () => {
                 <X className="h-5 w-5" />
               </button>
             </div>
-
-            {/* Navigation links inside drawer */}
             <nav className="flex flex-col space-y-1 overflow-y-auto max-h-[300px]">
               {navLinks.map((link) => (
                 <NavLink
@@ -469,10 +458,10 @@ export const LandingLayout: React.FC = () => {
                   to={link.path}
                   onClick={() => setMobileMenuOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 py-2.5 px-4 rounded-2xl text-xs font-bold transition-all ${
+                    `flex items-center gap-3 py-2.5 px-4 rounded-xl text-xs font-bold transition-all border ${
                       isActive 
-                        ? 'text-primary bg-primary/10 border border-primary/20 font-black' 
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                        ? 'text-[#7C3AED] dark:text-purple-300 bg-[#F3E8FF] dark:bg-purple-950/40 border-[#7C3AED]/20 dark:border-purple-400/20 font-bold' 
+                        : 'text-[#334155] dark:text-slate-300 border-transparent hover:text-[#7C3AED] dark:hover:text-purple-400 hover:bg-[#F3E8FF]/30 dark:hover:bg-purple-950/20'
                     }`
                   }
                 >
@@ -486,21 +475,21 @@ export const LandingLayout: React.FC = () => {
               
               {/* Mobile Segmented Appearance Panel */}
               <div className="space-y-3.5">
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 block">
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-2 block">
                   Appearance Settings
                 </span>
                 
                 {/* Mode Segmented Controls */}
-                <div className="p-1 bg-muted/60 flex border border-border/60 rounded-xl relative mx-2">
+                <div className="p-1 bg-[#F1F5F9]/60 dark:bg-slate-900/60 flex border border-[#E5E7EB] dark:border-slate-800 rounded-xl relative mx-2">
                   <div 
-                    className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-card border border-border/60 rounded-lg shadow-sm transition-all duration-300 ${
+                    className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-900 border border-[#E5E7EB] dark:border-slate-800/60 rounded-lg shadow-sm transition-all duration-300 ${
                       theme === 'dark' ? 'left-[calc(50%+2px)]' : 'left-[6px]'
                     }`}
                   />
                   <button
                     onClick={() => setThemeMode('light')}
                     className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all relative z-10 flex items-center justify-center gap-1.5 ${
-                      theme === 'light' ? 'text-primary' : 'text-muted-foreground'
+                      theme === 'light' ? 'text-[#7C3AED]' : 'text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
                     }`}
                   >
                     <Sun className="h-3.5 w-3.5" />
@@ -509,7 +498,7 @@ export const LandingLayout: React.FC = () => {
                   <button
                     onClick={() => setThemeMode('dark')}
                     className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all relative z-10 flex items-center justify-center gap-1.5 ${
-                      theme === 'dark' ? 'text-primary' : 'text-muted-foreground'
+                      theme === 'dark' ? 'text-[#7C3AED] dark:text-purple-300' : 'text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
                     }`}
                   >
                     <Moon className="h-3.5 w-3.5" />
@@ -518,40 +507,49 @@ export const LandingLayout: React.FC = () => {
                 </div>
 
                 {/* Preset Color Selection Grid */}
-                <div className="grid grid-cols-3 gap-1.5 bg-card/60 p-2 rounded-xl border border-border/80 mx-2">
-                  {presetsList.map((t) => (
-                    <button
-                      key={t.code}
-                      onClick={() => setThemePreset(t.code)}
-                      className={`py-2 rounded-lg flex flex-col items-center justify-center gap-1.5 border transition-all ${
-                        preset === t.code ? 'border-primary bg-primary/10' : 'border-transparent'
-                      }`}
-                    >
-                      <span className={`w-3.5 h-3.5 rounded-full ${t.dotColor}`} />
-                      <span className="text-[9px] font-bold text-foreground/80 truncate w-full px-1 text-center">{t.name}</span>
-                    </button>
-                  ))}
+                <div className="grid grid-cols-3 gap-1.5 bg-card/60 p-2 rounded-xl border border-[#E5E7EB] dark:border-slate-800 mx-2">
+                  {presetsList.map((t) => {
+                    const isSelected = preset === t.code;
+                    return (
+                      <button
+                        key={t.code}
+                        onClick={() => setThemePreset(t.code)}
+                        className={`py-2 rounded-lg flex flex-col items-center justify-center gap-1.5 border transition-all ${
+                          isSelected 
+                            ? 'border-[#7C3AED]/20 bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300' 
+                            : 'border-transparent text-[#334155] dark:text-slate-300 hover:text-[#7C3AED]'
+                        }`}
+                      >
+                        <span className={`w-3.5 h-3.5 rounded-full ${t.dotColor}`} />
+                        <span className="text-[9px] font-bold truncate w-full px-1 text-center">{t.name}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Language Switcher in Mobile */}
               <div className="flex items-center justify-between px-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Language</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400">Language</span>
                 <div className="relative" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={toggleLangClick}
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-border text-xs font-bold bg-card"
+                    className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl border border-[#E5E7EB] dark:border-slate-800 text-xs font-semibold bg-white dark:bg-slate-900 text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] hover:border-[#7C3AED]/30 active:scale-[0.97] transition-all"
                   >
                     <span>{selectedLang.flag}</span>
                     <span>{selectedLang.name}</span>
                   </button>
                   {langMenuOpen && (
-                    <div className="absolute right-0 bottom-full mb-1.5 w-36 rounded-xl border border-border/80 bg-card p-1 shadow-2xl z-50 text-left">
+                    <div className="absolute right-0 bottom-full mb-1.5 w-36 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white dark:bg-slate-950 p-1 shadow-xl z-50 text-left">
                       {languages.map((l) => (
                         <button
                           key={l.code}
                           onClick={() => selectLang(l.code)}
-                          className="w-full flex items-center space-x-2 px-2.5 py-2 rounded-lg text-left text-xs font-semibold hover:bg-muted"
+                          className={`w-full flex items-center space-x-2 px-2.5 py-2 rounded-lg text-left text-xs font-semibold transition-all ${
+                            lang === l.code 
+                              ? 'bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300 font-bold' 
+                              : 'text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:bg-slate-50 dark:hover:bg-slate-900/50'
+                          }`}
                         >
                           <span>{l.flag}</span>
                           <span>{l.name}</span>
@@ -573,7 +571,7 @@ export const LandingLayout: React.FC = () => {
                     else if (user.role === 'STUDENT') navigate('/dashboard/student');
                     else if (user.role === 'PARENT') navigate('/dashboard/parent');
                   }}
-                  className="w-full text-center py-3 text-xs font-bold btn-portal rounded-full shadow-lg shadow-primary/20 btn-shine btn-glow flex items-center justify-center gap-1.5"
+                  className="w-full text-center py-3 text-xs font-bold bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.97] flex items-center justify-center gap-1.5"
                 >
                   <Lock className="h-3.5 w-3.5" />
                   Go to Dashboard
@@ -582,7 +580,7 @@ export const LandingLayout: React.FC = () => {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block w-full text-center py-3 text-xs font-bold btn-portal rounded-full shadow-lg shadow-primary/20 btn-shine btn-glow flex items-center justify-center gap-1.5"
+                  className="block w-full text-center py-3 text-xs font-bold bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.97] flex items-center justify-center gap-1.5"
                 >
                   <Lock className="h-3.5 w-3.5" />
                   Portal Login
