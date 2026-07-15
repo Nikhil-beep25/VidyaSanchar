@@ -216,71 +216,75 @@ export const LandingLayout: React.FC = () => {
         <div className="max-w-[1280px] mx-auto w-full h-[72px] px-6 sm:px-8 flex items-center justify-between relative navbar-enter">
           
           {/* Left Brand Section */}
-          <Link to="/" className="flex items-center space-x-1.5 group z-10 relative flex-shrink-0 transition-transform duration-200 hover:scale-[1.01]">
-            <div className="p-1.5 rounded-lg bg-primary/10 text-primary border border-primary/20 group-hover:scale-105 group-hover:rotate-3 transition-all duration-300 shadow-[0_0_10px_-3px_hsl(var(--primary)/0.25)]">
-              <School className="h-4 w-4" />
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="font-extrabold text-[14.5px] sm:text-[15px] tracking-tight text-[#0F172A] dark:text-[#F9FAFB] leading-none font-sans group-hover:text-primary transition-colors duration-200">
-                VidyaSanchar
-              </span>
-              <span className="text-[7.5px] font-bold tracking-[0.15em] text-[#64748B] dark:text-slate-400 uppercase mt-0.5">
-                School ERP
-              </span>
-            </div>
-          </Link>
+          <div className="flex-1 flex items-center justify-start">
+            <Link to="/" className="flex items-center space-x-1.5 group z-10 relative flex-shrink-0 transition-transform duration-200 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl">
+              <div className="p-1.5 rounded-lg bg-primary/10 text-primary border border-primary/20 group-hover:scale-105 group-hover:rotate-3 transition-all duration-300 shadow-[0_0_10px_-3px_hsl(var(--primary)/0.25)]">
+                <School className="h-4 w-4" />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="font-extrabold text-[14.5px] sm:text-[15px] tracking-tight text-[#0F172A] dark:text-[#F9FAFB] leading-none font-sans group-hover:text-primary transition-colors duration-200">
+                  VidyaSanchar
+                </span>
+                <span className="text-[7.5px] font-bold tracking-[0.15em] text-[#64748B] dark:text-slate-400 uppercase mt-0.5">
+                  School ERP
+                </span>
+              </div>
+            </Link>
+          </div>
 
           {/* Center Navigation Menu — Premium SaaS style with sliding pill */}
-          <nav 
-            ref={navRef}
-            className="hidden xl:flex items-center space-x-1 absolute left-1/2 -translate-x-1/2 z-10 p-1 bg-[#F1F5F9]/60 dark:bg-slate-900/60 border border-[#E5E7EB] dark:border-slate-800/80 rounded-2xl"
-            role="navigation" 
-            aria-label="Main navigation"
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            {/* Sliding Pill Background */}
-            <div 
-              className="absolute rounded-[12px] transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-              style={{
-                left: pillStyle.left,
-                width: pillStyle.width,
-                height: pillStyle.height,
-                top: pillStyle.top,
-                opacity: pillStyle.opacity,
-                backgroundColor: theme === 'dark' ? 'rgba(168, 85, 247, 0.08)' : 'rgba(124, 58, 237, 0.06)',
-                boxShadow: theme === 'dark'
-                  ? '0 4px 12px -2px rgba(168, 85, 247, 0.15)'
-                  : '0 4px 12px -2px rgba(124, 58, 237, 0.08)',
-                border: theme === 'dark'
-                  ? '1px solid rgba(168, 85, 247, 0.15)'
-                  : '1px solid rgba(124, 58, 237, 0.12)',
-              }}
-            />
- 
-            {navLinks.map((link, idx) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                className={({ isActive }) =>
-                  `nav-link-item relative py-2.5 px-4 rounded-[12px] text-xs transition-all duration-200 z-10 ${
-                    isActive 
-                      ? 'bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300 font-semibold shadow-sm' 
-                      : 'text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 font-medium'
-                  }`
-                }
-                onMouseEnter={() => setHoveredIndex(idx)}
-              >
-                <span>{link.name}</span>
-              </NavLink>
-            ))}
-          </nav>
+          <div className="hidden xl:flex items-center justify-center mx-8 flex-shrink-0">
+            <nav 
+              ref={navRef}
+              className="flex items-center space-x-1 p-1 bg-[#F1F5F9]/60 dark:bg-slate-900/60 border border-[#E5E7EB] dark:border-slate-800/80 rounded-2xl relative"
+              role="navigation" 
+              aria-label="Main navigation"
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              {/* Sliding Pill Background */}
+              <div 
+                className="absolute rounded-[12px] transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                style={{
+                  left: pillStyle.left,
+                  width: pillStyle.width,
+                  height: pillStyle.height,
+                  top: pillStyle.top,
+                  opacity: pillStyle.opacity,
+                  backgroundColor: theme === 'dark' ? 'rgba(168, 85, 247, 0.08)' : 'rgba(124, 58, 237, 0.06)',
+                  boxShadow: theme === 'dark'
+                    ? '0 4px 12px -2px rgba(168, 85, 247, 0.15)'
+                    : '0 4px 12px -2px rgba(124, 58, 237, 0.08)',
+                  border: theme === 'dark'
+                    ? '1px solid rgba(168, 85, 247, 0.15)'
+                    : '1px solid rgba(124, 58, 237, 0.12)',
+                }}
+              />
+   
+              {navLinks.map((link, idx) => (
+                <NavLink
+                  key={link.path}
+                  to={link.path}
+                  className={({ isActive }) =>
+                    `nav-link-item relative py-2.5 px-4 rounded-[12px] text-xs transition-all duration-200 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                      isActive 
+                        ? 'bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300 font-semibold shadow-sm' 
+                        : 'text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 font-medium'
+                    }`
+                  }
+                  onMouseEnter={() => setHoveredIndex(idx)}
+                >
+                  <span>{link.name}</span>
+                </NavLink>
+              ))}
+            </nav>
+          </div>
 
           {/* Right Control Section */}
-          <div className="hidden xl:flex items-center space-x-3.5 z-10 relative flex-shrink-0">
+          <div className="flex-1 flex items-center justify-end gap-3 z-10 relative flex-shrink-0">
             
             {/* Language Switcher Button */}
             <div 
-              className="relative"
+              className="relative mr-1"
               onMouseEnter={handleLangEnter}
               onMouseLeave={handleLangLeave}
               onClick={(e) => e.stopPropagation()}
@@ -288,7 +292,7 @@ export const LandingLayout: React.FC = () => {
               <button
                 onClick={toggleLangClick}
                 aria-label={`Language: ${selectedLang.name}`}
-                className="inline-flex items-center space-x-1.5 h-10 px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30"
+                className="inline-flex items-center space-x-1.5 h-10 px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <Globe className="h-3.5 w-3.5" />
                 <span className="text-[10px] leading-none font-bold uppercase">{selectedLang.code}</span>
@@ -316,14 +320,14 @@ export const LandingLayout: React.FC = () => {
 
             {/* Appearance Selector Button */}
             <div 
-              className="relative"
+              className="relative hidden sm:block"
               onMouseEnter={handleAppearanceEnter}
               onMouseLeave={handleAppearanceLeave}
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={toggleAppearanceClick}
-                className="inline-flex items-center space-x-1.5 h-10 px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30"
+                className="inline-flex items-center space-x-1.5 h-10 px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 aria-label="Customize Appearance"
               >
                 <Palette className="h-3.5 w-3.5 text-[#7C3AED] dark:text-purple-400" />
@@ -405,7 +409,7 @@ export const LandingLayout: React.FC = () => {
                   else if (user.role === 'STUDENT') navigate('/dashboard/student');
                   else if (user.role === 'PARENT') navigate('/dashboard/parent');
                 }}
-                className="inline-flex items-center justify-center rounded-xl text-xs font-bold tracking-wide transition-all bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md hover:shadow-lg active:scale-[0.97] h-10 px-4.5 z-10"
+                className="hidden sm:inline-flex items-center justify-center rounded-xl text-xs font-bold tracking-wide transition-all bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md hover:shadow-lg active:scale-[0.97] h-10 px-4.5 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <Lock className="mr-1.5 h-3.5 w-3.5" />
                 Dashboard
@@ -413,19 +417,17 @@ export const LandingLayout: React.FC = () => {
             ) : (
               <Link
                 to="/login"
-                className="inline-flex items-center justify-center rounded-xl text-xs font-bold tracking-wide transition-all bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md hover:shadow-lg active:scale-[0.97] h-10 px-4.5 z-10"
+                className="hidden sm:inline-flex items-center justify-center rounded-xl text-xs font-bold tracking-wide transition-all bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md hover:shadow-lg active:scale-[0.97] h-10 px-4.5 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <Lock className="mr-1.5 h-3.5 w-3.5" />
                 Portal Login
               </Link>
             )}
-          </div>
 
-          {/* Mobile hamburger toggle */}
-          <div className="flex items-center xl:hidden z-10 relative">
+            {/* Mobile hamburger toggle */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="p-2 rounded-full border border-border/50 bg-muted/40 hover:bg-muted/60 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
+              className="xl:hidden flex items-center justify-center p-2 h-10 w-10 rounded-xl border border-border/50 bg-muted/40 hover:bg-muted/60 text-muted-foreground hover:text-foreground active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               aria-label="Open Mobile Menu"
             >
               <Menu className="h-5 w-5" />
