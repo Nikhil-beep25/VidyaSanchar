@@ -4,7 +4,7 @@ import { useTheme, type ThemePreset } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { 
   School, Globe, ChevronDown, Palette, Menu, X, 
-  Home, Info, Layers, CreditCard, MessageSquare, HelpCircle, Mail, Lock, Check, Sun, Moon, Sparkles, MapPin
+  Home, Info, Layers, CreditCard, MessageSquare, HelpCircle, Mail, Lock, Check, Sun, Moon, Sparkles, MapPin, LogIn
 } from 'lucide-react';
 import { Footer } from './footer/Footer';
 
@@ -280,7 +280,7 @@ export const LandingLayout: React.FC = () => {
           </div>
 
           {/* Right Control Section */}
-          <div className="flex-1 flex items-center justify-end gap-3 z-10 relative flex-shrink-0">
+          <div className="flex-1 flex items-center justify-end gap-3 z-10 relative flex-shrink-0 flex-nowrap">
             
             {/* Language Switcher Button */}
             <div 
@@ -292,7 +292,7 @@ export const LandingLayout: React.FC = () => {
               <button
                 onClick={toggleLangClick}
                 aria-label={`Language: ${selectedLang.name}`}
-                className="inline-flex items-center space-x-1.5 h-10 px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="inline-flex items-center space-x-1.5 h-[40px] px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] focus-visible:ring-offset-2"
               >
                 <Globe className="h-3.5 w-3.5" />
                 <span className="text-[10px] leading-none font-bold uppercase">{selectedLang.code}</span>
@@ -327,7 +327,7 @@ export const LandingLayout: React.FC = () => {
             >
               <button
                 onClick={toggleAppearanceClick}
-                className="inline-flex items-center space-x-1.5 h-10 px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="inline-flex items-center space-x-1.5 h-[40px] px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] focus-visible:ring-offset-2"
                 aria-label="Customize Appearance"
               >
                 <Palette className="h-3.5 w-3.5 text-[#7C3AED] dark:text-purple-400" />
@@ -409,25 +409,25 @@ export const LandingLayout: React.FC = () => {
                   else if (user.role === 'STUDENT') navigate('/dashboard/student');
                   else if (user.role === 'PARENT') navigate('/dashboard/parent');
                 }}
-                className="hidden sm:inline-flex items-center justify-center rounded-xl text-xs font-bold tracking-wide transition-all bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md hover:shadow-lg active:scale-[0.97] h-10 px-4.5 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="hidden sm:inline-flex items-center justify-center min-w-[130px] h-[40px] px-5 py-2.5 rounded-xl text-[15px] font-semibold tracking-wide whitespace-nowrap bg-gradient-to-r from-[#7C3AED] to-[#6D28D9] hover:from-[#8B5CF6] hover:to-[#7C3AED] text-white shadow-[0_4px_12px_rgba(124,58,237,0.15)] hover:shadow-[0_6px_16px_rgba(124,58,237,0.20)] hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.98] transition-all duration-200 ease-out z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] focus-visible:ring-offset-2 flex gap-2"
               >
-                <Lock className="mr-1.5 h-3.5 w-3.5" />
-                Dashboard
+                <Lock className="h-4 w-4 flex-shrink-0" />
+                <span>Dashboard</span>
               </button>
             ) : (
               <Link
                 to="/login"
-                className="hidden sm:inline-flex items-center justify-center rounded-xl text-xs font-bold tracking-wide transition-all bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md hover:shadow-lg active:scale-[0.97] h-10 px-4.5 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="hidden sm:inline-flex items-center justify-center min-w-[130px] h-[40px] px-5 py-2.5 rounded-xl text-[15px] font-semibold tracking-wide whitespace-nowrap bg-gradient-to-r from-[#7C3AED] to-[#6D28D9] hover:from-[#8B5CF6] hover:to-[#7C3AED] text-white shadow-[0_4px_12px_rgba(124,58,237,0.15)] hover:shadow-[0_6px_16px_rgba(124,58,237,0.20)] hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.98] transition-all duration-200 ease-out z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] focus-visible:ring-offset-2 flex gap-2"
               >
-                <Lock className="mr-1.5 h-3.5 w-3.5" />
-                Portal Login
+                <LogIn className="h-4 w-4 flex-shrink-0" />
+                <span>Portal Login</span>
               </Link>
             )}
 
             {/* Mobile hamburger toggle */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="xl:hidden flex items-center justify-center p-2 h-10 w-10 rounded-xl border border-border/50 bg-muted/40 hover:bg-muted/60 text-muted-foreground hover:text-foreground active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="xl:hidden flex items-center justify-center h-[40px] w-[40px] rounded-xl border border-border/50 bg-muted/40 hover:bg-muted/60 text-muted-foreground hover:text-foreground active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] focus-visible:ring-offset-2"
               aria-label="Open Mobile Menu"
             >
               <Menu className="h-5 w-5" />
