@@ -4,10 +4,11 @@ import {
   Sparkles, BookOpen, Receipt, Database, Smartphone, Award, Activity, 
   Users, GraduationCap, Calendar, Coins, FileSpreadsheet, Clock, 
   HeartHandshake, BarChart3, ShieldAlert, Bell, Code2, Server, 
-  Link2, Globe, Palette, Cloud, Layers, Shield, ArrowRight, ChevronRight 
+  Link2, Globe, Palette, Cloud, Layers, Shield, ArrowRight, ChevronRight, Github, Linkedin
 } from 'lucide-react';
 import { Card } from '../../components/common/Card';
 import { ConnectWithUsSection } from '../../components/layout/footer/ConnectWithUsSection';
+import { SOCIAL_LINKS } from '../../config/social';
 
 // Animated SVG representing the school data network flow
 const AnimatedIllustration: React.FC = () => {
@@ -537,6 +538,42 @@ export const About: React.FC = () => {
             <span>View Features</span>
             <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-200" />
           </Link>
+        </div>
+      </section>
+
+      {/* DEVELOPED BY SECTION */}
+      <section className="bg-card/30 border border-border/60 p-8 sm:p-12 rounded-3xl backdrop-blur-sm relative overflow-hidden text-center space-y-6 reveal reveal-fade-up">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 to-purple-500/5 pointer-events-none" />
+        <div className="max-w-2xl mx-auto space-y-3 relative z-10">
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#7C3AED] dark:text-purple-400 bg-violet-100 dark:bg-purple-950/40 px-3 py-1 rounded-full">
+            Project Creator
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold Outfit text-foreground">Developed by Nikhil Bhadauriya</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed font-medium max-w-md mx-auto">
+            VidyaSanchar is designed, engineered, and maintained by Nikhil Bhadauriya. Visit my profiles to follow other active projects or get in touch for custom software deployments.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-4 relative z-10">
+          <a
+            href={SOCIAL_LINKS.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Visit GitHub Profile"
+            className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-850 hover:bg-violet-50 dark:hover:bg-violet-950/20 text-xs font-semibold shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:scale-105"
+          >
+            <Github className="h-4.5 w-4.5 text-[#7C3AED] dark:text-purple-400" />
+            <span>GitHub Portfolio</span>
+          </a>
+          <a
+            href={SOCIAL_LINKS.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Visit LinkedIn Profile"
+            className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-850 hover:bg-violet-50 dark:hover:bg-violet-950/20 text-xs font-semibold shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:scale-105"
+          >
+            <Linkedin className="h-4.5 w-4.5 text-[#7C3AED] dark:text-purple-400" />
+            <span>LinkedIn Profile</span>
+          </a>
         </div>
       </section>
 

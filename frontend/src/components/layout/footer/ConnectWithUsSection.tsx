@@ -23,7 +23,7 @@ export const ConnectWithUsSection: React.FC = () => {
             We're here to help schools, educators, students, and parents succeed with modern education technology.
           </p>
           <div className="pt-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Join Social Ecosystem</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Connect with the Developer</h4>
             <SocialLinks />
           </div>
         </div>

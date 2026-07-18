@@ -3,6 +3,7 @@ import { apiRequest } from '../../lib/api';
 import { MapPin, Mail, Phone, Send, Sparkles, Github, Linkedin, Briefcase, ExternalLink } from 'lucide-react';
 import { Card } from '../../components/common/Card';
 import { ConnectWithUsSection } from '../../components/layout/footer/ConnectWithUsSection';
+import { SOCIAL_LINKS } from '../../config/social';
 
 export const Contact: React.FC = () => {
   const [name, setName] = useState('');
@@ -99,33 +100,53 @@ export const Contact: React.FC = () => {
             </div>
           </div>
 
-          {/* Social Profiles Connection Card */}
-          <div className="flex items-start space-x-4 border border-border/80 bg-card p-6 rounded-2xl group card-hover-saas">
-            <div className="p-3 bg-primary/10 text-primary rounded-xl flex-shrink-0 border border-primary/20 shadow-[0_2px_12px_-3px_hsl(var(--primary)/0.25)] transition-transform duration-300 group-hover:scale-110">
+          {/* Developer Contact - GitHub Profile Card */}
+          <div className="flex items-start space-x-4 border border-border/80 bg-card p-6 rounded-2xl group card-hover-saas hover:border-violet-300 transition-all duration-300">
+            <div className="p-3 bg-violet-100 dark:bg-violet-950/20 text-violet-600 dark:text-violet-400 rounded-xl flex-shrink-0 border border-violet-200/50 dark:border-violet-900/30 shadow-[0_2px_12px_-3px_rgba(124,58,237,0.25)] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
               <Github className="h-5 w-5 icon-rotate-hover" />
             </div>
-            <div className="space-y-3 w-full">
-              <h3 className="font-extrabold text-base Outfit text-foreground">Developer Channels</h3>
-              <div className="text-xs sm:text-sm mt-2.5 space-y-2.5 font-bold">
-                <a 
-                  href="https://github.com/nikhilbhadauriya" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="flex items-center justify-between text-muted-foreground hover:text-primary transition-all pb-2 border-b border-border/60"
-                >
-                  <span className="flex items-center gap-2"><Github className="h-4 w-4" /> GitHub Portfolio</span>
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-                <a 
-                  href="https://linkedin.com/in/nikhilbhadauriya" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="flex items-center justify-between text-muted-foreground hover:text-primary transition-all"
-                >
-                  <span className="flex items-center gap-2"><Linkedin className="h-4 w-4" /> LinkedIn Profile</span>
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
+            <div className="space-y-3 w-full text-left">
+              <div>
+                <h3 className="font-extrabold text-base Outfit text-foreground">GitHub</h3>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed font-medium">
+                  Checkout my open-source projects, full-stack prototypes, and active repositories.
+                </p>
               </div>
+              <a
+                href={SOCIAL_LINKS.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit GitHub Profile"
+                className="inline-flex items-center justify-center space-x-1.5 h-9 px-4 rounded-xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 text-xs font-bold transition-all shadow-sm duration-300 hover:-translate-y-[0.5px] hover:scale-102 text-[#334155] dark:text-slate-300 focus-visible:outline-none"
+              >
+                <span>Visit Profile</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          </div>
+
+          {/* Developer Contact - LinkedIn Profile Card */}
+          <div className="flex items-start space-x-4 border border-border/80 bg-card p-6 rounded-2xl group card-hover-saas hover:border-violet-300 transition-all duration-300">
+            <div className="p-3 bg-violet-100 dark:bg-violet-950/20 text-violet-600 dark:text-violet-400 rounded-xl flex-shrink-0 border border-violet-200/50 dark:border-violet-900/30 shadow-[0_2px_12px_-3px_rgba(124,58,237,0.25)] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+              <Linkedin className="h-5 w-5 icon-rotate-hover" />
+            </div>
+            <div className="space-y-3 w-full text-left">
+              <div>
+                <h3 className="font-extrabold text-base Outfit text-foreground">LinkedIn</h3>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed font-medium">
+                  Connect professionally, browse my work experience, and explore consulting offers.
+                </p>
+              </div>
+              <a
+                href={SOCIAL_LINKS.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit LinkedIn Profile"
+                className="inline-flex items-center justify-center space-x-1.5 h-9 px-4 rounded-xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 text-xs font-bold transition-all shadow-sm duration-300 hover:-translate-y-[0.5px] hover:scale-102 text-[#334155] dark:text-slate-300 focus-visible:outline-none"
+              >
+                <span>Visit Profile</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
             </div>
           </div>
 

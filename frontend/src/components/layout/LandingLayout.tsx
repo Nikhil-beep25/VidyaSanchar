@@ -3,9 +3,10 @@ import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-do
 import { useTheme, type ThemePreset } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { 
-  School, Globe, ChevronDown, Palette, Menu, X, 
-  Home, Info, Layers, CreditCard, MessageSquare, HelpCircle, Mail, Lock, Check, Sun, Moon, Sparkles, MapPin, LogIn
+  School, ChevronDown, Palette, Menu, X, 
+  Home, Info, Layers, Compass, MessageSquare, HelpCircle, Mail, Lock, Check, Sun, Moon, Sparkles, MapPin, LogIn, Github
 } from 'lucide-react';
+import { SOCIAL_LINKS } from '../../config/social';
 import { Footer } from './footer/Footer';
 
 export const LandingLayout: React.FC = () => {
@@ -16,11 +17,7 @@ export const LandingLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Switcher dropdown states
-  const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const [langTimeout, setLangTimeout] = useState<any>(null);
-  const [lang, setLang] = useState(() => localStorage.getItem('lang') || 'en');
-
+  // Appearance Selector states
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [appearanceTimeout, setAppearanceTimeout] = useState<any>(null);
 
@@ -58,12 +55,6 @@ export const LandingLayout: React.FC = () => {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
-  // Filter languages: Only English and Hindi are supported now
-  const languages = [
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' }
-  ];
-
   const presetsList = [
     { code: 'purple' as ThemePreset, name: 'Purple', dotColor: 'bg-violet-600' },
     { code: 'blue' as ThemePreset, name: 'Ocean Blue', dotColor: 'bg-blue-500' },
@@ -72,26 +63,6 @@ export const LandingLayout: React.FC = () => {
     { code: 'rose' as ThemePreset, name: 'Rose Pink', dotColor: 'bg-rose-500' },
     { code: 'obsidian' as ThemePreset, name: 'Obsidian', dotColor: 'bg-slate-700 dark:bg-slate-300 border border-border/80' }
   ];
-
-  const selectedLang = languages.find(l => l.code === lang) || languages[0];
-
-  const selectLang = (code: string) => {
-    setLang(code);
-    localStorage.setItem('lang', code);
-    setLangMenuOpen(false);
-  };
-
-  const handleLangEnter = () => {
-    if (langTimeout) clearTimeout(langTimeout);
-    setLangMenuOpen(true);
-  };
-
-  const handleLangLeave = () => {
-    const timeout = setTimeout(() => {
-      setLangMenuOpen(false);
-    }, 300);
-    setLangTimeout(timeout);
-  };
 
   const handleAppearanceEnter = () => {
     if (appearanceTimeout) clearTimeout(appearanceTimeout);
@@ -110,14 +81,8 @@ export const LandingLayout: React.FC = () => {
     setAppearanceOpen(!appearanceOpen);
   };
 
-  const toggleLangClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setLangMenuOpen(!langMenuOpen);
-  };
-
   useEffect(() => {
     const closeAll = () => {
-      setLangMenuOpen(false);
       setAppearanceOpen(false);
     };
     window.addEventListener('click', closeAll);
@@ -126,208 +91,178 @@ export const LandingLayout: React.FC = () => {
 
   const navLinks = [
     { name: 'Home', path: '/', icon: <Home className="h-3.5 w-3.5" /> },
-    { name: 'About', path: '/about', icon: <Info className="h-3.5 w-3.5" /> },
     { name: 'Features', path: '/features', icon: <Layers className="h-3.5 w-3.5" /> },
-    { name: 'Projects', path: '/projects', icon: <Layers className="h-3.5 w-3.5" /> },
-    { name: 'Journey', path: '/journey', icon: <Sparkles className="h-3.5 w-3.5" /> },
-    { name: 'Pricing', path: '/pricing', icon: <CreditCard className="h-3.5 w-3.5" /> },
-    { name: 'Testimonials', path: '/testimonials', icon: <MessageSquare className="h-3.5 w-3.5" /> },
-    { name: 'FAQ', path: '/faq', icon: <HelpCircle className="h-3.5 w-3.5" /> },
+    { name: 'Modules', path: '/features#modules', icon: <Layers className="h-3.5 w-3.5" /> },
+    { name: 'Roadmap', path: '/pricing', icon: <Compass className="h-3.5 w-3.5" /> },
     { name: 'Contact', path: '/contact', icon: <Mail className="h-3.5 w-3.5" /> },
   ];
 
-  const navRef = useRef<HTMLDivElement>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [pillStyle, setPillStyle] = useState<React.CSSProperties>({
-    left: 0,
-    width: 0,
-    opacity: 0,
-  });
-
-  // Calculate active index on route change
+  // Scroll to hash element if it exists in URL
   useEffect(() => {
-    const activeIdx = navLinks.findIndex((link) => {
-      if (link.path === '/') return location.pathname === '/';
-      return location.pathname.startsWith(link.path);
-    });
-    setActiveIndex(activeIdx !== -1 ? activeIdx : null);
-  }, [location.pathname]);
-
-  // Recalculate pill coordinates dynamically
-  useEffect(() => {
-    const container = navRef.current;
-    if (!container) return;
-
-    const targetIndex = hoveredIndex;
-    if (targetIndex !== null) {
-      const linkElements = container.querySelectorAll('.nav-link-item');
-      const targetEl = linkElements[targetIndex] as HTMLElement;
-      if (targetEl) {
-        setPillStyle({
-          left: targetEl.offsetLeft,
-          width: targetEl.offsetWidth,
-          height: targetEl.offsetHeight,
-          top: targetEl.offsetTop,
-          opacity: 1,
-        });
+    if (location.hash) {
+      const id = location.hash.substring(1);
+      const element = document.getElementById(id);
+      if (element) {
+        const timer = setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        return () => clearTimeout(timer);
       }
-    } else {
-      setPillStyle((prev) => ({ ...prev, opacity: 0 }));
     }
-  }, [hoveredIndex]);
+  }, [location.pathname, location.hash]);
 
-  // Handle window resizing to adjust pill coordinates
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+
+  // Close drawer on Escape keypress
   useEffect(() => {
-    const handleResize = () => {
-      const container = navRef.current;
-      if (!container) return;
-      const targetIndex = hoveredIndex;
-      if (targetIndex !== null) {
-        const linkElements = container.querySelectorAll('.nav-link-item');
-        const targetEl = linkElements[targetIndex] as HTMLElement;
-        if (targetEl) {
-          setPillStyle({
-            left: targetEl.offsetLeft,
-            width: targetEl.offsetWidth,
-            height: targetEl.offsetHeight,
-            top: targetEl.offsetTop,
-            opacity: 1,
-          });
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+      }
+    };
+    if (mobileMenuOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
+  // Focus trap inside the mobile drawer
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const originalFocusedElement = document.activeElement as HTMLElement;
+
+    // Focus the first focusable element inside the drawer, or the close button
+    const focusableElements = drawerRef.current?.querySelectorAll(
+      'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusableElements && focusableElements.length > 0) {
+      (focusableElements[0] as HTMLElement).focus();
+    }
+
+    const handleFocusTrap = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+
+      if (!drawerRef.current) return;
+      const elements = drawerRef.current.querySelectorAll(
+        'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!elements || elements.length === 0) return;
+
+      const firstEl = elements[0] as HTMLElement;
+      const lastEl = elements[elements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) {
+        // Shift + Tab: if on first element, wrap to last
+        if (document.activeElement === firstEl) {
+          lastEl.focus();
+          e.preventDefault();
+        }
+      } else {
+        // Tab: if on last element, wrap to first
+        if (document.activeElement === lastEl) {
+          firstEl.focus();
+          e.preventDefault();
         }
       }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [hoveredIndex]);
+
+    window.addEventListener('keydown', handleFocusTrap);
+
+    return () => {
+      window.removeEventListener('keydown', handleFocusTrap);
+      if (originalFocusedElement) {
+        originalFocusedElement.focus();
+      }
+    };
+  }, [mobileMenuOpen]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300 relative theme-transition font-sans">
+    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300 relative theme-transition font-sans overflow-x-clip">
       {/* Background Ambient Glows */}
       <div className="absolute top-[-25%] left-[-15%] w-[600px] h-[600px] rounded-full bg-primary/5 blur-[140px] pointer-events-none dark:block hidden transition-all duration-500" />
       <div className="absolute top-[25%] right-[-15%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-[140px] pointer-events-none dark:block hidden transition-all duration-500" />
 
-      {/* Premium Fixed SaaS Navbar */}
+      {/* Premium Sticky SaaS Navbar */}
       <header 
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ease-in-out border-b bg-white/90 dark:bg-[#050816]/90 backdrop-blur-md border-[#E5E7EB] dark:border-white/[0.08] ${
-          scrolled ? 'shadow-sm' : 'shadow-none'
-        }`}
+        className="sticky top-0 z-50 w-full transition-all duration-300 ease-in-out border-b bg-white/80 dark:bg-[#050816]/80 backdrop-blur-xl border-gray-200/60 dark:border-slate-800/60 shadow-sm theme-transition"
       >
-        <div className="max-w-[1280px] mx-auto w-full h-[72px] px-6 sm:px-8 flex items-center justify-between relative navbar-enter">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full h-20 flex items-center justify-between relative navbar-enter">
           
-          {/* Left Brand Section */}
-          <div className="flex-1 flex items-center justify-start">
-            <Link to="/" className="flex items-center space-x-1.5 group z-10 relative flex-shrink-0 transition-transform duration-200 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl">
-              <div className="p-1.5 rounded-lg bg-primary/10 text-primary border border-primary/20 group-hover:scale-105 group-hover:rotate-3 transition-all duration-300 shadow-[0_0_10px_-3px_hsl(var(--primary)/0.25)]">
-                <School className="h-4 w-4" />
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <Link to="/" className="flex items-center space-x-3 group z-10 relative transition-transform duration-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl">
+              <div className="p-2 rounded-full bg-white dark:bg-slate-900 border border-gray-200/80 dark:border-slate-800 shadow-sm transition-all duration-300 group-hover:rotate-6 group-hover:scale-105">
+                <School className="h-5 w-5 text-primary" />
               </div>
               <div className="flex flex-col text-left">
-                <span className="font-extrabold text-[14.5px] sm:text-[15px] tracking-tight text-[#0F172A] dark:text-[#F9FAFB] leading-none font-sans group-hover:text-primary transition-colors duration-200">
+                <span className="font-extrabold text-base tracking-tight text-[#0F172A] dark:text-[#F9FAFB] leading-none font-sans group-hover:text-primary transition-colors duration-200">
                   VidyaSanchar
                 </span>
-                <span className="text-[7.5px] font-bold tracking-[0.15em] text-[#64748B] dark:text-slate-400 uppercase mt-0.5">
+                <span className="text-[9px] font-bold tracking-[0.2em] text-gray-500 dark:text-slate-400 uppercase mt-1">
                   School ERP
                 </span>
               </div>
             </Link>
           </div>
 
-          {/* Center Navigation Menu — Premium SaaS style with sliding pill */}
-          <div className="hidden xl:flex items-center justify-center mx-8 flex-shrink-0">
-            <nav 
-              ref={navRef}
-              className="flex items-center space-x-1 p-1 bg-[#F1F5F9]/60 dark:bg-slate-900/60 border border-[#E5E7EB] dark:border-slate-800/80 rounded-2xl relative"
-              role="navigation" 
-              aria-label="Main navigation"
-              onMouseLeave={() => setHoveredIndex(null)}
-            >
-              {/* Sliding Pill Background */}
-              <div 
-                className="absolute rounded-[12px] transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-                style={{
-                  left: pillStyle.left,
-                  width: pillStyle.width,
-                  height: pillStyle.height,
-                  top: pillStyle.top,
-                  opacity: pillStyle.opacity,
-                  backgroundColor: theme === 'dark' ? 'rgba(168, 85, 247, 0.08)' : 'rgba(124, 58, 237, 0.06)',
-                  boxShadow: theme === 'dark'
-                    ? '0 4px 12px -2px rgba(168, 85, 247, 0.15)'
-                    : '0 4px 12px -2px rgba(124, 58, 237, 0.08)',
-                  border: theme === 'dark'
-                    ? '1px solid rgba(168, 85, 247, 0.15)'
-                    : '1px solid rgba(124, 58, 237, 0.12)',
+          {/* Center Navigation Menu (hidden lg:flex) */}
+          <nav 
+            className="hidden lg:flex items-center gap-1.5 rounded-full border border-gray-200/70 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl shadow-sm px-3 py-1.5 flex-shrink-0 whitespace-nowrap"
+            role="navigation" 
+            aria-label="Main navigation"
+          >
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.path}
+                to={link.path}
+                className={({ isActive }) => {
+                  const isLinkActive = link.name === 'Modules' 
+                    ? location.pathname === '/features' && location.hash === '#modules'
+                    : link.name === 'Features'
+                      ? location.pathname === '/features' && location.hash !== '#modules'
+                      : isActive;
+                  return `h-11 flex items-center px-5 rounded-full text-sm font-semibold transition-all duration-300 focus-visible:outline-none ${
+                    isLinkActive 
+                      ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold shadow-md shadow-violet-500/10' 
+                      : 'text-gray-600 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-950/20 hover:text-violet-600 dark:hover:text-violet-400'
+                  }`;
                 }}
-              />
-   
-              {navLinks.map((link, idx) => (
-                <NavLink
-                  key={link.path}
-                  to={link.path}
-                  className={({ isActive }) =>
-                    `nav-link-item relative py-2.5 px-4 rounded-[12px] text-xs transition-all duration-200 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
-                      isActive 
-                        ? 'bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300 font-semibold shadow-sm' 
-                        : 'text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 font-medium'
-                    }`
-                  }
-                  onMouseEnter={() => setHoveredIndex(idx)}
-                >
-                  <span>{link.name}</span>
-                </NavLink>
-              ))}
-            </nav>
-          </div>
-
-          {/* Right Control Section */}
-          <div className="flex-1 flex items-center justify-end gap-3 z-10 relative flex-shrink-0 flex-nowrap">
-            
-            {/* Language Switcher Button */}
-            <div 
-              className="relative mr-1"
-              onMouseEnter={handleLangEnter}
-              onMouseLeave={handleLangLeave}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={toggleLangClick}
-                aria-label={`Language: ${selectedLang.name}`}
-                className="inline-flex items-center space-x-1.5 h-[40px] px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] focus-visible:ring-offset-2"
               >
-                <Globe className="h-3.5 w-3.5" />
-                <span className="text-[10px] leading-none font-bold uppercase">{selectedLang.code}</span>
-                <ChevronDown className={`h-2.5 w-2.5 transition-transform duration-200 ${langMenuOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {langMenuOpen && (
-                <div className="absolute right-0 mt-2.5 w-32 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white dark:bg-slate-950 p-1 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
-                  {languages.map((l) => (
-                    <button
-                      key={l.code}
-                      onClick={() => selectLang(l.code)}
-                      className={`w-full flex items-center space-x-2 px-2.5 py-2 rounded-lg text-left text-xs font-semibold transition-all ${
-                        lang === l.code 
-                          ? 'bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300 font-bold' 
-                          : 'text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:bg-slate-50 dark:hover:bg-slate-900/50'
-                      }`}
-                    >
-                      <span>{l.flag}</span>
-                      <span>{l.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                <span>{link.name}</span>
+              </NavLink>
+            ))}
+          </nav>
 
-            {/* Appearance Selector Button */}
+          {/* Right Control Section (GitHub, Theme, Login, Hamburger) */}
+          <div className="flex items-center gap-4 z-10 relative flex-shrink-0 flex-nowrap whitespace-nowrap">
+            
+            {/* GitHub Button (hidden md:flex) */}
+            <a
+              href={SOCIAL_LINKS.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-1.5 h-11 px-4 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 text-xs font-semibold shadow-sm transition-all duration-300 hover:-translate-y-[1px] hover:scale-105 hover:shadow-md text-[#334155] dark:text-slate-300 focus-visible:outline-none"
+              title="GitHub Repository"
+              aria-label="Visit GitHub Profile"
+            >
+              <Github className="h-4 w-4 text-[#7C3AED] dark:text-purple-400" />
+              <span>GitHub</span>
+            </a>
+
+            {/* Appearance Selector Button (hidden md:flex) */}
             <div 
-              className="relative hidden sm:block"
+              className="relative hidden md:flex"
               onMouseEnter={handleAppearanceEnter}
               onMouseLeave={handleAppearanceLeave}
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={toggleAppearanceClick}
-                className="inline-flex items-center space-x-1.5 h-[40px] px-3.5 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold transition-all active:scale-[0.97] text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:border-[#7C3AED]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] focus-visible:ring-offset-2"
+                className="inline-flex items-center space-x-1.5 h-11 px-4 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 text-xs font-semibold shadow-sm transition-all duration-300 hover:-translate-y-[1px] hover:scale-[1.02] hover:shadow-md text-[#334155] dark:text-slate-300 focus-visible:outline-none"
                 aria-label="Customize Appearance"
               >
                 <Palette className="h-3.5 w-3.5 text-[#7C3AED] dark:text-purple-400" />
@@ -335,16 +270,16 @@ export const LandingLayout: React.FC = () => {
               </button>
 
               {appearanceOpen && (
-                <div className="absolute right-0 mt-2.5 w-60 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white dark:bg-slate-950 p-3.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-left space-y-3.5">
+                <div className="absolute right-0 mt-2.5 w-60 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-3.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-left space-y-3.5">
                   
                   {/* SECTION 1: MODE */}
                   <div className="space-y-1.5">
                     <span className="text-[9px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-1 block">
                       Mode
                     </span>
-                    <div className="p-0.5 bg-[#F1F5F9]/60 dark:bg-slate-900/60 flex border border-[#E5E7EB] dark:border-slate-800 rounded-lg relative">
+                    <div className="p-0.5 bg-[#F1F5F9]/60 dark:bg-slate-900/60 flex border border-gray-200 dark:border-slate-800 rounded-lg relative">
                       <div 
-                        className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-white dark:bg-slate-900 border border-[#E5E7EB] dark:border-slate-800/60 rounded-md shadow-sm transition-all duration-300 ${
+                        className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800/60 rounded-md shadow-sm transition-all duration-300 ${
                           theme === 'dark' ? 'left-[calc(50%+1px)]' : 'left-[1px]'
                         }`}
                       />
@@ -384,7 +319,7 @@ export const LandingLayout: React.FC = () => {
                             className={`flex items-center space-x-1.5 px-2 py-1 rounded-lg text-[10px] font-bold border transition-all text-left ${
                               isSelected 
                                 ? 'bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300 border-[#7C3AED]/20 shadow-sm' 
-                                : 'border-[#E5E7EB] dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400 font-medium'
+                                : 'border-gray-200 dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400 font-medium'
                             }`}
                           >
                             <span className={`w-2.5 h-2.5 rounded-full ${t.dotColor} flex-shrink-0`} />
@@ -409,7 +344,7 @@ export const LandingLayout: React.FC = () => {
                   else if (user.role === 'STUDENT') navigate('/dashboard/student');
                   else if (user.role === 'PARENT') navigate('/dashboard/parent');
                 }}
-                className="hidden sm:inline-flex items-center justify-center min-w-[130px] h-[40px] px-5 py-2.5 rounded-xl text-[15px] font-semibold tracking-wide whitespace-nowrap bg-gradient-to-r from-[#7C3AED] to-[#6D28D9] hover:from-[#8B5CF6] hover:to-[#7C3AED] text-white shadow-[0_4px_12px_rgba(124,58,237,0.15)] hover:shadow-[0_6px_16px_rgba(124,58,237,0.20)] hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.98] transition-all duration-200 ease-out z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] focus-visible:ring-offset-2 flex gap-2"
+                className="flex items-center justify-center h-12 px-6 sm:px-9 rounded-2xl text-sm font-bold bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/15 dark:shadow-violet-950/20 hover:scale-105 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-violet-500/25 active:scale-[0.98] transition-all duration-300 ease-out z-10 focus-visible:outline-none gap-2"
               >
                 <Lock className="h-4 w-4 flex-shrink-0" />
                 <span>Dashboard</span>
@@ -417,18 +352,21 @@ export const LandingLayout: React.FC = () => {
             ) : (
               <Link
                 to="/login"
-                className="hidden sm:inline-flex items-center justify-center min-w-[130px] h-[40px] px-5 py-2.5 rounded-xl text-[15px] font-semibold tracking-wide whitespace-nowrap bg-gradient-to-r from-[#7C3AED] to-[#6D28D9] hover:from-[#8B5CF6] hover:to-[#7C3AED] text-white shadow-[0_4px_12px_rgba(124,58,237,0.15)] hover:shadow-[0_6px_16px_rgba(124,58,237,0.20)] hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.98] transition-all duration-200 ease-out z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] focus-visible:ring-offset-2 flex gap-2"
+                className="flex items-center justify-center h-12 px-6 sm:px-9 rounded-2xl text-sm font-bold bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/15 dark:shadow-violet-950/20 hover:scale-105 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-violet-500/25 active:scale-[0.98] transition-all duration-300 ease-out z-10 focus-visible:outline-none gap-2"
               >
                 <LogIn className="h-4 w-4 flex-shrink-0" />
                 <span>Portal Login</span>
               </Link>
             )}
 
-            {/* Mobile hamburger toggle */}
+            {/* Mobile Hamburger Toggle (flex lg:hidden) */}
             <button
+              ref={hamburgerRef}
               onClick={() => setMobileMenuOpen(true)}
-              className="xl:hidden flex items-center justify-center h-[40px] w-[40px] rounded-xl border border-border/50 bg-muted/40 hover:bg-muted/60 text-muted-foreground hover:text-foreground active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A78BFA] focus-visible:ring-offset-2"
-              aria-label="Open Mobile Menu"
+              className="flex lg:hidden items-center justify-center h-11 w-11 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 shadow-sm transition-all duration-300 hover:-translate-y-[1px] hover:scale-[1.02] hover:shadow-md text-[#334155] dark:text-slate-300 focus-visible:outline-none"
+              aria-label="Open navigation"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-drawer"
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -437,164 +375,175 @@ export const LandingLayout: React.FC = () => {
       </header>
 
       {/* Mobile Drawer Menu (Slides in from the right) */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 xl:hidden animate-in fade-in duration-200 text-left">
-          <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <div className="fixed top-0 right-0 h-full w-[310px] bg-background/95 backdrop-blur-md border-l border-border/85 p-6 flex flex-col space-y-6 shadow-2xl animate-in slide-in-from-right duration-300">
-            <div className="flex items-center justify-between pb-4 border-b border-border/60">
-              <span className="font-extrabold text-base text-gradient-theme">VidyaSanchar ERP</span>
-              <button 
-                onClick={() => setMobileMenuOpen(false)} 
-                className="p-2 rounded-full border border-border hover:bg-muted transition-all active:scale-95"
+      <div 
+        id="mobile-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation drawer"
+        aria-hidden={!mobileMenuOpen}
+        className={`fixed inset-0 z-50 lg:hidden transition-all duration-300 ${
+          mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'
+        }`}
+      >
+        {/* Overlay backdrop */}
+        <div 
+          className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
+            mobileMenuOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+        {/* Drawer panel */}
+        <div 
+          ref={drawerRef}
+          className={`fixed top-0 right-0 h-full w-[310px] bg-background/95 dark:bg-[#050816]/95 backdrop-blur-xl border-l border-border/80 p-6 flex flex-col justify-between shadow-2xl transition-transform duration-300 ease-out transform rounded-l-2xl ${
+            mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          {/* Top Header */}
+          <div className="flex items-center justify-between pb-4 border-b border-border/60">
+            <span className="font-extrabold text-base text-gradient-theme">VidyaSanchar ERP</span>
+            <button 
+              onClick={() => setMobileMenuOpen(false)} 
+              className="p-2 rounded-full border border-border hover:bg-violet-55 dark:hover:bg-violet-950/20 hover:text-violet-600 transition-all active:scale-95 text-foreground"
+              aria-label="Close navigation"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="flex flex-col space-y-1.5 overflow-y-auto my-4 flex-grow">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.path}
+                to={link.path}
+                onClick={() => setMobileMenuOpen(false)}
+                className={({ isActive }) => {
+                  const isLinkActive = link.name === 'Modules' 
+                    ? location.pathname === '/features' && location.hash === '#modules'
+                    : link.name === 'Features'
+                      ? location.pathname === '/features' && location.hash !== '#modules'
+                      : isActive;
+                  return `flex items-center gap-3 h-11 px-4 rounded-xl text-sm font-semibold transition-all duration-300 border border-transparent ${
+                    isLinkActive 
+                      ? 'text-violet-750 dark:text-purple-300 bg-violet-100 dark:bg-purple-950/40 border-violet-200/50 dark:border-purple-900/30' 
+                      : 'text-gray-650 dark:text-slate-300 hover:text-violet-650 dark:hover:text-purple-400 hover:bg-violet-50 dark:hover:bg-violet-950/15'
+                  }`;
+                }}
               >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <nav className="flex flex-col space-y-1 overflow-y-auto max-h-[300px]">
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 py-2.5 px-4 rounded-xl text-xs font-bold transition-all border ${
-                      isActive 
-                        ? 'text-[#7C3AED] dark:text-purple-300 bg-[#F3E8FF] dark:bg-purple-950/40 border-[#7C3AED]/20 dark:border-purple-400/20 font-bold' 
-                        : 'text-[#334155] dark:text-slate-300 border-transparent hover:text-[#7C3AED] dark:hover:text-purple-400 hover:bg-[#F3E8FF]/30 dark:hover:bg-purple-950/20'
-                    }`
-                  }
-                >
-                  {link.icon}
-                  <span>{link.name}</span>
-                </NavLink>
-              ))}
-            </nav>
+                {link.icon}
+                <span>{link.name}</span>
+              </NavLink>
+            ))}
+          </nav>
 
-            <div className="pt-4 border-t border-border/60 mt-auto space-y-5 overflow-y-auto">
+          {/* Bottom Settings and Actions */}
+          <div className="pt-4 border-t border-border/60 space-y-5 overflow-y-auto">
+            
+            {/* Appearance settings */}
+            <div className="space-y-3.5">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-2 block">
+                Appearance Settings
+              </span>
               
-              {/* Mobile Segmented Appearance Panel */}
-              <div className="space-y-3.5">
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-2 block">
-                  Appearance Settings
-                </span>
-                
-                {/* Mode Segmented Controls */}
-                <div className="p-1 bg-[#F1F5F9]/60 dark:bg-slate-900/60 flex border border-[#E5E7EB] dark:border-slate-800 rounded-xl relative mx-2">
-                  <div 
-                    className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-900 border border-[#E5E7EB] dark:border-slate-800/60 rounded-lg shadow-sm transition-all duration-300 ${
-                      theme === 'dark' ? 'left-[calc(50%+2px)]' : 'left-[6px]'
-                    }`}
-                  />
-                  <button
-                    onClick={() => setThemeMode('light')}
-                    className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all relative z-10 flex items-center justify-center gap-1.5 ${
-                      theme === 'light' ? 'text-[#7C3AED]' : 'text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
-                    }`}
-                  >
-                    <Sun className="h-3.5 w-3.5" />
-                    <span>Light</span>
-                  </button>
-                  <button
-                    onClick={() => setThemeMode('dark')}
-                    className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all relative z-10 flex items-center justify-center gap-1.5 ${
-                      theme === 'dark' ? 'text-[#7C3AED] dark:text-purple-300' : 'text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
-                    }`}
-                  >
-                    <Moon className="h-3.5 w-3.5" />
-                    <span>Dark</span>
-                  </button>
-                </div>
-
-                {/* Preset Color Selection Grid */}
-                <div className="grid grid-cols-3 gap-1.5 bg-card/60 p-2 rounded-xl border border-[#E5E7EB] dark:border-slate-800 mx-2">
-                  {presetsList.map((t) => {
-                    const isSelected = preset === t.code;
-                    return (
-                      <button
-                        key={t.code}
-                        onClick={() => setThemePreset(t.code)}
-                        className={`py-2 rounded-lg flex flex-col items-center justify-center gap-1.5 border transition-all ${
-                          isSelected 
-                            ? 'border-[#7C3AED]/20 bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300' 
-                            : 'border-transparent text-[#334155] dark:text-slate-300 hover:text-[#7C3AED]'
-                        }`}
-                      >
-                        <span className={`w-3.5 h-3.5 rounded-full ${t.dotColor}`} />
-                        <span className="text-[9px] font-bold truncate w-full px-1 text-center">{t.name}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Language Switcher in Mobile */}
-              <div className="flex items-center justify-between px-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400">Language</span>
-                <div className="relative" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    onClick={toggleLangClick}
-                    className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl border border-[#E5E7EB] dark:border-slate-800 text-xs font-semibold bg-white dark:bg-slate-900 text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] hover:border-[#7C3AED]/30 active:scale-[0.97] transition-all"
-                  >
-                    <span>{selectedLang.flag}</span>
-                    <span>{selectedLang.name}</span>
-                  </button>
-                  {langMenuOpen && (
-                    <div className="absolute right-0 bottom-full mb-1.5 w-36 rounded-xl border border-[#E5E7EB] dark:border-slate-800 bg-white dark:bg-slate-950 p-1 shadow-xl z-50 text-left">
-                      {languages.map((l) => (
-                        <button
-                          key={l.code}
-                          onClick={() => selectLang(l.code)}
-                          className={`w-full flex items-center space-x-2 px-2.5 py-2 rounded-lg text-left text-xs font-semibold transition-all ${
-                            lang === l.code 
-                              ? 'bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300 font-bold' 
-                              : 'text-[#334155] dark:text-slate-300 hover:text-[#7C3AED] dark:hover:text-purple-400 hover:bg-slate-50 dark:hover:bg-slate-900/50'
-                          }`}
-                        >
-                          <span>{l.flag}</span>
-                          <span>{l.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* CTA portal login in Mobile */}
-              {user ? (
+              {/* Mode Control */}
+              <div className="p-1 bg-[#F1F5F9]/60 dark:bg-slate-900/60 flex border border-gray-200 dark:border-slate-800 rounded-2xl relative mx-2">
+                <div 
+                  className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800/60 rounded-lg shadow-sm transition-all duration-300 ${
+                    theme === 'dark' ? 'left-[calc(50%+2px)]' : 'left-[6px]'
+                  }`}
+                />
                 <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    if (user.role === 'SUPER_ADMIN') navigate('/dashboard/super-admin');
-                    else if (user.role === 'ADMIN') navigate('/dashboard/admin');
-                    else if (user.role === 'TEACHER') navigate('/dashboard/teacher');
-                    else if (user.role === 'STUDENT') navigate('/dashboard/student');
-                    else if (user.role === 'PARENT') navigate('/dashboard/parent');
-                  }}
-                  className="w-full text-center py-3 text-xs font-bold bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.97] flex items-center justify-center gap-1.5"
+                  onClick={() => setThemeMode('light')}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all relative z-10 flex items-center justify-center gap-1.5 ${
+                    theme === 'light' ? 'text-[#7C3AED]' : 'text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
+                  }`}
                 >
-                  <Lock className="h-3.5 w-3.5" />
-                  Go to Dashboard
+                  <Sun className="h-3.5 w-3.5" />
+                  <span>Light</span>
                 </button>
-              ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block w-full text-center py-3 text-xs font-bold bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.97] flex items-center justify-center gap-1.5"
+                <button
+                  onClick={() => setThemeMode('dark')}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all relative z-10 flex items-center justify-center gap-1.5 ${
+                    theme === 'dark' ? 'text-[#7C3AED] dark:text-purple-300' : 'text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
+                  }`}
                 >
-                  <Lock className="h-3.5 w-3.5" />
-                  Portal Login
-                </Link>
-              )}
+                  <Moon className="h-3.5 w-3.5" />
+                  <span>Dark</span>
+                </button>
+              </div>
+
+              {/* Color Presets */}
+              <div className="grid grid-cols-3 gap-1.5 bg-card/60 p-2 rounded-2xl border border-gray-200 dark:border-slate-800 mx-2">
+                {presetsList.map((t) => {
+                  const isSelected = preset === t.code;
+                  return (
+                    <button
+                      key={t.code}
+                      onClick={() => setThemePreset(t.code)}
+                      className={`py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 border transition-all ${
+                        isSelected 
+                          ? 'border-[#7C3AED]/20 bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300' 
+                          : 'border-transparent text-[#334155] dark:text-slate-300 hover:text-[#7C3AED]'
+                      }`}
+                    >
+                      <span className={`w-3.5 h-3.5 rounded-full ${t.dotColor}`} />
+                      <span className="text-[9px] font-bold truncate w-full px-1 text-center">{t.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+
+            {/* Developer Profile */}
+            <div className="flex flex-col space-y-2 px-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 block mb-0.5">
+                Developer Link
+              </span>
+              <a
+                href={SOCIAL_LINKS.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit GitHub Profile"
+                className="w-full inline-flex items-center justify-center space-x-1.5 h-11 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-[#334155] dark:text-slate-355 hover:text-violet-650 dark:hover:text-purple-400 hover:border-violet-300 dark:hover:border-violet-850 active:scale-[0.97] transition-all duration-300"
+              >
+                <Github className="h-3.5 w-3.5 text-[#7C3AED] dark:text-purple-400" />
+                <span>GitHub Portfolio</span>
+              </a>
+            </div>
+
+            {/* Portal Login CTA */}
+            {user ? (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  if (user.role === 'SUPER_ADMIN') navigate('/dashboard/super-admin');
+                  else if (user.role === 'ADMIN') navigate('/dashboard/admin');
+                  else if (user.role === 'TEACHER') navigate('/dashboard/teacher');
+                  else if (user.role === 'STUDENT') navigate('/dashboard/student');
+                  else if (user.role === 'PARENT') navigate('/dashboard/parent');
+                }}
+                className="w-full text-center h-11 text-xs font-bold bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-95 text-white rounded-2xl shadow-md shadow-violet-300/40 dark:shadow-violet-950/40 transition-all active:scale-[0.97] flex items-center justify-center gap-1.5"
+              >
+                <Lock className="h-3.5 w-3.5" />
+                Go to Dashboard
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block w-full text-center h-11 py-3 text-xs font-bold bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-95 text-white rounded-2xl shadow-md shadow-violet-300/40 dark:shadow-violet-950/40 transition-all active:scale-[0.97] flex items-center justify-center gap-1.5"
+              >
+                <Lock className="h-3.5 w-3.5 inline-block mr-1" />
+                Portal Login
+              </Link>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
       {/* Main Content Area */}
-      <main key={location.pathname} className="flex-grow relative z-10 pt-16 md:pt-[72px] page-transition-enter">
+      <main key={location.pathname} className="flex-grow relative z-10 page-transition-enter">
         <Outlet />
       </main>
 

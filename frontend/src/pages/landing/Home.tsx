@@ -1,98 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Shield, BookOpen, Clock, Users, ArrowRight, Award, ChevronLeft, ChevronRight, 
-  Star, Sparkles, Database, Check, Code, Github, Terminal, Briefcase 
+  Shield, BookOpen, Clock, Users, ArrowRight, Sparkles, Database, Code, Github, Terminal, Briefcase, Linkedin, School
 } from 'lucide-react';
 import { Card } from '../../components/common/Card';
+import { SOCIAL_LINKS } from '../../config/social';
 import heroCampus from '../../assets/images/hero_campus.png';
 
-const CountUp: React.FC<{ end: number; duration?: number; suffix?: string }> = ({ 
-  end, 
-  duration = 1400, 
-  suffix = '' 
-}) => {
-  const [count, setCount] = useState(0);
-  const elementRef = useRef<HTMLSpanElement>(null);
-  const [hasAnimated, setHasAnimated] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
-          let startTimestamp: number | null = null;
-          const step = (timestamp: number) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const easeProgress = progress * (2 - progress); // Ease out quad
-            setCount(Math.floor(easeProgress * end));
-            if (progress < 1) {
-              window.requestAnimationFrame(step);
-            } else {
-              setCount(end);
-            }
-          };
-          window.requestAnimationFrame(step);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [end, duration, hasAnimated]);
-
-  return <span ref={elementRef}>{count.toLocaleString('en-IN')}{suffix}</span>;
-};
-
-
 export const Home: React.FC = () => {
-  // Testimonial Carousel State
-  const [activeReview, setActiveReview] = useState(0);
-  const reviews = [
-    {
-      name: 'Dr. G.S. Grewal',
-      role: 'Principal, Delhi Public School Dwarka',
-      text: 'VidyaSanchar completely changed our administrative workflows. Collecting student fees, generating ledger reports, and tracking classroom attendances used to take hours. Now it takes minutes, and parents receive alerts instantly.',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120',
-      rating: 5,
-    },
-    {
-      name: 'Sister Mary Joseph',
-      role: 'Registrar, St. Xavier\'s College, Mumbai',
-      text: 'Since we deployed the open-source ERP on our local college servers, we have saved lakhs in recurring licensing fees. The timetable generation and student profiling modules are fast and highly customisable.',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120',
-      rating: 5,
-    },
-    {
-      name: 'Prof. Ramesh Verma',
-      role: 'Senior Mathematics Teacher, Indore Academy',
-      text: 'Recording mid-term exam marks in bulk through the clean teacher portal has simplified my grading duties. The performance reports provide high/low/average grade graphs instantly.',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120',
-      rating: 4,
-    },
-  ];
-
-  const handlePrevReview = () => {
-    setActiveReview((prev) => (prev === 0 ? reviews.length - 1 : prev - 1));
-  };
-
-  const handleNextReview = () => {
-    setActiveReview((prev) => (prev === reviews.length - 1 ? 0 : prev + 1));
-  };
-
-  // Auto-play carousel
-  useEffect(() => {
-    const timer = setInterval(handleNextReview, 6000);
-    return () => clearInterval(timer);
-  }, []);
-
-
-
   const developerSkills = [
     { name: 'Full-Stack React & Node', desc: 'Crafting responsive user interfaces backed by scalable API architectures.' },
     { name: 'Relational Ledgers', desc: 'Designing secure, normalized database tables mapping double-entry accounting.' },
@@ -101,63 +16,83 @@ export const Home: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-16 pb-16 theme-transition relative">
+    <div className="pb-16 bg-background text-foreground transition-colors duration-300 relative theme-transition font-sans">
       
-      {/* 1. Hero Section */}
-      <section className="relative overflow-hidden pt-8">
+      {/* 1. Hero Section (24px pt from navbar) */}
+      <section className="relative overflow-hidden pt-6">
         {/* Glow Spheres */}
-        <div className="absolute top-[20%] left-[-15%] w-[600px] h-[600px] rounded-full bg-primary/5 blur-[130px] animate-pulse-slow pointer-events-none" />
-        <div className="absolute top-[10%] right-[-15%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-[130px] animate-pulse-slow pointer-events-none" />
+        <div className="absolute top-[20%] left-[-15%] w-[600px] h-[600px] rounded-full bg-primary/5 blur-[130px] pointer-events-none dark:block hidden" />
+        <div className="absolute top-[10%] right-[-15%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-[130px] pointer-events-none dark:block hidden" />
 
-        <div className="layout-container grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6 space-y-8 text-left z-10 reveal reveal-fade-up">
-            {/* Animated Premium Badge */}
-            <div className="inline-flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-primary backdrop-blur-md shadow-[0_0_15px_-3px_hsl(var(--primary)/0.15)] animate-pulse">
+            {/* Animated Project Badge */}
+            <div className="inline-flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-primary backdrop-blur-md shadow-[0_0_15px_-3px_hsl(var(--primary)/0.15)]">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span>New Release v1.2</span>
+              <span>Project Status: Prototype</span>
               <span className="h-3 w-px bg-border" />
-              <span className="text-muted-foreground font-medium">CBSE & State Board Ready</span>
+              <span className="text-muted-foreground font-medium">Open Source</span>
             </div>
 
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] font-sans">
-              Transforming Indian Education with{' '}
-              <span className="text-gradient-theme font-black">
-                Modern Management
+              VidyaSanchar
+              <span className="block text-gradient-theme font-black text-3xl sm:text-4xl lg:text-5xl mt-2">
+                Modern School ERP Prototype
               </span>
             </h1>
 
             {/* Subtext */}
-            <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed font-semibold">
-              An enterprise-grade, fast, and open-source school ERP built specifically for Indian schools, universities, and coaching institutes. Simplify admissions, attendance, fees, examinations, and library tracking.
+            <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed font-medium">
+              VidyaSanchar is a modern School ERP prototype built to demonstrate full-stack software engineering using React, TypeScript, Node.js, PostgreSQL, and Prisma.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+            <div className="flex flex-wrap gap-4 pt-2">
               <Link
-                to="/pricing"
+                to="/login"
                 className="inline-flex items-center justify-center rounded-full text-sm font-bold tracking-wide transition-all bg-primary text-primary-foreground hover:opacity-95 h-12 px-8 shadow-md shadow-primary/20 hover:shadow-primary/30 active:scale-[0.98] duration-200 btn-saas"
               >
-                Book a Free Demo
+                Try Live Demo
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
               <Link
-                to="/features"
+                to="/pricing"
                 className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card hover:bg-muted/70 h-12 px-8 backdrop-blur-md btn-saas"
               >
-                Explore Modules
+                View Roadmap
               </Link>
+              <a
+                href={SOCIAL_LINKS.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit GitHub Profile"
+                className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card/45 hover:bg-violet-50 dark:hover:bg-violet-950/20 hover:border-violet-300 h-12 px-6 backdrop-blur-md text-foreground btn-saas gap-2"
+              >
+                <Github className="h-4 w-4 text-[#7C3AED] dark:text-purple-400" />
+                <span>View GitHub</span>
+              </a>
+              <a
+                href={SOCIAL_LINKS.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit LinkedIn Profile"
+                className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card/45 hover:bg-violet-50 dark:hover:bg-violet-950/20 hover:border-violet-300 h-12 px-6 backdrop-blur-md text-foreground btn-saas gap-2"
+              >
+                <Linkedin className="h-4 w-4 text-[#7C3AED] dark:text-purple-400" />
+                <span>Connect on LinkedIn</span>
+              </a>
             </div>
 
-            {/* Trust Info */}
+            {/* Factual Info */}
             <div className="flex items-center space-x-6 pt-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
               <div className="flex items-center space-x-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-                <span>100% Free Core</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                <span>MIT Licensed</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                <span>No Vendor Lock-in</span>
+                <span>Dockerized Architecture</span>
               </div>
             </div>
           </div>
@@ -175,9 +110,9 @@ export const Home: React.FC = () => {
                   <span className="w-3 h-3 rounded-full bg-[#27C93F] inline-block" />
                 </div>
                 <div className="text-[11px] font-bold text-muted-foreground/80 tracking-wide font-mono bg-white/[0.04] px-4 py-0.5 rounded-md border border-border/40">
-                  app.vidyasanchar.in
+                  github.com/VidyaSanchar
                 </div>
-                <div className="w-12" /> {/* Spacer */}
+                <div className="w-12" />
               </div>
 
               {/* Mockup Dashboard Body Container */}
@@ -188,61 +123,26 @@ export const Home: React.FC = () => {
                   className="w-full h-72 sm:h-96 object-cover object-center filter saturate-75 contrast-105"
                 />
                 
-                {/* Floating Glass Indicators */}
-                {/* 1. Today's Attendance (Top Left) */}
-                <div className="absolute top-4 left-4 p-2.5 sm:p-3 rounded-xl border border-border/80 bg-card/85 backdrop-blur-md shadow-xl flex items-center space-x-2 sm:space-x-3 text-left animate-float">
-                  <div className="p-1.5 sm:p-2 bg-emerald-500/10 rounded-lg text-emerald-500 border border-emerald-500/20">
-                    <Users className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
+                {/* Subtle Glassmorphism Badge */}
+                <div className="absolute bottom-4 left-4 inline-flex items-center space-x-2.5 px-4 py-2 rounded-full border border-white/20 dark:border-white/10 bg-white/70 dark:bg-slate-950/75 backdrop-blur-md shadow-lg animate-float">
+                  <div className="p-1.5 bg-[#7C3AED]/10 dark:bg-purple-400/10 rounded-full text-[#7C3AED] dark:text-purple-400 flex items-center justify-center">
+                    <School className="h-3.5 w-3.5" />
                   </div>
-                  <div>
-                    <h5 className="text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Attendance</h5>
-                    <p className="text-xs sm:text-sm font-black text-foreground mt-0.5">94% Today</p>
-                  </div>
-                </div>
-
-                {/* 2. CBSE Compliant (Top Right) */}
-                <div className="absolute top-4 right-4 p-2.5 sm:p-3 rounded-xl border border-border/80 bg-card/85 backdrop-blur-md shadow-xl flex items-center space-x-2 sm:space-x-3 text-left animate-float" style={{ animationDelay: '1s' }}>
-                  <div className="p-1.5 sm:p-2 bg-violet-500/10 rounded-lg text-violet-500 border border-violet-500/20">
-                    <Shield className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
-                  </div>
-                  <div>
-                    <h5 className="text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Affiliation</h5>
-                    <p className="text-xs sm:text-sm font-black text-foreground mt-0.5">CBSE Compliant</p>
-                  </div>
-                </div>
-
-                {/* 3. Fee Collection (Bottom Left) */}
-                <div className="absolute bottom-4 left-4 p-2.5 sm:p-3 rounded-xl border border-border/80 bg-card/85 backdrop-blur-md shadow-xl flex items-center space-x-2 sm:space-x-3 text-left animate-float" style={{ animationDelay: '2s' }}>
-                  <div className="p-1.5 sm:p-2 bg-amber-500/10 rounded-lg text-amber-500 border border-amber-500/20 flex items-center justify-center h-7 sm:h-8 w-7 sm:w-8 font-black text-xs sm:text-sm">
-                    ₹
-                  </div>
-                  <div>
-                    <h5 className="text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Fees Collected</h5>
-                    <p className="text-xs sm:text-sm font-black text-foreground mt-0.5">₹12.5 Lakhs</p>
-                  </div>
-                </div>
-
-                {/* 4. Active Students (Bottom Right) */}
-                <div className="absolute bottom-4 right-4 p-2.5 sm:p-3 rounded-xl border border-border/80 bg-card/85 backdrop-blur-md shadow-xl flex items-center space-x-2 sm:space-x-3 text-left animate-float" style={{ animationDelay: '3s' }}>
-                  <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20">
-                    <BookOpen className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
-                  </div>
-                  <div>
-                    <h5 className="text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Students</h5>
-                    <p className="text-xs sm:text-sm font-black text-foreground mt-0.5">3,250+ Active</p>
-                  </div>
+                  <span className="text-[10px] sm:text-xs font-extrabold tracking-wide text-foreground font-sans">
+                    VidyaSanchar School ERP
+                  </span>
                 </div>
               </div>
 
               {/* Bottom bar */}
               <div className="p-5 bg-card/45 border-t border-border/60 flex items-center justify-between text-left">
                 <div>
-                  <h4 className="font-extrabold text-sm text-foreground font-sans">VidyaSanchar ERP Dashboard</h4>
-                  <p className="text-xs text-muted-foreground">Indian School Management Platform</p>
+                  <h4 className="font-extrabold text-sm text-foreground font-sans">VidyaSanchar Project Prototype</h4>
+                  <p className="text-xs text-muted-foreground">Full-Stack Architecture Showcase</p>
                 </div>
-                <div className="flex items-center space-x-1.5 text-yellow-600 dark:text-yellow-500 bg-yellow-500/5 px-2.5 py-1 rounded-lg border border-yellow-500/15">
-                  <Star className="h-4 w-4 fill-current" />
-                  <span className="text-[10px] sm:text-xs font-black tracking-wider uppercase font-sans">ERP Top Rated</span>
+                <div className="flex items-center space-x-1.5 text-primary bg-primary/5 px-2.5 py-1 rounded-lg border border-primary/15">
+                  <Code className="h-4 w-4" />
+                  <span className="text-[10px] sm:text-xs font-black tracking-wider uppercase font-sans">Open Source</span>
                 </div>
               </div>
             </div>
@@ -250,38 +150,58 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. Statistics Section */}
-      <section className="relative py-12 reveal reveal-fade-up">
+      {/* 2. True Project Highlights (48px margin-top, 64px margin-bottom) */}
+      <section className="relative mt-12 mb-16 reveal reveal-fade-up">
         <div className="absolute inset-0 bg-gradient-to-y from-transparent via-primary/[0.01] to-transparent pointer-events-none" />
-        <div className="layout-container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
-            <div className="border border-border/80 bg-card rounded-2xl p-6 text-center shadow-sm relative overflow-hidden group card-hover-saas">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-primary font-mono"><CountUp end={120} suffix="+" /></h2>
-              <p className="text-xs text-muted-foreground mt-2 font-bold tracking-wide uppercase">Institutions Connected</p>
-            </div>
+            <Card className="p-6 text-left border-border/80 flex flex-col justify-between card-hover-saas group">
+              <div className="space-y-3">
+                <div className="p-2.5 bg-primary/10 text-primary w-fit rounded-xl border border-primary/20">
+                  <Code className="h-5 w-5" />
+                </div>
+                <h4 className="font-extrabold text-base Outfit text-foreground">Modern Tech Stack</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium">React • TypeScript • Node.js • PostgreSQL • Prisma</p>
+              </div>
+            </Card>
 
-            <div className="border border-border/80 bg-card rounded-2xl p-6 text-center shadow-sm relative overflow-hidden group card-hover-saas">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-primary font-mono"><CountUp end={50000} suffix="+" /></h2>
-              <p className="text-xs text-muted-foreground mt-2 font-bold tracking-wide uppercase">Active Students</p>
-            </div>
+            <Card className="p-6 text-left border-border/80 flex flex-col justify-between card-hover-saas group">
+              <div className="space-y-3">
+                <div className="p-2.5 bg-primary/10 text-primary w-fit rounded-xl border border-primary/20">
+                  <BookOpen className="h-5 w-5" />
+                </div>
+                <h4 className="font-extrabold text-base Outfit text-foreground">Core Modules</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium">Students, Teachers, Attendance, Fees & Examinations</p>
+              </div>
+            </Card>
 
-            <div className="border border-border/80 bg-card rounded-2xl p-6 text-center shadow-sm relative overflow-hidden group card-hover-saas">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-primary font-mono"><CountUp end={12} suffix="+" /></h2>
-              <p className="text-xs text-muted-foreground mt-2 font-bold tracking-wide uppercase">Completed Projects</p>
-            </div>
+            <Card className="p-6 text-left border-border/80 flex flex-col justify-between card-hover-saas group">
+              <div className="space-y-3">
+                <div className="p-2.5 bg-primary/10 text-primary w-fit rounded-xl border border-primary/20">
+                  <Shield className="h-5 w-5" />
+                </div>
+                <h4 className="font-extrabold text-base Outfit text-foreground">Authentication</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium">Secure login with role-based access architecture</p>
+              </div>
+            </Card>
 
-            <div className="border border-border/80 bg-card rounded-2xl p-6 text-center shadow-sm relative overflow-hidden group card-hover-saas">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-primary font-mono"><CountUp end={45} suffix="+" /></h2>
-              <p className="text-xs text-muted-foreground mt-2 font-bold tracking-wide uppercase">GitHub Repositories</p>
-            </div>
+            <Card className="p-6 text-left border-border/80 flex flex-col justify-between card-hover-saas group">
+              <div className="space-y-3">
+                <div className="p-2.5 bg-primary/10 text-primary w-fit rounded-xl border border-primary/20">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <h4 className="font-extrabold text-base Outfit text-foreground">Project Status</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium">Open-source prototype under active development</p>
+              </div>
+            </Card>
 
           </div>
         </div>
       </section>
 
       {/* 3. Featured Skills Section */}
-      <section className="layout-container py-8 reveal reveal-scale">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 reveal reveal-scale">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
             <span>Specializations</span>
@@ -308,7 +228,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* 4. Featured Projects link / callout */}
-      <section className="layout-container py-8 reveal reveal-fade-up">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 reveal reveal-fade-up">
         <div className="border border-border/80 rounded-3xl p-8 bg-card/60 backdrop-blur-sm flex flex-col md:flex-row items-center justify-between gap-6 text-left">
           <div className="space-y-2">
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">Active Repositories</span>
@@ -329,7 +249,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* 5. Experience Highlights Timeline Preview */}
-      <section className="layout-container py-8 reveal reveal-fade-up">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 reveal reveal-fade-up">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl Outfit text-foreground">Milestone Highlights</h2>
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-semibold">
@@ -371,93 +291,16 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. Testimonial Carousel Section */}
-      <section className="relative py-16 bg-card/25 border-y border-border/60 reveal reveal-fade-up">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.005] to-transparent pointer-events-none" />
-        <div className="container max-w-6xl mx-auto px-4 text-center space-y-12">
-          
-          <div className="space-y-3">
-            <span className="text-xs text-primary font-bold uppercase tracking-wider px-3 py-1 border border-primary/20 bg-primary/5 rounded-full">Testimonials</span>
-            <h2 className="text-3xl font-extrabold Outfit text-foreground">Trusted by Administrators</h2>
-            <p className="text-muted-foreground text-sm max-w-md mx-auto font-semibold">See how VidyaSanchar is simplifying school management across Bharat.</p>
-          </div>
-
-          <Card className="relative max-w-4xl mx-auto min-h-[250px] text-left p-8 md:p-12 shadow-md border-border/80 card-hover-saas group">
-            <div className="absolute -top-12 -left-12 w-32 h-32 bg-primary/5 rounded-full blur-2xl" />
-
-            <div className="space-y-6">
-              <div className="flex items-center space-x-1 text-yellow-500">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-5 w-5 ${i < reviews[activeReview].rating ? 'fill-yellow-500' : 'text-muted-foreground/30'}`}
-                  />
-                ))}
-              </div>
-
-              <blockquote className="text-base sm:text-xl font-medium leading-relaxed text-foreground/90 italic">
-                "{reviews[activeReview].text}"
-              </blockquote>
-
-              <div className="flex items-center justify-between pt-6 border-t border-border/50">
-                <div className="flex items-center space-x-4">
-                  <img 
-                    src={reviews[activeReview].avatar} 
-                    alt={reviews[activeReview].name} 
-                    className="h-12 w-12 rounded-full object-cover border border-border/80 bg-slate-900" 
-                  />
-                  <div>
-                    <h4 className="font-extrabold text-sm text-foreground">{reviews[activeReview].name}</h4>
-                    <p className="text-xs text-muted-foreground">{reviews[activeReview].role}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <button 
-                    onClick={handlePrevReview}
-                    className="p-2 rounded-xl border border-border bg-card hover:bg-muted/70 text-muted-foreground hover:text-foreground transition-all btn-saas"
-                    aria-label="Previous Testimonial"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  <button 
-                    onClick={handleNextReview}
-                    className="p-2 rounded-xl border border-border bg-card hover:bg-muted/70 text-muted-foreground hover:text-foreground transition-all btn-saas"
-                    aria-label="Next Testimonial"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <div className="flex justify-center space-x-1.5 pt-2">
-            {reviews.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveReview(i)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  activeReview === i ? 'w-6 bg-primary' : 'w-1.5 bg-muted-foreground/35 hover:bg-muted-foreground/60'
-                }`}
-                aria-label={`Go to slide ${i + 1}`}
-              />
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* 7. Call To Action section */}
-      <section className="layout-container py-8 reveal reveal-scale">
-        <div className="relative border border-primary/20 rounded-3xl overflow-hidden bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-6 py-12 md:py-20 text-center space-y-6 shadow-md shadow-primary/5">
+      {/* 6. Call To Action section (64px padding bottom / footer) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 reveal reveal-scale">
+        <div className="relative border border-primary/20 rounded-3xl overflow-hidden bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-6 py-12 md:py-16 text-center space-y-6 shadow-md shadow-primary/5">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_-10%,hsl(var(--primary)/0.12),rgba(255,255,255,0))]" />
           
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl max-w-2xl mx-auto Outfit relative z-10 text-foreground">
-            Ready to upgrade your school administration?
+            Explore the Codebase & Roadmap
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed relative z-10 font-semibold">
-            Get started with our free demo instance or download the repository to deploy on your own local server.
+            VidyaSanchar is open source. You can view the full repository on GitHub, check out the roadmap, or test the prototype modules.
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10 pt-4 max-w-xs sm:max-w-md mx-auto">
@@ -465,13 +308,13 @@ export const Home: React.FC = () => {
               to="/pricing"
               className="inline-flex items-center justify-center rounded-full text-sm font-bold tracking-wide transition-all bg-primary text-primary-foreground hover:opacity-95 h-11 px-8 shadow-md shadow-primary/20 hover:shadow-primary/30 active:scale-[0.98] duration-200 btn-saas"
             >
-              Sign Up For Demo
+              View Roadmap
             </Link>
             <Link
               to="/contact"
               className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card hover:bg-muted h-11 px-8 btn-saas"
             >
-              Talk to Sales
+              Contact / Feedback
             </Link>
           </div>
         </div>

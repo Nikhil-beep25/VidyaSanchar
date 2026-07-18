@@ -61,7 +61,7 @@ export const Features: React.FC = () => {
       <div className="absolute top-[50%] right-[-15%] w-[450px] h-[450px] rounded-full bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
 
       {/* Intro - Reduced Top Padding */}
-      <section className="text-center max-w-3xl mx-auto space-y-3 pt-4">
+      <section id="modules" className="text-center max-w-3xl mx-auto space-y-3 pt-4">
         <div className="inline-flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
           <span>VidyaSanchar Capabilities</span>
