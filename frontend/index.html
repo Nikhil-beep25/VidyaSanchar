@@ -5,6 +5,36 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VidyaSanchar ERP — Modern School Management Platform</title>
+    <script>
+      (function() {
+        var savedMode = localStorage.getItem('vidyasanchar-theme');
+        var themeMode = 'dark'; // default fallback
+        
+        if (savedMode === 'light' || savedMode === 'dark') {
+          themeMode = savedMode;
+        } else {
+          // Time-based automatic theme detection (6 AM - 5:59 PM is light)
+          var hour = new Date().getHours();
+          var isMorning = hour >= 6 && hour < 18;
+          themeMode = isMorning ? 'light' : 'dark';
+        }
+        
+        var root = document.documentElement;
+        if (themeMode === 'dark') {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
+        }
+        
+        // Also apply the theme color preset class immediately
+        var savedPresetCombined = localStorage.getItem('vidyasanchar-theme-preset');
+        var preset = 'purple';
+        if (savedPresetCombined) {
+          preset = savedPresetCombined.split('-')[0] || 'purple';
+        }
+        root.classList.add('preset-' + preset);
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">

@@ -4,7 +4,7 @@ import { useTheme, type ThemePreset } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { 
   School, ChevronDown, Palette, Menu, X, 
-  Home, Info, Layers, Compass, MessageSquare, HelpCircle, Mail, Lock, Check, Sun, Moon, Sparkles, MapPin, LogIn, Github
+  Home, Info, Layers, Compass, MessageSquare, HelpCircle, Mail, Lock, Check, Sun, Moon, Sparkles, MapPin, LogIn, Github, Linkedin, Globe
 } from 'lucide-react';
 import { SOCIAL_LINKS } from '../../config/social';
 import { Footer } from './footer/Footer';
@@ -16,6 +16,8 @@ export const LandingLayout: React.FC = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [language, setLanguage] = useState('English (US)');
+  const [langOpen, setLangOpen] = useState(false);
 
   // Appearance Selector states
   const [appearanceOpen, setAppearanceOpen] = useState(false);
@@ -84,6 +86,7 @@ export const LandingLayout: React.FC = () => {
   useEffect(() => {
     const closeAll = () => {
       setAppearanceOpen(false);
+      setLangOpen(false);
     };
     window.addEventListener('click', closeAll);
     return () => window.removeEventListener('click', closeAll);
@@ -238,14 +241,14 @@ export const LandingLayout: React.FC = () => {
           </nav>
 
           {/* Right Control Section (GitHub, Theme, Login, Hamburger) */}
-          <div className="flex items-center gap-4 z-10 relative flex-shrink-0 flex-nowrap whitespace-nowrap">
+          <div className="flex items-center gap-2.5 md:gap-3 lg:gap-4 z-10 relative flex-shrink-0 flex-nowrap whitespace-nowrap">
             
             {/* GitHub Button (hidden md:flex) */}
             <a
               href={SOCIAL_LINKS.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-1.5 h-11 px-4 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 text-xs font-semibold shadow-sm transition-all duration-300 hover:-translate-y-[1px] hover:scale-105 hover:shadow-md text-[#334155] dark:text-slate-300 focus-visible:outline-none"
+              className="hidden md:inline-flex items-center space-x-1 lg:space-x-1.5 h-10 lg:h-11 px-3 lg:px-4 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 text-xs font-semibold shadow-sm transition-all duration-300 hover:-translate-y-[1px] hover:scale-105 hover:shadow-md text-[#334155] dark:text-slate-300 focus-visible:outline-none"
               title="GitHub Repository"
               aria-label="Visit GitHub Profile"
             >
@@ -262,7 +265,7 @@ export const LandingLayout: React.FC = () => {
             >
               <button
                 onClick={toggleAppearanceClick}
-                className="inline-flex items-center space-x-1.5 h-11 px-4 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 text-xs font-semibold shadow-sm transition-all duration-300 hover:-translate-y-[1px] hover:scale-[1.02] hover:shadow-md text-[#334155] dark:text-slate-300 focus-visible:outline-none"
+                className="inline-flex items-center space-x-1 lg:space-x-1.5 h-10 lg:h-11 px-2.5 lg:px-4 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 text-xs font-semibold shadow-sm transition-all duration-300 hover:-translate-y-[1px] hover:scale-[1.02] hover:shadow-md text-[#334155] dark:text-slate-300 focus-visible:outline-none"
                 aria-label="Customize Appearance"
               >
                 <Palette className="h-3.5 w-3.5 text-[#7C3AED] dark:text-purple-400" />
@@ -279,7 +282,7 @@ export const LandingLayout: React.FC = () => {
                     </span>
                     <div className="p-0.5 bg-[#F1F5F9]/60 dark:bg-slate-900/60 flex border border-gray-200 dark:border-slate-800 rounded-lg relative">
                       <div 
-                        className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800/60 rounded-md shadow-sm transition-all duration-300 ${
+                        className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-white dark:bg-slate-950 border border-gray-205 dark:border-slate-800/60 rounded-md shadow-sm transition-all duration-300 ${
                           theme === 'dark' ? 'left-[calc(50%+1px)]' : 'left-[1px]'
                         }`}
                       />
@@ -344,7 +347,7 @@ export const LandingLayout: React.FC = () => {
                   else if (user.role === 'STUDENT') navigate('/dashboard/student');
                   else if (user.role === 'PARENT') navigate('/dashboard/parent');
                 }}
-                className="flex items-center justify-center h-12 px-6 sm:px-9 rounded-2xl text-sm font-bold bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/15 dark:shadow-violet-950/20 hover:scale-105 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-violet-500/25 active:scale-[0.98] transition-all duration-300 ease-out z-10 focus-visible:outline-none gap-2"
+                className="hidden md:flex items-center justify-center h-11 lg:h-12 px-4 lg:px-9 rounded-2xl text-sm font-bold bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/15 dark:shadow-violet-950/20 hover:scale-105 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-violet-500/25 active:scale-[0.98] transition-all duration-300 ease-out z-10 focus-visible:outline-none gap-2"
               >
                 <Lock className="h-4 w-4 flex-shrink-0" />
                 <span>Dashboard</span>
@@ -352,7 +355,7 @@ export const LandingLayout: React.FC = () => {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center justify-center h-12 px-6 sm:px-9 rounded-2xl text-sm font-bold bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/15 dark:shadow-violet-950/20 hover:scale-105 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-violet-500/25 active:scale-[0.98] transition-all duration-300 ease-out z-10 focus-visible:outline-none gap-2"
+                className="hidden md:flex items-center justify-center h-11 lg:h-12 px-4 lg:px-9 rounded-2xl text-sm font-bold bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/15 dark:shadow-violet-950/20 hover:scale-105 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-violet-500/25 active:scale-[0.98] transition-all duration-300 ease-out z-10 focus-visible:outline-none gap-2"
               >
                 <LogIn className="h-4 w-4 flex-shrink-0" />
                 <span>Portal Login</span>
@@ -363,7 +366,7 @@ export const LandingLayout: React.FC = () => {
             <button
               ref={hamburgerRef}
               onClick={() => setMobileMenuOpen(true)}
-              className="flex lg:hidden items-center justify-center h-11 w-11 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 shadow-sm transition-all duration-300 hover:-translate-y-[1px] hover:scale-[1.02] hover:shadow-md text-[#334155] dark:text-slate-300 focus-visible:outline-none"
+              className="flex lg:hidden items-center justify-center h-12 w-12 md:h-11 md:w-11 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/25 shadow-sm transition-all duration-300 hover:-translate-y-[1px] hover:scale-[1.02] hover:shadow-md text-[#334155] dark:text-slate-300 focus-visible:outline-none"
               aria-label="Open navigation"
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-drawer"
@@ -395,149 +398,254 @@ export const LandingLayout: React.FC = () => {
         {/* Drawer panel */}
         <div 
           ref={drawerRef}
-          className={`fixed top-0 right-0 h-full w-[310px] bg-background/95 dark:bg-[#050816]/95 backdrop-blur-xl border-l border-border/80 p-6 flex flex-col justify-between shadow-2xl transition-transform duration-300 ease-out transform rounded-l-2xl ${
+          className={`fixed top-0 right-0 h-full w-[320px] max-w-[85vw] bg-white/95 dark:bg-[#050816]/95 backdrop-blur-2xl border-l border-gray-200/80 dark:border-slate-800/80 flex flex-col shadow-2xl transition-transform duration-300 ease-out transform rounded-l-3xl z-50 will-change-transform ${
             mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
           {/* Top Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-border/60">
-            <span className="font-extrabold text-base text-gradient-theme">VidyaSanchar ERP</span>
+          <div className="flex items-center justify-between p-6 border-b border-gray-200/60 dark:border-slate-800/60">
+            <Link 
+              to="/" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center space-x-2.5 group transition-transform duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+            >
+              <div className="p-1.5 rounded-full bg-white dark:bg-slate-900 border border-gray-200/80 dark:border-slate-850 shadow-sm">
+                <School className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="font-extrabold text-sm text-[#0F172A] dark:text-[#F9FAFB] leading-none">
+                  VidyaSanchar
+                </span>
+                <span className="text-[8px] font-bold tracking-[0.2em] text-gray-500 dark:text-slate-400 uppercase mt-0.5">
+                  School ERP
+                </span>
+              </div>
+            </Link>
             <button 
               onClick={() => setMobileMenuOpen(false)} 
-              className="p-2 rounded-full border border-border hover:bg-violet-55 dark:hover:bg-violet-950/20 hover:text-violet-600 transition-all active:scale-95 text-foreground"
+              className="w-12 h-12 flex items-center justify-center rounded-full border border-gray-200/60 dark:border-slate-800/60 hover:bg-violet-50 dark:hover:bg-violet-950/20 hover:text-violet-650 dark:hover:text-purple-400 transition-all active:scale-95 text-foreground focus-visible:outline-none"
               aria-label="Close navigation"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="flex flex-col space-y-1.5 overflow-y-auto my-4 flex-grow">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) => {
-                  const isLinkActive = link.name === 'Modules' 
-                    ? location.pathname === '/features' && location.hash === '#modules'
-                    : link.name === 'Features'
-                      ? location.pathname === '/features' && location.hash !== '#modules'
-                      : isActive;
-                  return `flex items-center gap-3 h-11 px-4 rounded-xl text-sm font-semibold transition-all duration-300 border border-transparent ${
-                    isLinkActive 
-                      ? 'text-violet-750 dark:text-purple-300 bg-violet-100 dark:bg-purple-950/40 border-violet-200/50 dark:border-purple-900/30' 
-                      : 'text-gray-650 dark:text-slate-300 hover:text-violet-650 dark:hover:text-purple-400 hover:bg-violet-50 dark:hover:bg-violet-950/15'
-                  }`;
-                }}
-              >
-                {link.icon}
-                <span>{link.name}</span>
-              </NavLink>
-            ))}
-          </nav>
-
-          {/* Bottom Settings and Actions */}
-          <div className="pt-4 border-t border-border/60 space-y-5 overflow-y-auto">
+          {/* Scrollable Body */}
+          <div className="flex-grow overflow-y-auto p-6 space-y-6 scrollbar-thin">
             
-            {/* Appearance settings */}
-            <div className="space-y-3.5">
+            {/* Navigation Links */}
+            <div className="space-y-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-2 block">
-                Appearance Settings
+                Menu
               </span>
-              
-              {/* Mode Control */}
-              <div className="p-1 bg-[#F1F5F9]/60 dark:bg-slate-900/60 flex border border-gray-200 dark:border-slate-800 rounded-2xl relative mx-2">
-                <div 
-                  className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800/60 rounded-lg shadow-sm transition-all duration-300 ${
-                    theme === 'dark' ? 'left-[calc(50%+2px)]' : 'left-[6px]'
-                  }`}
-                />
-                <button
-                  onClick={() => setThemeMode('light')}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all relative z-10 flex items-center justify-center gap-1.5 ${
-                    theme === 'light' ? 'text-[#7C3AED]' : 'text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
-                  }`}
+              <nav className="flex flex-col space-y-1">
+                {navLinks.map((link) => (
+                  <NavLink
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={({ isActive }) => {
+                      const isLinkActive = link.name === 'Modules' 
+                        ? location.pathname === '/features' && location.hash === '#modules'
+                        : link.name === 'Features'
+                          ? location.pathname === '/features' && location.hash !== '#modules'
+                          : isActive;
+                      return `flex items-center gap-3 h-12 px-4 rounded-2xl text-sm font-semibold transition-all duration-300 border border-transparent ${
+                        isLinkActive 
+                          ? 'text-violet-750 dark:text-purple-300 bg-violet-50 dark:bg-purple-950/40 border-violet-200/50 dark:border-purple-900/30' 
+                          : 'text-[#334155] dark:text-slate-300 hover:text-violet-650 dark:hover:text-purple-400 hover:bg-violet-50/50 dark:hover:bg-violet-950/15'
+                      }`;
+                    }}
+                  >
+                    {React.cloneElement(link.icon, { className: "h-4 w-4" })}
+                    <span>{link.name}</span>
+                  </NavLink>
+                ))}
+              </nav>
+            </div>
+
+            {/* Quick Actions & Links */}
+            <div className="space-y-3">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-2 block">
+                Actions
+              </span>
+              <div className="flex flex-col space-y-2">
+                {/* Portal Login / Dashboard */}
+                {user ? (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      if (user.role === 'SUPER_ADMIN') navigate('/dashboard/super-admin');
+                      else if (user.role === 'ADMIN') navigate('/dashboard/admin');
+                      else if (user.role === 'TEACHER') navigate('/dashboard/teacher');
+                      else if (user.role === 'STUDENT') navigate('/dashboard/student');
+                      else if (user.role === 'PARENT') navigate('/dashboard/parent');
+                    }}
+                    className="w-full flex items-center justify-center h-12 rounded-2xl text-sm font-bold bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/15 dark:shadow-violet-950/20 active:scale-[0.98] transition-all duration-300 ease-out gap-2 focus-visible:outline-none"
+                  >
+                    <Lock className="h-4 w-4" />
+                    <span>Dashboard</span>
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full flex items-center justify-center h-12 rounded-2xl text-sm font-bold bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/15 dark:shadow-violet-950/20 active:scale-[0.98] transition-all duration-300 ease-out gap-2 focus-visible:outline-none"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    <span>Portal Login</span>
+                  </Link>
+                )}
+
+                {/* GitHub */}
+                <a
+                  href={SOCIAL_LINKS.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center h-12 px-4 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 text-sm font-semibold text-[#334155] dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-850 hover:bg-violet-50 dark:hover:bg-violet-950/25 active:scale-[0.98] transition-all duration-300 gap-2 focus-visible:outline-none"
+                  aria-label="Visit GitHub"
                 >
-                  <Sun className="h-3.5 w-3.5" />
-                  <span>Light</span>
-                </button>
-                <button
-                  onClick={() => setThemeMode('dark')}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all relative z-10 flex items-center justify-center gap-1.5 ${
-                    theme === 'dark' ? 'text-[#7C3AED] dark:text-purple-300' : 'text-[#334155] dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
-                  }`}
+                  <Github className="h-4 w-4 text-[#7C3AED] dark:text-purple-400" />
+                  <span>GitHub Repository</span>
+                </a>
+
+                {/* Roadmap Link */}
+                <Link
+                  to="/pricing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-center h-12 px-4 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 text-sm font-semibold text-[#334155] dark:text-slate-350 hover:border-violet-300 dark:hover:border-violet-850 hover:bg-violet-50 dark:hover:bg-violet-950/25 active:scale-[0.98] transition-all duration-300 gap-2 focus-visible:outline-none"
                 >
-                  <Moon className="h-3.5 w-3.5" />
-                  <span>Dark</span>
-                </button>
+                  <Compass className="h-4 w-4 text-[#7C3AED] dark:text-purple-400" />
+                  <span>Roadmap & Pricing</span>
+                </Link>
+
+                {/* LinkedIn */}
+                <a
+                  href={SOCIAL_LINKS.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center h-12 px-4 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 text-sm font-semibold text-[#334155] dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-850 hover:bg-violet-50 dark:hover:bg-violet-950/25 active:scale-[0.98] transition-all duration-300 gap-2 focus-visible:outline-none"
+                  aria-label="Visit LinkedIn"
+                >
+                  <Linkedin className="h-4 w-4 text-[#7C3AED] dark:text-purple-400" />
+                  <span>LinkedIn Profile</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Preferences / Settings */}
+            <div className="space-y-4 pt-2">
+              {/* Theme Toggle */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-2 block">
+                  Theme Mode
+                </span>
+                <div className="h-12 p-1 bg-[#F1F5F9]/60 dark:bg-slate-900/60 flex border border-gray-200 dark:border-slate-800 rounded-2xl relative">
+                  <div 
+                    className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800/65 rounded-xl shadow-sm transition-all duration-300 ${
+                      theme === 'dark' ? 'left-[calc(50%+2px)]' : 'left-[6px]'
+                    }`}
+                  />
+                  <button
+                    onClick={() => setThemeMode('light')}
+                    className={`flex-1 rounded-xl text-xs font-bold transition-all relative z-10 flex items-center justify-center gap-1.5 focus-visible:outline-none ${
+                      theme === 'light' ? 'text-[#7C3AED]' : 'text-gray-500 dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
+                    }`}
+                  >
+                    <Sun className="h-4 w-4" />
+                    <span>Light</span>
+                  </button>
+                  <button
+                    onClick={() => setThemeMode('dark')}
+                    className={`flex-1 rounded-xl text-xs font-bold transition-all relative z-10 flex items-center justify-center gap-1.5 focus-visible:outline-none ${
+                      theme === 'dark' ? 'text-[#7C3AED] dark:text-purple-300' : 'text-gray-500 dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400'
+                    }`}
+                  >
+                    <Moon className="h-4 w-4" />
+                    <span>Dark</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Language Selector */}
+              <div className="space-y-2 relative">
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-2 block">
+                  Language Selector
+                </span>
+                <div>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setLangOpen(!langOpen);
+                    }}
+                    className="w-full flex items-center justify-between h-12 px-4 rounded-2xl border border-gray-200 dark:border-slate-800 bg-[#F1F5F9]/60 dark:bg-slate-900/60 text-[#334155] dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-850 active:scale-[0.98] transition-all duration-300 font-semibold text-xs focus-visible:outline-none"
+                    aria-label="Select Language"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Globe className="h-4 w-4 text-[#7C3AED] dark:text-purple-400" />
+                      <span>{language}</span>
+                    </div>
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${langOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {langOpen && (
+                    <div 
+                      className="absolute left-0 right-0 bottom-full mb-2 bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-xl z-50 space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-200 text-left"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {[
+                        { name: 'English', label: 'English (US)' },
+                        { name: 'Hindi', label: 'हिन्दी (IN)' },
+                        { name: 'Spanish', label: 'Español (ES)' }
+                      ].map((langOption) => (
+                        <button
+                          key={langOption.name}
+                          onClick={() => {
+                            setLanguage(langOption.label);
+                            setLangOpen(false);
+                          }}
+                          className={`w-full text-left h-10 px-3.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between focus-visible:outline-none ${
+                            language === langOption.label
+                              ? 'bg-violet-50 dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300'
+                              : 'text-gray-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50'
+                          }`}
+                        >
+                          <span>{langOption.label}</span>
+                          {language === langOption.label && <Check className="h-3.5 w-3.5 text-[#7C3AED] dark:text-purple-400" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Color Presets */}
-              <div className="grid grid-cols-3 gap-1.5 bg-card/60 p-2 rounded-2xl border border-gray-200 dark:border-slate-800 mx-2">
-                {presetsList.map((t) => {
-                  const isSelected = preset === t.code;
-                  return (
-                    <button
-                      key={t.code}
-                      onClick={() => setThemePreset(t.code)}
-                      className={`py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 border transition-all ${
-                        isSelected 
-                          ? 'border-[#7C3AED]/20 bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300' 
-                          : 'border-transparent text-[#334155] dark:text-slate-300 hover:text-[#7C3AED]'
-                      }`}
-                    >
-                      <span className={`w-3.5 h-3.5 rounded-full ${t.dotColor}`} />
-                      <span className="text-[9px] font-bold truncate w-full px-1 text-center">{t.name}</span>
-                    </button>
-                  );
-                })}
+              <div className="space-y-2">
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 px-2 block">
+                  Theme Preset Colors
+                </span>
+                <div className="grid grid-cols-3 gap-1.5 bg-[#F1F5F9]/30 dark:bg-slate-900/30 p-2 rounded-2xl border border-gray-200 dark:border-slate-800">
+                  {presetsList.map((t) => {
+                    const isSelected = preset === t.code;
+                    return (
+                      <button
+                        key={t.code}
+                        onClick={() => setThemePreset(t.code)}
+                        className={`py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 border transition-all focus-visible:outline-none ${
+                          isSelected 
+                            ? 'border-[#7C3AED]/20 bg-[#F3E8FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-300' 
+                            : 'border-transparent text-[#334155] dark:text-slate-350 hover:text-[#7C3AED] dark:hover:text-purple-400'
+                        }`}
+                      >
+                        <span className={`w-3.5 h-3.5 rounded-full ${t.dotColor}`} />
+                        <span className="text-[9px] font-bold truncate w-full px-1 text-center">{t.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
+
             </div>
 
-            {/* Developer Profile */}
-            <div className="flex flex-col space-y-2 px-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-slate-400 block mb-0.5">
-                Developer Link
-              </span>
-              <a
-                href={SOCIAL_LINKS.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Visit GitHub Profile"
-                className="w-full inline-flex items-center justify-center space-x-1.5 h-11 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-[#334155] dark:text-slate-355 hover:text-violet-650 dark:hover:text-purple-400 hover:border-violet-300 dark:hover:border-violet-850 active:scale-[0.97] transition-all duration-300"
-              >
-                <Github className="h-3.5 w-3.5 text-[#7C3AED] dark:text-purple-400" />
-                <span>GitHub Portfolio</span>
-              </a>
-            </div>
-
-            {/* Portal Login CTA */}
-            {user ? (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  if (user.role === 'SUPER_ADMIN') navigate('/dashboard/super-admin');
-                  else if (user.role === 'ADMIN') navigate('/dashboard/admin');
-                  else if (user.role === 'TEACHER') navigate('/dashboard/teacher');
-                  else if (user.role === 'STUDENT') navigate('/dashboard/student');
-                  else if (user.role === 'PARENT') navigate('/dashboard/parent');
-                }}
-                className="w-full text-center h-11 text-xs font-bold bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-95 text-white rounded-2xl shadow-md shadow-violet-300/40 dark:shadow-violet-950/40 transition-all active:scale-[0.97] flex items-center justify-center gap-1.5"
-              >
-                <Lock className="h-3.5 w-3.5" />
-                Go to Dashboard
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-center h-11 py-3 text-xs font-bold bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-95 text-white rounded-2xl shadow-md shadow-violet-300/40 dark:shadow-violet-950/40 transition-all active:scale-[0.97] flex items-center justify-center gap-1.5"
-              >
-                <Lock className="h-3.5 w-3.5 inline-block mr-1" />
-                Portal Login
-              </Link>
-            )}
           </div>
         </div>
       </div>

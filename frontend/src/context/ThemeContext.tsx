@@ -16,14 +16,24 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Read combined theme from localStorage or fallback to system default
+  // Read combined theme from localStorage or fallback to system default / time-based automatic theme detection
   const [activeTheme, setActiveThemeState] = useState<string>(() => {
-    const saved = localStorage.getItem('vidyasanchar-theme-preset');
-    if (saved) return saved;
+    // 1. Check for manual user theme preference
+    const savedMode = localStorage.getItem('vidyasanchar-theme');
+    
+    // 2. Extract theme color preset
+    const savedPresetCombined = localStorage.getItem('vidyasanchar-theme-preset');
+    const savedPreset = savedPresetCombined ? savedPresetCombined.split('-')[0] : 'purple';
+    
+    if (savedMode === 'light' || savedMode === 'dark') {
+      return `${savedPreset}-${savedMode}`;
+    }
 
-    // Check system preference
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return prefersDark ? 'purple-dark' : 'purple-light';
+    // 3. Fallback to time-based automatic theme detection (6 AM - 5:59 PM is light)
+    const hour = new Date().getHours();
+    const isMorning = hour >= 6 && hour < 18;
+    const detectedMode = isMorning ? 'light' : 'dark';
+    return `${savedPreset}-${detectedMode}`;
   });
 
   // Extract mode and preset from activeTheme
@@ -54,7 +64,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     );
     root.classList.add(`preset-${parsedPreset}`);
 
+    // 3. Persist manual theme selections
     localStorage.setItem('vidyasanchar-theme-preset', activeTheme);
+    localStorage.setItem('vidyasanchar-theme', parsedTheme);
   }, [activeTheme]);
 
   const toggleTheme = () => {
