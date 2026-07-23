@@ -1,99 +1,120 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark';
+export type ThemeMode = 'system' | 'light' | 'dark';
 export type ThemePreset = 'purple' | 'blue' | 'emerald' | 'orange' | 'rose' | 'obsidian';
 
 interface ThemeContextType {
-  theme: Theme;
+  mode: ThemeMode;
+  theme: 'light' | 'dark';
   toggleTheme: () => void;
   preset: ThemePreset;
   activeTheme: string;
   selectTheme: (themeId: string) => void;
-  setThemeMode: (mode: Theme) => void;
+  setThemeMode: (mode: ThemeMode) => void;
   setThemePreset: (preset: ThemePreset) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Read combined theme from localStorage or fallback to system default / time-based automatic theme detection
-  const [activeTheme, setActiveThemeState] = useState<string>(() => {
-    // 1. Check for manual user theme preference
-    const savedMode = localStorage.getItem('vidyasanchar-theme');
-    
-    // 2. Extract theme color preset
-    const savedPresetCombined = localStorage.getItem('vidyasanchar-theme-preset');
-    const savedPreset = savedPresetCombined ? savedPresetCombined.split('-')[0] : 'purple';
-    
-    if (savedMode === 'light' || savedMode === 'dark') {
-      return `${savedPreset}-${savedMode}`;
+  const [mode, setModeState] = useState<ThemeMode>(() => {
+    const savedMode = localStorage.getItem('vidyasanchar-theme-mode') as ThemeMode;
+    if (savedMode === 'system' || savedMode === 'light' || savedMode === 'dark') {
+      return savedMode;
     }
-
-    // 3. Fallback to time-based automatic theme detection (6 AM - 5:59 PM is light)
-    const hour = new Date().getHours();
-    const isMorning = hour >= 6 && hour < 18;
-    const detectedMode = isMorning ? 'light' : 'dark';
-    return `${savedPreset}-${detectedMode}`;
+    // Backward compatibility with previous key
+    const legacyMode = localStorage.getItem('vidyasanchar-theme');
+    if (legacyMode === 'light' || legacyMode === 'dark') {
+      return legacyMode;
+    }
+    return 'system';
   });
 
-  // Extract mode and preset from activeTheme
-  const [preset, setPreset] = useState<ThemePreset>('purple');
-  const [theme, setTheme] = useState<Theme>('light');
+  const [preset, setPresetState] = useState<ThemePreset>(() => {
+    const savedPresetCombined = localStorage.getItem('vidyasanchar-theme-preset');
+    const p = savedPresetCombined ? savedPresetCombined.split('-')[0] : 'purple';
+    return (['purple', 'blue', 'emerald', 'orange', 'rose', 'obsidian'].includes(p) ? p : 'purple') as ThemePreset;
+  });
+
+  const [effectiveTheme, setEffectiveTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    // Parse preset and mode
-    const [p, m] = activeTheme.split('-');
-    const parsedPreset = (['purple', 'blue', 'emerald', 'orange', 'rose', 'obsidian'].includes(p) ? p : 'purple') as ThemePreset;
-    const parsedTheme = (m === 'dark' ? 'dark' : 'light') as Theme;
+    const getSystemTheme = (): 'light' | 'dark' => {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
 
-    setPreset(parsedPreset);
-    setTheme(parsedTheme);
+    const computedTheme = mode === 'system' ? getSystemTheme() : mode;
+    setEffectiveTheme(computedTheme);
 
     const root = window.document.documentElement;
 
-    // 1. Update dark mode class
-    if (parsedTheme === 'dark') {
+    // Apply dark class
+    if (computedTheme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
 
-    // 2. Update color preset class
+    // Apply color preset
     root.classList.remove(
       'preset-purple', 'preset-blue', 'preset-emerald', 'preset-orange', 'preset-rose', 'preset-obsidian'
     );
-    root.classList.add(`preset-${parsedPreset}`);
+    root.classList.add(`preset-${preset}`);
 
-    // 3. Persist manual theme selections
-    localStorage.setItem('vidyasanchar-theme-preset', activeTheme);
-    localStorage.setItem('vidyasanchar-theme', parsedTheme);
-  }, [activeTheme]);
+    // Persist
+    localStorage.setItem('vidyasanchar-theme-mode', mode);
+    localStorage.setItem('vidyasanchar-theme', computedTheme);
+    localStorage.setItem('vidyasanchar-theme-preset', `${preset}-${computedTheme}`);
+
+    // Listen for system theme changes if mode is 'system'
+    if (mode === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => {
+        const nextTheme = e.matches ? 'dark' : 'light';
+        setEffectiveTheme(nextTheme);
+        if (nextTheme === 'dark') {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
+        }
+      };
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+  }, [mode, preset]);
 
   const toggleTheme = () => {
-    setActiveThemeState(prev => {
-      const [p, m] = prev.split('-');
-      const nextMode = m === 'dark' ? 'light' : 'dark';
-      return `${p}-${nextMode}`;
-    });
+    setModeState(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  const selectTheme = (themeId: string) => {
-    setActiveThemeState(themeId);
-  };
-
-  const setThemeMode = (mode: Theme) => {
-    const [p] = activeTheme.split('-');
-    setActiveThemeState(`${p}-${mode}`);
+  const setThemeMode = (newMode: ThemeMode) => {
+    setModeState(newMode);
   };
 
   const setThemePreset = (newPreset: ThemePreset) => {
-    const [, m] = activeTheme.split('-');
-    setActiveThemeState(`${newPreset}-${m}`);
+    setPresetState(newPreset);
+  };
+
+  const selectTheme = (themeId: string) => {
+    const [p, m] = themeId.split('-');
+    if (['purple', 'blue', 'emerald', 'orange', 'rose', 'obsidian'].includes(p)) {
+      setPresetState(p as ThemePreset);
+    }
+    if (m === 'light' || m === 'dark' || m === 'system') {
+      setModeState(m as ThemeMode);
+    }
   };
 
   return (
     <ThemeContext.Provider value={{ 
-      theme, toggleTheme, preset, activeTheme, selectTheme, setThemeMode, setThemePreset 
+      mode,
+      theme: effectiveTheme, 
+      toggleTheme, 
+      preset, 
+      activeTheme: `${preset}-${effectiveTheme}`, 
+      selectTheme, 
+      setThemeMode, 
+      setThemePreset 
     }}>
       {children}
     </ThemeContext.Provider>
