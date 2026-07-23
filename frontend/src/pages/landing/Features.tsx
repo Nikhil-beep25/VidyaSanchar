@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, CheckCircle2, ShieldCheck, Zap, BarChart3, LayoutDashboard, 
-  UserCheck, CalendarCheck, Wallet, GraduationCap, MessageSquare, Globe, 
+  UserCheck, CalendarCheck, Wallet, GraduationCap, MessageSquare, 
   Moon, Lock, Smartphone, Cloud, ArrowRight, ChevronDown, Check, FileSpreadsheet,
   Users, Clock, HelpCircle, Layers
 } from 'lucide-react';
@@ -64,11 +64,11 @@ export const Features: React.FC = () => {
       badge: 'Communication'
     },
     {
-      icon: <Globe className="h-6 w-6 text-blue-500" />,
-      title: 'Multi-Language UI Support',
-      desc: 'Dynamic localization support allowing users to switch interface languages easily.',
-      benefits: ['Regional Localization', 'Dynamic Switcher', 'Accessible UI'],
-      badge: 'Localization'
+      icon: <Layers className="h-6 w-6 text-blue-500" />,
+      title: 'Modular ERP Architecture',
+      desc: 'Scalable and decoupled module structures designed for enterprise school operations.',
+      benefits: ['Decoupled Modules', 'Scalable Architecture', 'Extensible Design'],
+      badge: 'Architecture'
     },
     {
       icon: <Moon className="h-6 w-6 text-slate-400" />,

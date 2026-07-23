@@ -1,16 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Sun, Moon, Laptop, Globe, Palette, Check, Info, ChevronDown, ChevronRight } from 'lucide-react';
+import { Settings, Sun, Moon, Laptop, Palette, Check, Info, ChevronDown, ChevronRight } from 'lucide-react';
 import { useTheme, type ThemeMode, type ThemePreset } from '../../context/ThemeContext';
 
 interface SettingsMenuProps {
   variant?: 'dropdown' | 'mobile-accordion';
 }
-
-const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-];
 
 const accentColors: { code: ThemePreset; name: string; dotColor: string }[] = [
   { code: 'purple', name: 'Purple', dotColor: 'bg-purple-500' },
@@ -23,7 +18,6 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ variant = 'dropdown'
   const { mode, preset, setThemeMode, setThemePreset } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isAccordionExpanded, setIsAccordionExpanded] = useState(false);
-  const [lang, setLang] = useState(() => localStorage.getItem('vidyasanchar-lang') || 'en');
   const [showAboutModal, setShowAboutModal] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -36,11 +30,6 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ variant = 'dropdown'
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const handleLanguageChange = (code: string) => {
-    setLang(code);
-    localStorage.setItem('vidyasanchar-lang', code);
-  };
 
   // Button Trigger for Desktop
   const triggerButton = (
@@ -97,38 +86,6 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ variant = 'dropdown'
             <Moon className="h-3.5 w-3.5" />
             <span>Dark</span>
           </button>
-        </div>
-      </div>
-
-      <div className="border-t border-gray-200 dark:border-slate-800" />
-
-      {/* 🌐 Language Section */}
-      <div className="space-y-2">
-        <div className="flex items-center space-x-2 text-xs font-extrabold text-gray-700 dark:text-slate-300">
-          <Globe className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
-          <span>Language</span>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          {languages.map((l) => {
-            const isSelected = lang === l.code;
-            return (
-              <button
-                key={l.code}
-                onClick={() => handleLanguageChange(l.code)}
-                className={`flex items-center justify-between px-3.5 py-2.5 min-h-[44px] sm:min-h-[38px] rounded-xl text-xs font-bold border transition-all ${
-                  isSelected
-                    ? 'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700'
-                    : 'bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-800 hover:border-purple-200 dark:hover:border-purple-800'
-                }`}
-              >
-                <span className="flex items-center space-x-2">
-                  <span className="text-sm">{l.flag}</span>
-                  <span>{l.name}</span>
-                </span>
-                {isSelected && <Check className="h-4 w-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />}
-              </button>
-            );
-          })}
         </div>
       </div>
 
