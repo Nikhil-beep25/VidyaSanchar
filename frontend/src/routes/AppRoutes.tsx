@@ -10,6 +10,7 @@ import { DashboardLayout } from '../components/layout/DashboardLayout';
 import { Home } from '../pages/landing/Home';
 import { About } from '../pages/landing/About';
 import { Features } from '../pages/landing/Features';
+import { Modules } from '../pages/landing/Modules';
 import { Projects } from '../pages/landing/Projects';
 import { Journey } from '../pages/landing/Journey';
 import { Pricing } from '../pages/landing/Pricing';
@@ -97,9 +98,11 @@ const AppRoutesInternal: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/features" element={<Features />} />
+        <Route path="/modules" element={<Modules />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/journey" element={<Journey />} />
         <Route path="/pricing" element={<Pricing />} />
+        <Route path="/roadmap" element={<Pricing />} />
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/contact" element={<Contact />} />

@@ -11,8 +11,9 @@ export const Footer: React.FC = () => {
       title: 'Project Info',
       links: [
         { name: 'Home', path: '/' },
-        { name: 'Features & Modules', path: '/features' },
-        { name: 'Development Roadmap', path: '/pricing' },
+        { name: 'Features', path: '/features' },
+        { name: 'Modules', path: '/modules' },
+        { name: 'Development Roadmap', path: '/roadmap' },
       ],
     },
     {

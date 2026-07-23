@@ -1,7 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
-  Shield, BookOpen, Clock, Users, ArrowRight, Sparkles, Database, Code, Github, Terminal, Briefcase, Linkedin, School
+  ShieldCheck, LayoutDashboard, CalendarCheck, CreditCard, GraduationCap, Clock, 
+  BarChart3, MessageSquare, Globe, Sparkles, ArrowRight, Github, Code, School, 
+  CheckCircle2, Terminal, Zap, Layers, Activity, Users, UserCheck, HeartHandshake,
+  Wallet, Library, Bus, Home as HomeIcon, Briefcase
 } from 'lucide-react';
 import { Card } from '../../components/common/Card';
 import { SOCIAL_LINKS } from '../../config/social';
@@ -9,313 +13,389 @@ import heroCampus from '../../assets/images/hero_campus.png';
 
 export const Home: React.FC = () => {
   const developerSkills = [
-    { name: 'Full-Stack React & Node', desc: 'Crafting responsive user interfaces backed by scalable API architectures.' },
-    { name: 'Relational Ledgers', desc: 'Designing secure, normalized database tables mapping double-entry accounting.' },
-    { name: 'DevOps & Docker Compose', desc: 'Containerizing multi-service stacks, proxy setups, and auto-backup cron jobs.' },
-    { name: 'Performance Audits', desc: 'Optimizing SQL query indices, reducing render shifts, and maintaining high SLAs.' }
+    { name: 'Full-Stack React & Node', desc: 'Crafting responsive user interfaces backed by RESTful API endpoints.' },
+    { name: 'Relational Database Schema', desc: 'Designing normalized PostgreSQL tables with Prisma ORM data modeling.' },
+    { name: 'DevOps & Docker Setup', desc: 'Containerizing multi-service stacks for development and deployment.' },
+    { name: 'Role-Based Access Control', desc: 'Implementing JWT authentication with role-based routing for 5 user roles.' }
+  ];
+
+  const featuredHighlights = [
+    {
+      icon: <CalendarCheck className="h-6 w-6 text-amber-500" />,
+      title: 'Attendance & Scheduling',
+      desc: 'Class check-ins, monthly attendance records, and timetable period assignments.',
+      link: '/features'
+    },
+    {
+      icon: <Wallet className="h-6 w-6 text-violet-500" />,
+      title: 'Fee Management & Payments',
+      desc: 'Class fee head setup, payment tracking, payment receipts, and balance tracking.',
+      link: '/features'
+    },
+    {
+      icon: <GraduationCap className="h-6 w-6 text-emerald-500" />,
+      title: 'Examinations & Marks',
+      desc: 'Exam schedule publishing, subject mark entry, progress report cards, and grade distributions.',
+      link: '/features'
+    },
+    {
+      icon: <ShieldCheck className="h-6 w-6 text-blue-500" />,
+      title: 'Role-Based Authorization',
+      desc: 'Role-based access matrix for Super Admin, Admin, Teacher, Student, and Parent roles.',
+      link: '/features'
+    }
+  ];
+
+  const erpModuleTeasers = [
+    { name: 'Student Management', icon: <UserCheck className="h-5 w-5 text-violet-500" />, desc: 'Student profiles, admissions, and class section assignments' },
+    { name: 'Teacher Management', icon: <Users className="h-5 w-5 text-indigo-500" />, desc: 'Faculty directory, subject allocations, and schedules' },
+    { name: 'Parent Portal', icon: <HeartHandshake className="h-5 w-5 text-pink-500" />, desc: 'Guardian access to student progress, fees, and notices' },
+    { name: 'Attendance System', icon: <CalendarCheck className="h-5 w-5 text-amber-500" />, desc: 'Daily roll call, monthly rosters, and attendance reports' },
+    { name: 'Fee Management', icon: <Wallet className="h-5 w-5 text-emerald-500" />, desc: 'Fee head setup, payment transactions, and receipts' },
+    { name: 'Exams & Grades', icon: <GraduationCap className="h-5 w-5 text-purple-500" />, desc: 'Exam schedules, marksheets, and report card downloads' }
   ];
 
   return (
-    <div className="pb-16 bg-background text-foreground transition-colors duration-300 relative theme-transition font-sans">
+    <div className="pb-16 bg-background text-foreground transition-colors duration-300 relative theme-transition font-sans overflow-x-hidden">
       
-      {/* 1. Hero Section (24px pt from navbar) */}
-      <section className="relative overflow-hidden pt-6">
-        {/* Glow Spheres */}
-        <div className="absolute top-[20%] left-[-15%] w-[600px] h-[600px] rounded-full bg-primary/5 blur-[130px] pointer-events-none dark:block hidden" />
-        <div className="absolute top-[10%] right-[-15%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-[130px] pointer-events-none dark:block hidden" />
+      {/* 
+        ============================================================
+        1. HERO SECTION
+        ============================================================
+      */}
+      <section className="relative overflow-hidden pt-12 sm:pt-16 lg:pt-20 pb-16 lg:pb-24">
+        {/* Ambient Glow Spheres */}
+        <div className="absolute top-[10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-primary/10 blur-[130px] pointer-events-none dark:block hidden" />
+        <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-primary/10 blur-[130px] pointer-events-none dark:block hidden" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-6 space-y-8 text-left z-10 reveal reveal-fade-up">
-            {/* Animated Project Badge */}
-            <div className="inline-flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-primary backdrop-blur-md shadow-[0_0_15px_-3px_hsl(var(--primary)/0.15)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          
+          {/* Left Column Text Content */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-6 space-y-6 sm:space-y-8 text-left z-10"
+          >
+            {/* Status Badge */}
+            <div className="inline-flex items-center space-x-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-xs sm:text-sm font-semibold text-primary backdrop-blur-md shadow-sm">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span>Project Status: Prototype</span>
+              <span>VidyaSanchar School ERP</span>
               <span className="h-3 w-px bg-border" />
-              <span className="text-muted-foreground font-medium">Open Source</span>
+              <span className="text-muted-foreground font-medium">Open Source Prototype</span>
             </div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] font-sans">
-              VidyaSanchar
-              <span className="block text-gradient-theme font-black text-3xl sm:text-4xl lg:text-5xl mt-2">
-                Modern School ERP Prototype
+            <div className="space-y-3">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] font-sans text-foreground">
+                VidyaSanchar
+              </h1>
+              <span className="block text-gradient-theme font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight">
+                Open-Source School ERP Platform
               </span>
-            </h1>
+            </div>
 
-            {/* Subtext */}
+            {/* Description */}
             <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed font-medium">
-              VidyaSanchar is a modern School ERP prototype built to demonstrate full-stack software engineering using React, TypeScript, Node.js, PostgreSQL, and Prisma.
+              A School ERP prototype developed with React, TypeScript, Node.js, Express, PostgreSQL, and Prisma ORM. Designed for academic record management, attendance tracking, fee billing, and user role authorization.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-wrap gap-4 pt-2">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
+              <Link
+                to="/features"
+                className="inline-flex items-center justify-center rounded-full text-sm font-bold tracking-wide transition-all bg-primary text-primary-foreground hover:opacity-95 h-12 px-8 shadow-md hover:shadow-lg active:scale-[0.98] duration-200 btn-saas gap-2"
+              >
+                Platform Features
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                to="/modules"
+                className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card/80 hover:bg-muted/80 h-12 px-7 backdrop-blur-md btn-saas gap-2"
+              >
+                <Layers className="h-4 w-4 text-primary" />
+                ERP Modules
+              </Link>
               <Link
                 to="/login"
-                className="inline-flex items-center justify-center rounded-full text-sm font-bold tracking-wide transition-all bg-primary text-primary-foreground hover:opacity-95 h-12 px-8 shadow-md shadow-primary/20 hover:shadow-primary/30 active:scale-[0.98] duration-200 btn-saas"
+                className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card/50 hover:bg-violet-50 dark:hover:bg-violet-950/20 hover:border-violet-300 h-12 px-6 backdrop-blur-md text-foreground btn-saas gap-2"
               >
-                Try Live Demo
-                <ArrowRight className="ml-2 h-4 w-4" />
+                Demo Login
               </Link>
-              <Link
-                to="/pricing"
-                className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card hover:bg-muted/70 h-12 px-8 backdrop-blur-md btn-saas"
-              >
-                View Roadmap
-              </Link>
-              <a
-                href={SOCIAL_LINKS.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Visit GitHub Profile"
-                className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card/45 hover:bg-violet-50 dark:hover:bg-violet-950/20 hover:border-violet-300 h-12 px-6 backdrop-blur-md text-foreground btn-saas gap-2"
-              >
-                <Github className="h-4 w-4 text-[#7C3AED] dark:text-purple-400" />
-                <span>View GitHub</span>
-              </a>
-              <a
-                href={SOCIAL_LINKS.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Visit LinkedIn Profile"
-                className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card/45 hover:bg-violet-50 dark:hover:bg-violet-950/20 hover:border-violet-300 h-12 px-6 backdrop-blur-md text-foreground btn-saas gap-2"
-              >
-                <Linkedin className="h-4 w-4 text-[#7C3AED] dark:text-purple-400" />
-                <span>Connect on LinkedIn</span>
-              </a>
             </div>
 
-            {/* Factual Info */}
-            <div className="flex items-center space-x-6 pt-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            {/* Factual Info Badges */}
+            <div className="flex flex-wrap items-center gap-6 pt-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
               <div className="flex items-center space-x-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
                 <span>MIT Licensed</span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                <span>Dockerized Architecture</span>
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                <span>Docker Setup Available</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                <span>Role-Based Authorization</span>
               </div>
             </div>
-          </div>
-          
-          {/* Dashboard Preview Mockup */}
-          <div className="lg:col-span-6 relative z-10 w-full animate-float reveal reveal-scale">
-            <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-tr from-primary/20 to-primary-light/20 opacity-40 blur-2xl dark:block hidden" />
-            <div className="relative border border-border/80 rounded-2xl overflow-hidden shadow-xl bg-card/60 backdrop-blur-md">
+          </motion.div>
+
+          {/* Right Column - Dashboard Preview Image */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-6 relative z-10 w-full p-2 sm:p-4 lg:p-6"
+          >
+            <div className="relative border border-border/80 rounded-3xl overflow-hidden shadow-2xl bg-card/70 backdrop-blur-xl transition-all duration-300">
               
-              {/* macOS Window Title Bar */}
-              <div className="flex items-center justify-between px-4 py-3.5 border-b border-border/60 bg-background/40">
+              {/* Window Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-border/60 bg-background/50">
                 <div className="flex items-center space-x-2">
-                  <span className="w-3 h-3 rounded-full bg-[#FF5F56] inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-[#FFBD2E] inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-[#27C93F] inline-block" />
+                  <span className="w-3 h-3 rounded-full bg-red-400 inline-block shadow-sm" />
+                  <span className="w-3 h-3 rounded-full bg-amber-400 inline-block shadow-sm" />
+                  <span className="w-3 h-3 rounded-full bg-emerald-400 inline-block shadow-sm" />
                 </div>
-                <div className="text-[11px] font-bold text-muted-foreground/80 tracking-wide font-mono bg-white/[0.04] px-4 py-0.5 rounded-md border border-border/40">
-                  github.com/VidyaSanchar
+                <div className="text-[11px] font-bold text-muted-foreground/90 tracking-wide font-mono bg-muted/40 px-4 py-1 rounded-full border border-border/50 flex items-center gap-1.5">
+                  <Terminal className="h-3 w-3 text-primary" />
+                  <span>vidyasanchar.app/dashboard</span>
                 </div>
                 <div className="w-12" />
               </div>
 
-              {/* Mockup Dashboard Body Container */}
-              <div className="relative overflow-hidden">
+              {/* Preview Image */}
+              <div className="relative overflow-hidden group">
                 <img
                   src={heroCampus}
-                  alt="VidyaSanchar Active Campus Hub"
-                  className="w-full h-72 sm:h-96 object-cover object-center filter saturate-75 contrast-105"
+                  alt="VidyaSanchar Dashboard Interface Preview"
+                  className="w-full h-80 sm:h-[420px] object-cover object-center filter saturate-90"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-80" />
                 
-                {/* Subtle Glassmorphism Badge */}
-                <div className="absolute bottom-4 left-4 inline-flex items-center space-x-2.5 px-4 py-2 rounded-full border border-white/20 dark:border-white/10 bg-white/70 dark:bg-slate-950/75 backdrop-blur-md shadow-lg animate-float">
-                  <div className="p-1.5 bg-[#7C3AED]/10 dark:bg-purple-400/10 rounded-full text-[#7C3AED] dark:text-purple-400 flex items-center justify-center">
-                    <School className="h-3.5 w-3.5" />
+                {/* Information Badge */}
+                <div className="absolute bottom-5 left-5 right-5 sm:right-auto inline-flex items-center space-x-3 px-5 py-3 rounded-2xl border border-white/20 dark:border-white/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-xl">
+                  <div className="p-2 bg-primary/15 rounded-xl text-primary flex items-center justify-center">
+                    <School className="h-4 w-4" />
                   </div>
-                  <span className="text-[10px] sm:text-xs font-extrabold tracking-wide text-foreground font-sans">
-                    VidyaSanchar School ERP
-                  </span>
+                  <div>
+                    <h5 className="text-xs sm:text-sm font-extrabold text-foreground font-sans leading-none">
+                      VidyaSanchar ERP Prototype
+                    </h5>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium mt-0.5">
+                      Multi-Role Academic Application
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Bottom bar */}
-              <div className="p-5 bg-card/45 border-t border-border/60 flex items-center justify-between text-left">
+              {/* Footer */}
+              <div className="p-5 bg-card/60 border-t border-border/60 flex items-center justify-between text-left">
                 <div>
-                  <h4 className="font-extrabold text-sm text-foreground font-sans">VidyaSanchar Project Prototype</h4>
-                  <p className="text-xs text-muted-foreground">Full-Stack Architecture Showcase</p>
+                  <h4 className="font-extrabold text-sm text-foreground font-sans">Full-Stack Application</h4>
+                  <p className="text-xs text-muted-foreground">React 18 • TypeScript • Node.js • Prisma</p>
                 </div>
-                <div className="flex items-center space-x-1.5 text-primary bg-primary/5 px-2.5 py-1 rounded-lg border border-primary/15">
+                <div className="flex items-center space-x-1.5 text-primary bg-primary/10 px-3 py-1.5 rounded-xl border border-primary/20">
                   <Code className="h-4 w-4" />
                   <span className="text-[10px] sm:text-xs font-black tracking-wider uppercase font-sans">Open Source</span>
                 </div>
               </div>
+
             </div>
-          </div>
+          </motion.div>
+
         </div>
       </section>
 
-      {/* 2. True Project Highlights (48px margin-top, 64px margin-bottom) */}
-      <section className="relative mt-12 mb-16 reveal reveal-fade-up">
-        <div className="absolute inset-0 bg-gradient-to-y from-transparent via-primary/[0.01] to-transparent pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <Card className="p-6 text-left border-border/80 flex flex-col justify-between card-hover-saas group">
-              <div className="space-y-3">
-                <div className="p-2.5 bg-primary/10 text-primary w-fit rounded-xl border border-primary/20">
-                  <Code className="h-5 w-5" />
-                </div>
-                <h4 className="font-extrabold text-base Outfit text-foreground">Modern Tech Stack</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium">React • TypeScript • Node.js • PostgreSQL • Prisma</p>
-              </div>
-            </Card>
-
-            <Card className="p-6 text-left border-border/80 flex flex-col justify-between card-hover-saas group">
-              <div className="space-y-3">
-                <div className="p-2.5 bg-primary/10 text-primary w-fit rounded-xl border border-primary/20">
-                  <BookOpen className="h-5 w-5" />
-                </div>
-                <h4 className="font-extrabold text-base Outfit text-foreground">Core Modules</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium">Students, Teachers, Attendance, Fees & Examinations</p>
-              </div>
-            </Card>
-
-            <Card className="p-6 text-left border-border/80 flex flex-col justify-between card-hover-saas group">
-              <div className="space-y-3">
-                <div className="p-2.5 bg-primary/10 text-primary w-fit rounded-xl border border-primary/20">
-                  <Shield className="h-5 w-5" />
-                </div>
-                <h4 className="font-extrabold text-base Outfit text-foreground">Authentication</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium">Secure login with role-based access architecture</p>
-              </div>
-            </Card>
-
-            <Card className="p-6 text-left border-border/80 flex flex-col justify-between card-hover-saas group">
-              <div className="space-y-3">
-                <div className="p-2.5 bg-primary/10 text-primary w-fit rounded-xl border border-primary/20">
-                  <Clock className="h-5 w-5" />
-                </div>
-                <h4 className="font-extrabold text-base Outfit text-foreground">Project Status</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium">Open-source prototype under active development</p>
-              </div>
-            </Card>
-
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Featured Skills Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 reveal reveal-scale">
-        <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
-          <div className="inline-flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
-            <span>Specializations</span>
-          </div>
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl Outfit text-foreground">Featured Technical Skills</h2>
-          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-semibold">
-            Core development capabilities backing our software releases and school deployments.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {developerSkills.map((s, idx) => (
-            <Card key={idx} className="p-6 text-left border-border/80 flex flex-col justify-between card-hover-saas group">
-              <div className="space-y-3">
-                <div className="p-2.5 bg-primary/10 text-primary w-fit rounded-xl border border-primary/20 transition-transform duration-300">
-                  <Code className="h-5 w-5 icon-rotate-hover" />
-                </div>
-                <h4 className="font-extrabold text-base Outfit text-foreground">{s.name}</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium">{s.desc}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* 4. Featured Projects link / callout */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 reveal reveal-fade-up">
-        <div className="border border-border/80 rounded-3xl p-8 bg-card/60 backdrop-blur-sm flex flex-col md:flex-row items-center justify-between gap-6 text-left">
-          <div className="space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Active Repositories</span>
-            <h3 className="text-xl sm:text-2xl font-extrabold Outfit text-foreground">Flagship Platform & Microservices</h3>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-xl font-semibold">
-              VidyaSanchar ERP is fully open-source. Explore the source repositories, Docker build files, and setup instructions.
+      {/* 
+        ============================================================
+        2. SECTION 1: PLATFORM CAPABILITIES
+        ============================================================
+      */}
+      <section className="py-20 lg:py-28 bg-muted/20 dark:bg-slate-900/30 border-y border-border/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+          
+          <div className="text-center max-w-3xl mx-auto space-y-4">
+            <div className="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-primary">
+              <Zap className="h-3.5 w-3.5 text-amber-500" />
+              <span>Platform Overview</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight Outfit text-foreground">
+              Core Technical Capabilities
+            </h2>
+            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium">
+              Implemented features supporting academic administration, student records, fee tracking, and user role management.
             </p>
           </div>
-          <Link
-            to="/projects"
-            className="inline-flex items-center justify-center rounded-full text-xs font-bold tracking-wide transition-all bg-primary text-primary-foreground hover:opacity-95 h-11 px-6 gap-2 shadow-sm shadow-primary/20 shrink-0 btn-saas"
-          >
-            <Github className="h-4 w-4" />
-            View Projects Portfolio
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredHighlights.map((feat, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                whileHover={{ y: -6 }}
+              >
+                <Card className="h-full p-6 text-left flex flex-col justify-between border-border/80 hover:border-primary/40 hover:shadow-xl transition-all rounded-2xl bg-card">
+                  <div className="space-y-3">
+                    <div className="p-3.5 bg-primary/10 w-fit rounded-2xl border border-primary/20">
+                      {feat.icon}
+                    </div>
+                    <h3 className="font-extrabold text-lg text-foreground Outfit">{feat.title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium">{feat.desc}</p>
+                  </div>
+
+                  <Link
+                    to={feat.link}
+                    className="mt-6 flex items-center justify-between text-xs font-extrabold text-primary pt-3 border-t border-border/40 hover:underline"
+                  >
+                    <span>View Features</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center pt-4">
+            <Link
+              to="/features"
+              className="inline-flex items-center justify-center rounded-full text-xs font-extrabold tracking-wider uppercase px-8 py-3.5 bg-primary text-primary-foreground hover:opacity-95 shadow-sm gap-2"
+            >
+              <span>View All Implemented Features</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
         </div>
       </section>
 
-      {/* 5. Experience Highlights Timeline Preview */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 reveal reveal-fade-up">
-        <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl Outfit text-foreground">Milestone Highlights</h2>
-          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-semibold">
-            A chronological timeline tracking full stack development, container deployments, and system rollouts.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          <Card className="p-6 border-border/80 flex flex-col justify-between card-hover-saas group">
-            <div className="space-y-3">
-              <span className="text-[10px] font-black tracking-widest text-primary uppercase font-mono">2026</span>
-              <h4 className="font-extrabold text-base Outfit text-foreground">System Architect Certifications</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed font-medium">Refactored school databases to support active double-entry fee billing ledgers.</p>
-            </div>
-          </Card>
+      {/* 
+        ============================================================
+        3. SECTION 2: ERP MODULES OVERVIEW
+        ============================================================
+      */}
+      <section className="py-20 lg:py-28 bg-background border-b border-border/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           
-          <Card className="p-6 border-border/80 flex flex-col justify-between card-hover-saas group">
-            <div className="space-y-3">
-              <span className="text-[10px] font-black tracking-widest text-primary uppercase font-mono">2025</span>
-              <h4 className="font-extrabold text-base Outfit text-foreground">Docker DevOps Automation</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed font-medium">Orchestrated continuous deployment scripts and local database cron backups.</p>
+          <div className="text-center max-w-3xl mx-auto space-y-4">
+            <div className="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-primary">
+              <Layers className="h-3.5 w-3.5" />
+              <span>Module Architecture</span>
             </div>
-          </Card>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight Outfit text-foreground">
+              Implemented ERP Modules
+            </h2>
+            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium">
+              Functional components designed for administrators, teachers, students, and parent roles.
+            </p>
+          </div>
 
-          <Card className="p-6 border-border/80 flex flex-col justify-between card-hover-saas group">
-            <div className="space-y-3">
-              <span className="text-[10px] font-black tracking-widest text-primary uppercase font-mono">2024</span>
-              <h4 className="font-extrabold text-base Outfit text-foreground">Launched VidyaSanchar v1.0</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed font-medium">Deployed open-source campus suites to pilot CBSE institutions in Bharat.</p>
-            </div>
-          </Card>
-        </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {erpModuleTeasers.map((mod, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.04 }}
+                whileHover={{ y: -5 }}
+              >
+                <Card className="p-6 text-left border-border/80 hover:border-primary/40 hover:shadow-lg transition-all rounded-2xl bg-card h-full flex items-start gap-4">
+                  <div className="p-3 bg-muted rounded-2xl border border-border/60 shrink-0">
+                    {mod.icon}
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-extrabold text-base Outfit text-foreground">{mod.name}</h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed font-medium">{mod.desc}</p>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
 
-        <div className="pt-6 text-center">
-          <Link to="/journey" className="text-xs font-bold text-primary hover:underline flex items-center justify-center gap-1.5">
-            <span>Explore Complete Engineering Timeline</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+          <div className="text-center pt-4">
+            <Link
+              to="/modules"
+              className="inline-flex items-center justify-center rounded-full text-xs font-extrabold tracking-wider uppercase px-8 py-3.5 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all gap-2"
+            >
+              <span>Explore All Functional Modules</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
         </div>
       </section>
 
-      {/* 6. Call To Action section (64px padding bottom / footer) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 reveal reveal-scale">
-        <div className="relative border border-primary/20 rounded-3xl overflow-hidden bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-6 py-12 md:py-16 text-center space-y-6 shadow-md shadow-primary/5">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_-10%,hsl(var(--primary)/0.12),rgba(255,255,255,0))]" />
-          
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl max-w-2xl mx-auto Outfit relative z-10 text-foreground">
-            Explore the Codebase & Roadmap
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed relative z-10 font-semibold">
-            VidyaSanchar is open source. You can view the full repository on GitHub, check out the roadmap, or test the prototype modules.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10 pt-4 max-w-xs sm:max-w-md mx-auto">
-            <Link
-              to="/pricing"
-              className="inline-flex items-center justify-center rounded-full text-sm font-bold tracking-wide transition-all bg-primary text-primary-foreground hover:opacity-95 h-11 px-8 shadow-md shadow-primary/20 hover:shadow-primary/30 active:scale-[0.98] duration-200 btn-saas"
-            >
-              View Roadmap
-            </Link>
-            <Link
-              to="/contact"
-              className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card hover:bg-muted h-11 px-8 btn-saas"
-            >
-              Contact / Feedback
-            </Link>
+      {/* 
+        ============================================================
+        4. TECHNICAL SPECIALIZATIONS / SKILLS
+        ============================================================
+      */}
+      <section className="py-20 lg:py-28 bg-muted/20 dark:bg-slate-900/30 border-b border-border/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+          <div className="text-center max-w-3xl mx-auto space-y-4">
+            <div className="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-primary">
+              <Code className="h-3.5 w-3.5" />
+              <span>Technology Stack</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight Outfit text-foreground">
+              Technical Implementation Details
+            </h2>
+            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium">
+              Software engineering patterns and libraries utilized across the codebase.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {developerSkills.map((s, idx) => (
+              <Card key={idx} className="p-6 text-left border-border/80 flex flex-col justify-between card-hover-saas group rounded-2xl h-full">
+                <div className="space-y-3">
+                  <div className="p-3 bg-primary/10 text-primary w-fit rounded-xl border border-primary/20">
+                    <Code className="h-5 w-5" />
+                  </div>
+                  <h4 className="font-extrabold text-base Outfit text-foreground">{s.name}</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed font-medium">{s.desc}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 
+        ============================================================
+        5. CALL TO ACTION SECTION
+        ============================================================
+      */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative border border-primary/25 rounded-3xl overflow-hidden bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-6 py-12 md:py-16 text-center space-y-6 shadow-xl">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_-10%,hsl(var(--primary)/0.15),rgba(255,255,255,0))]" />
+            
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight max-w-2xl mx-auto Outfit relative z-10 text-foreground">
+              Explore VidyaSanchar Source Code & Demo
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed relative z-10 font-semibold">
+              Test prototype logins for Super Admin, Admin, Teacher, Student, and Parent roles or review source code on GitHub.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10 pt-4 max-w-xs sm:max-w-md mx-auto">
+              <Link
+                to="/features"
+                className="inline-flex items-center justify-center rounded-full text-sm font-bold tracking-wide transition-all bg-primary text-primary-foreground hover:opacity-95 h-12 px-8 shadow-md active:scale-[0.98] duration-200 btn-saas"
+              >
+                Platform Features
+              </Link>
+              <Link
+                to="/modules"
+                className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card/80 hover:bg-muted/80 h-12 px-8 backdrop-blur-md btn-saas"
+              >
+                System Modules
+              </Link>
+            </div>
           </div>
         </div>
       </section>

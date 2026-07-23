@@ -1,107 +1,405 @@
-import React from 'react';
-import { UserCheck, Calendar, BookOpen, CreditCard, Clock, Library, Bell, ShieldAlert, Sparkles, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Sparkles, CheckCircle2, ShieldCheck, Zap, BarChart3, LayoutDashboard, 
+  UserCheck, CalendarCheck, Wallet, GraduationCap, MessageSquare, Globe, 
+  Moon, Lock, Smartphone, Cloud, ArrowRight, ChevronDown, Check, FileSpreadsheet,
+  Users, Clock, HelpCircle, Layers
+} from 'lucide-react';
 import { Card } from '../../components/common/Card';
 
 export const Features: React.FC = () => {
-  const modules = [
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  // 12 FEATURE CATEGORY CARDS - Concise (1-2 sentences, max 3 benefits)
+  const featureCategories = [
     {
-      icon: <UserCheck className="h-5.5 w-5.5" />,
-      title: 'Student Management',
-      desc: 'Add, update, search, and delete students. View holistic student profiles, roll assignments, and maintain quick access to medical or contact details.',
-      features: ['Demographics & Bio', 'Roll Call Mapping', 'Parent Linkage', 'Bulk Imports']
+      icon: <LayoutDashboard className="h-6 w-6 text-violet-500" />,
+      title: 'Role-Based Dashboard',
+      desc: 'Tailored dashboard views for Super Admins, School Admins, Teachers, Students, and Parents.',
+      benefits: ['Role-Specific Interfaces', 'Clean Navigation', 'Fast Data Load'],
+      badge: 'User Interface'
     },
     {
-      icon: <Calendar className="h-5.5 w-5.5" />,
+      icon: <UserCheck className="h-6 w-6 text-indigo-500" />,
+      title: 'Student & Teacher Management',
+      desc: 'Centralized records for student admissions, class section assignments, and faculty directories.',
+      benefits: ['Student Profiles', 'Section Assignments', 'Faculty Directory'],
+      badge: 'Academic Core'
+    },
+    {
+      icon: <BarChart3 className="h-6 w-6 text-emerald-500" />,
+      title: 'Grade & Exam Analytics',
+      desc: 'Calculate class grade medians, record subject marks, and generate printable report cards.',
+      benefits: ['Class Medians', 'Marksheet Entry', 'Report Card Downloads'],
+      badge: 'Analytics'
+    },
+    {
+      icon: <CalendarCheck className="h-6 w-6 text-amber-500" />,
       title: 'Attendance System',
-      desc: 'Quick class sheets for mark-in. Generate monthly attendance percentages, export Excel/CSV reports, and identify chronic absent students.',
-      features: ['One-Click Check-in', 'Calendar View Grid', 'Absence Alerts', 'Export PDF/Excel']
+      desc: 'Record daily class attendance, track student absentees, and generate monthly rosters.',
+      benefits: ['Class Roll Calls', 'Absentee Tracking', 'Monthly Roster Views'],
+      badge: 'Attendance'
     },
     {
-      icon: <BookOpen className="h-5.5 w-5.5" />,
-      title: 'Examination System',
-      desc: 'Schedule exams, set maximum/passing grades, record test marks, publish digital report cards, and analyze high/low/average performances.',
-      features: ['Exam Timeframes', 'Bulk Marks Upload', 'CBSE Report Cards', 'Averages & Medians']
+      icon: <Wallet className="h-6 w-6 text-cyan-500" />,
+      title: 'Fee & Payment Tracking',
+      desc: 'Manage class tuition fees, issue digital payment receipts, and monitor due balances.',
+      benefits: ['Fee Head Setup', 'Payment Receipts', 'Defaulter Tracking'],
+      badge: 'Finance'
     },
     {
-      icon: <CreditCard className="h-5.5 w-5.5" />,
-      title: 'Fee Management',
-      desc: 'Set quarterly tuition fees or exam fees for classes. Keep history of cash/UPI payments, track balances, and generate unique receipt numbers.',
-      features: ['Class-wise Billing', 'UPI & Cash Ledger', 'Partial Due Payments', 'Unique Receipt IDs']
+      icon: <GraduationCap className="h-6 w-6 text-purple-500" />,
+      title: 'Examination Management',
+      desc: 'Create exam schedules, manage subject grading scales, and print marksheets.',
+      benefits: ['Exam Schedules', 'Marksheet Portals', 'Grade Calculations'],
+      badge: 'Exams'
     },
     {
-      icon: <Clock className="h-5.5 w-5.5" />,
-      title: 'Timetable Scheduling',
-      desc: 'Configure day schedules, periods, room numbers, teacher loads, and subjects taught to prevent conflicts.',
-      features: ['Conflict Detection', 'Teacher Credit Loads', 'Room Allocations', 'Export PDF Schedules']
+      icon: <MessageSquare className="h-6 w-6 text-pink-500" />,
+      title: 'Notice Board & Communication',
+      desc: 'Publish role-targeted circular notices, school announcements, and parent-teacher messages.',
+      benefits: ['Targeted Circulars', 'School Announcements', 'Direct Messaging'],
+      badge: 'Communication'
     },
     {
-      icon: <Library className="h-5.5 w-5.5" />,
-      title: 'Library Management',
-      desc: 'Maintain library book database (titles, authors, ISBNs). Record borrow/return transactions, and automatically track daily overdue fines.',
-      features: ['ISBN Scanning', 'Borrower Records', 'Fine Counter Logic', 'Uptimes Tracker']
+      icon: <Globe className="h-6 w-6 text-blue-500" />,
+      title: 'Multi-Language UI Support',
+      desc: 'Dynamic localization support allowing users to switch interface languages easily.',
+      benefits: ['Regional Localization', 'Dynamic Switcher', 'Accessible UI'],
+      badge: 'Localization'
     },
     {
-      icon: <Bell className="h-5.5 w-5.5" />,
-      title: 'Announcements Board',
-      desc: 'Send targeted notifications (for teachers, parents, students, or administrative staff) with instant dashboard boards.',
-      features: ['Custom Role Targets', 'Notice Board Feeds', 'Email Dispatcher', 'Pinned Notice Tags']
+      icon: <Moon className="h-6 w-6 text-slate-400" />,
+      title: 'Dark & Light Appearance',
+      desc: 'Toggle between dark and light themes with customizable preset color palettes.',
+      benefits: ['Theme Switcher', 'System Theme Sync', 'Preset Palettes'],
+      badge: 'Theme'
     },
     {
-      icon: <ShieldAlert className="h-5.5 w-5.5" />,
-      title: 'Role-Based Authorization',
-      desc: 'Granular permissions for Super Admin, Admin, Teacher, Student, and Parent. Tokens expire securely with HTTP-only cookies.',
-      features: ['RBAC Middleware', 'JWT Security tokens', 'Audit Activity Log', 'Cookie Expirations']
+      icon: <Lock className="h-6 w-6 text-rose-500" />,
+      title: 'Role Security & Auth',
+      desc: 'Role-based access control, JWT session token management, and encrypted password storage.',
+      benefits: ['Password Hashing', 'Role Authorization', 'Token Session Control'],
+      badge: 'Security'
     },
+    {
+      icon: <Smartphone className="h-6 w-6 text-teal-500" />,
+      title: 'Mobile Responsive Layouts',
+      desc: 'Responsive grid layouts designed for smooth navigation across mobile, tablet, and desktop devices.',
+      benefits: ['Mobile & Desktop View', 'Touch Friendly UI', 'Responsive Tables'],
+      badge: 'Responsive'
+    },
+    {
+      icon: <Cloud className="h-6 w-6 text-sky-500" />,
+      title: 'Docker Microservices Stack',
+      desc: 'Containerized deployment separating frontend, Express backend, and PostgreSQL database services.',
+      benefits: ['Docker Compose Setup', 'Prisma DB Migration', 'Environment Configs'],
+      badge: 'Infrastructure'
+    }
+  ];
+
+  // TRADITIONAL VS VIDYASANCHAR COMPARISON TABLE
+  const comparisonRows = [
+    {
+      feature: 'User Role Dashboards',
+      traditional: 'Single shared admin login with manual access control',
+      vidyaSanchar: 'Dedicated portals for Admin, Teacher, Student, and Parent roles'
+    },
+    {
+      feature: 'Attendance Management',
+      traditional: 'Paper register entry and manual end-of-month tallying',
+      vidyaSanchar: 'Digital class check-ins with monthly attendance summary views'
+    },
+    {
+      feature: 'Fee Ledger Tracking',
+      traditional: 'Manual receipt books and physical ledger books',
+      vidyaSanchar: 'Fee head mapping, payment records, and balance tracking'
+    },
+    {
+      feature: 'Exam & Result Processing',
+      traditional: 'Manual marksheet calculation and paper report cards',
+      vidyaSanchar: 'Subject mark entry, grade median calculation, and digital report cards'
+    },
+    {
+      feature: 'Communication & Notices',
+      traditional: 'Physical circular notices sent via students',
+      vidyaSanchar: 'Digital notice board dispatches with audience filtering'
+    },
+    {
+      feature: 'System Security',
+      traditional: 'Shared passwords and unencrypted data storage',
+      vidyaSanchar: 'JWT token authorization, role permissions, and password hashing'
+    }
+  ];
+
+  // PERFORMANCE METRICS
+  const performanceMetrics = [
+    { val: '5', label: 'Role Portals', desc: 'Admin, Teacher, Student, Parent & Super Admin' },
+    { val: '20', label: 'ERP Modules', desc: 'Core academic and administrative tools' },
+    { val: '100%', label: 'Mobile Responsive', desc: 'Optimized for phone, tablet, and desktop' },
+    { val: 'REST', label: 'API Architecture', desc: 'Node.js Express API with Prisma ORM' }
+  ];
+
+  // FAQ ITEMS
+  const faqs = [
+    {
+      q: 'Which user roles are supported in VidyaSanchar?',
+      a: 'VidyaSanchar supports Super Admin, School Admin, Teacher, Student, and Parent roles. Each role accesses a dedicated dashboard.'
+    },
+    {
+      q: 'How does the fee management module work?',
+      a: 'Admins set up class fee structures, record student payments (Cash, Transfer, UPI), and track due balances.'
+    },
+    {
+      q: 'Can VidyaSanchar be deployed locally?',
+      a: 'Yes. Docker Compose setups are included to run PostgreSQL, Node.js backend, and React frontend containers locally or in the cloud.'
+    },
+    {
+      q: 'Is VidyaSanchar mobile-friendly?',
+      a: 'Yes. The interface is built with responsive grid layouts, making it accessible on smartphones, tablets, and desktops.'
+    }
   ];
 
   return (
-    <div className="layout-container pt-4 pb-12 sm:pt-6 sm:pb-16 space-y-12 sm:space-y-16 relative">
-      {/* Background Ambient Decorative Lights */}
-      <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
-      <div className="absolute top-[50%] right-[-15%] w-[450px] h-[450px] rounded-full bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
+    <div className="pb-16 bg-background text-foreground transition-colors duration-300 relative font-sans overflow-x-hidden">
+      
+      {/* HERO SECTION */}
+      <section className="relative overflow-hidden pt-12 sm:pt-16 lg:pt-20 pb-16 lg:pb-24 border-b border-border/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 text-center">
+          
+          <div className="inline-flex items-center space-x-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-xs sm:text-sm font-semibold text-primary backdrop-blur-md shadow-sm">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <span>VidyaSanchar Capabilities</span>
+          </div>
 
-      {/* Intro - Reduced Top Padding */}
-      <section id="modules" className="text-center max-w-3xl mx-auto space-y-3 pt-4">
-        <div className="inline-flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-          <span>VidyaSanchar Capabilities</span>
+          <div className="space-y-4 max-w-3xl mx-auto">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight Outfit text-foreground">
+              Powerful School ERP Features
+            </h1>
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed font-medium">
+              Explore the key capabilities and administrative tools built into the VidyaSanchar ERP platform.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <Link
+              to="/modules"
+              className="inline-flex items-center justify-center rounded-full text-sm font-bold tracking-wide transition-all bg-primary text-primary-foreground hover:opacity-95 h-12 px-8 shadow-md gap-2"
+            >
+              <span>Explore System Modules</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/contact"
+              className="inline-flex items-center justify-center rounded-full text-sm font-semibold tracking-wide transition-all border border-border bg-card hover:bg-muted h-12 px-8 gap-2"
+            >
+              <span>Contact Developer</span>
+            </Link>
+          </div>
+
         </div>
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight Outfit text-foreground">System Modules & Features</h1>
-        <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed">
-          VidyaSanchar comes packed with features covering all day-to-day administrative and academic operations.
-        </p>
       </section>
 
-      {/* Grid using reusable Card Component with Equal Heights */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
-        {modules.map((m, index) => (
-          <Card 
-            key={index} 
-            hoverLift 
-            glowOnHover
-            className="group flex flex-col justify-between space-y-5 text-left p-6 sm:p-8 h-full"
-          >
-            <div className="space-y-4">
-              {/* Icon container with group-hover animation */}
-              <div className="p-3 bg-primary/10 text-primary w-fit rounded-xl border border-primary/25 shadow-[0_2px_12px_-3px_hsl(var(--primary)/0.25)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                {m.icon}
-              </div>
-              <h3 className="font-extrabold text-lg text-foreground Outfit">{m.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{m.desc}</p>
+      {/* 12 FEATURE CATEGORY CARDS */}
+      <section className="py-20 lg:py-28 bg-background border-b border-border/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+          
+          <div className="text-center max-w-3xl mx-auto space-y-4">
+            <div className="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-primary">
+              <Zap className="h-3.5 w-3.5" />
+              <span>Capabilities</span>
             </div>
-            
-            {/* Features Sub-bullets */}
-            <div className="pt-4 border-t border-border/60 space-y-2.5 mt-auto">
-              {m.features.map((feat, fidx) => (
-                <div key={fidx} className="flex items-center space-x-2.5 text-xs font-semibold text-muted-foreground/80">
-                  <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>{feat}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
-        ))}
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight Outfit text-foreground">
+              Core Platform Features
+            </h2>
+            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium">
+              Essential administrative, academic, and security capabilities supporting campus operations.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {featureCategories.map((feat, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.03 }}
+                whileHover={{ y: -6 }}
+              >
+                <Card className="h-full p-6 text-left flex flex-col justify-between border-border/80 hover:border-primary/40 hover:shadow-xl transition-all rounded-2xl bg-card">
+                  <div className="space-y-4">
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="p-3 bg-primary/10 rounded-2xl border border-primary/20">
+                        {feat.icon}
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-muted text-muted-foreground font-mono">
+                        {feat.badge}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="font-extrabold text-xl Outfit text-foreground mb-2">{feat.title}</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium min-h-[40px]">
+                        {feat.desc}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2 pt-3 border-t border-border/40">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground block">
+                        Key Benefits:
+                      </span>
+                      <ul className="space-y-1.5">
+                        {feat.benefits.map((b, bIdx) => (
+                          <li key={bIdx} className="flex items-center space-x-2 text-xs font-semibold text-foreground/90">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                            <span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+        </div>
       </section>
+
+      {/* COMPARISON TABLE */}
+      <section className="py-20 lg:py-28 bg-muted/20 dark:bg-slate-900/30 border-b border-border/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+          
+          <div className="text-center max-w-3xl mx-auto space-y-4">
+            <div className="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-primary">
+              <FileSpreadsheet className="h-3.5 w-3.5" />
+              <span>Comparison</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight Outfit text-foreground">
+              Traditional Methods vs. VidyaSanchar
+            </h2>
+            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium">
+              Comparing manual recordkeeping with digital school management processes.
+            </p>
+          </div>
+
+          <div className="overflow-x-auto rounded-3xl border border-border/80 shadow-lg bg-card">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-border/80 bg-muted/50">
+                  <th className="py-5 px-6 font-extrabold text-sm text-foreground uppercase tracking-wider">Feature</th>
+                  <th className="py-5 px-6 font-extrabold text-sm text-muted-foreground uppercase tracking-wider">Traditional Methods</th>
+                  <th className="py-5 px-6 font-extrabold text-sm text-primary uppercase tracking-wider">VidyaSanchar Platform</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60 text-xs sm:text-sm font-medium">
+                {comparisonRows.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-muted/20 transition-colors">
+                    <td className="py-4 px-6 font-extrabold text-foreground">{row.feature}</td>
+                    <td className="py-4 px-6 text-muted-foreground">{row.traditional}</td>
+                    <td className="py-4 px-6 text-foreground font-semibold flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                      <span>{row.vidyaSanchar}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+      {/* METRICS */}
+      <section className="py-20 lg:py-28 bg-background border-b border-border/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+            {performanceMetrics.map((m, idx) => (
+              <Card key={idx} className="p-8 border-border/80 bg-card rounded-2xl space-y-2">
+                <span className="text-3xl sm:text-4xl font-black text-primary font-mono block">{m.val}</span>
+                <h4 className="font-extrabold text-sm sm:text-base text-foreground font-sans">{m.label}</h4>
+                <p className="text-xs text-muted-foreground font-medium">{m.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="py-20 lg:py-28 bg-muted/20 dark:bg-slate-900/30 border-b border-border/50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight Outfit text-foreground">
+              Frequently Asked Questions
+            </h2>
+          </div>
+
+          <div className="space-y-4 text-left">
+            {faqs.map((faq, idx) => {
+              const isOpen = activeFaq === idx;
+              return (
+                <Card 
+                  key={idx} 
+                  className="border-border/80 bg-card rounded-2xl overflow-hidden transition-all"
+                >
+                  <button
+                    onClick={() => setActiveFaq(isOpen ? null : idx)}
+                    className="w-full p-6 text-left flex items-center justify-between gap-4 font-extrabold text-base sm:text-lg text-foreground focus-visible:outline-none"
+                  >
+                    <span>{faq.q}</span>
+                    <ChevronDown className={`h-5 w-5 text-primary shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="px-6 pb-6 text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium border-t border-border/40 pt-4">
+                          {faq.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Card>
+              );
+            })}
+          </div>
+
+        </div>
+      </section>
+
+      {/* CTA SECTION */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative border border-primary/25 rounded-3xl overflow-hidden bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-6 py-12 md:py-16 text-center space-y-6 shadow-xl">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight max-w-2xl mx-auto Outfit text-foreground">
+              Explore All 20 ERP System Modules
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed font-medium">
+              Review module listings and specifications across administrative and academic components.
+            </p>
+            <div className="pt-4">
+              <Link
+                to="/modules"
+                className="inline-flex items-center justify-center rounded-full text-sm font-bold tracking-wide transition-all bg-primary text-primary-foreground hover:opacity-95 h-12 px-8 shadow-md gap-2"
+              >
+                <span>View System Modules</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };
