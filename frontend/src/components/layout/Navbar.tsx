@@ -89,8 +89,10 @@ export const Navbar: React.FC<NavbarProps> = ({ mobileMenuOpen, setMobileMenuOpe
             <span>GitHub</span>
           </a>
 
-          {/* Settings Menu Button & Dropdown */}
-          <SettingsMenu variant="dropdown" />
+          {/* Settings Menu Button & Dropdown (Desktop Only) */}
+          <div className="hidden lg:inline-block">
+            <SettingsMenu variant="dropdown" />
+          </div>
 
           {/* Portal Action Button */}
           {user ? (

@@ -99,8 +99,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               {/* Divider */}
               <div className="border-t border-gray-200 dark:border-slate-800" />
 
-              {/* ⚙️ Settings Section (Mobile Sheet) */}
-              <SettingsMenu variant="mobile-sheet" />
+              {/* ⚙️ Settings Section (Mobile Accordion) */}
+              <SettingsMenu variant="mobile-accordion" />
 
               {/* Divider */}
               <div className="border-t border-gray-200 dark:border-slate-800" />
