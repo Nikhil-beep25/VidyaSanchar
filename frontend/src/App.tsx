@@ -7,6 +7,7 @@ import { ToastProvider } from './context/ToastContext';
 import { AppRoutes } from './routes/AppRoutes';
 import { ErrorBoundary } from './components/layout/ErrorBoundary';
 import { CinematicIntro } from './components/common/CinematicIntro';
+import { ScrollToTop } from './components/common/ScrollToTop';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +39,7 @@ function App() {
                 />
               )}
               <BrowserRouter>
+                <ScrollToTop />
                 <AppRoutes />
               </BrowserRouter>
             </AuthProvider>
