@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { CreditCard, Plus, Receipt } from 'lucide-react';
+import { DatePicker } from '../../../components/ui/DatePicker';
 
 export const FeeManagement: React.FC = () => {
   const toast = useToast();
@@ -122,8 +123,12 @@ export const FeeManagement: React.FC = () => {
                 <input type="number" required value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full h-10 px-3 border rounded-md bg-background text-sm" placeholder="e.g. 25000" />
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Due Date *</label>
-                <input type="date" required value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full h-10 px-3 border rounded-md bg-background text-sm" />
+                <DatePicker
+                  label="Due Date *"
+                  value={dueDate}
+                  onChange={setDueDate}
+                  required
+                />
               </div>
             </div>
 

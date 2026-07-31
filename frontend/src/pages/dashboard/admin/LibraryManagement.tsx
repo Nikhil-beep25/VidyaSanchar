@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { BookOpen, Plus, FileText, CheckCircle } from 'lucide-react';
+import { DatePicker } from '../../../components/ui/DatePicker';
 
 export const LibraryManagement: React.FC = () => {
   const toast = useToast();
@@ -179,8 +180,12 @@ export const LibraryManagement: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Return Due Date *</label>
-              <input type="date" required value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full h-10 px-3 border rounded-md bg-background text-sm" />
+              <DatePicker
+                label="Return Due Date *"
+                value={dueDate}
+                onChange={setDueDate}
+                required
+              />
             </div>
 
             <button type="submit" className="w-full h-10 inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium">

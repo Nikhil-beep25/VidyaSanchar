@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { School, Eye, EyeOff, AlertTriangle, CheckCircle, Copy, Check } from 'lucide-react';
 import { Card } from '../../components/common/Card';
 
 export const Login: React.FC = () => {
   const { login } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
 
   const [mounted, setMounted] = useState(false);
@@ -75,8 +77,15 @@ export const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) {
+      console.warn('[Login] Authentication request already in progress.');
+      return;
+    }
+
     if (!email || !password) {
-      setError('Please provide both email and password.');
+      const msg = 'Please provide both email and password.';
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -84,15 +93,28 @@ export const Login: React.FC = () => {
     setError('');
 
     try {
+      console.log(`[Login] Submitting credentials for ${email}...`);
       const user = await login(email, password);
+      console.log(`[Login] Login successful. User role: ${user?.role}`);
+
+      toast.success(`Welcome back, ${user.name || 'User'}!`);
+
       if (user.role === 'SUPER_ADMIN') navigate('/dashboard/super-admin');
       else if (user.role === 'ADMIN') navigate('/dashboard/admin');
       else if (user.role === 'TEACHER') navigate('/dashboard/teacher');
       else if (user.role === 'STUDENT') navigate('/dashboard/student');
       else if (user.role === 'PARENT') navigate('/dashboard/parent');
+      else {
+        console.warn(`[Login] Unrecognized role "${user.role}". Defaulting to /dashboard.`);
+        navigate('/dashboard');
+      }
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      console.error('[Login Error]:', err);
+      const errMsg = err.message || 'Login failed. Please check your credentials and network connection.';
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
+      console.log('[Login] Authentication attempt complete. Resetting submitting state.');
       setSubmitting(false);
     }
   };

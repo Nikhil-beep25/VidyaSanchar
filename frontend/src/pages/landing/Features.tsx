@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, CheckCircle2, ShieldCheck, Zap, BarChart3, LayoutDashboard, 
-  UserCheck, CalendarCheck, Wallet, GraduationCap, MessageSquare, 
+  UserCheck, CalendarCheck, Wallet, GraduationCap, BookOpen, 
   Moon, Lock, Smartphone, Cloud, ArrowRight, ChevronDown, Check, FileSpreadsheet,
   Users, Clock, HelpCircle, Layers
 } from 'lucide-react';
@@ -57,11 +57,11 @@ export const Features: React.FC = () => {
       badge: 'Exams'
     },
     {
-      icon: <MessageSquare className="h-6 w-6 text-pink-500" />,
-      title: 'Notice Board & Communication',
-      desc: 'Publish role-targeted circular notices, school announcements, and parent-teacher messages.',
-      benefits: ['Targeted Circulars', 'School Announcements', 'Direct Messaging'],
-      badge: 'Communication'
+      icon: <BookOpen className="h-6 w-6 text-pink-500" />,
+      title: 'Library Management System',
+      desc: 'Catalog books, track issue histories, manage returns, and maintain a digital library ledger.',
+      benefits: ['Book Cataloging', 'Issue Tracking', 'Return Records'],
+      badge: 'Library'
     },
     {
       icon: <Layers className="h-6 w-6 text-blue-500" />,
@@ -123,9 +123,9 @@ export const Features: React.FC = () => {
       vidyaSanchar: 'Subject mark entry, grade median calculation, and digital report cards'
     },
     {
-      feature: 'Communication & Notices',
-      traditional: 'Physical circular notices sent via students',
-      vidyaSanchar: 'Digital notice board dispatches with audience filtering'
+      feature: 'Library Management',
+      traditional: 'Physical paper library registers and manual issue diaries',
+      vidyaSanchar: 'Digital book issue tracking, return management, and availability records'
     },
     {
       feature: 'System Security',

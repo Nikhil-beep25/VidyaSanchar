@@ -51,6 +51,7 @@ app.use((req, res, next) => {
     !req.path.startsWith('/api') &&
     !req.path.startsWith('/api-docs') &&
     !req.path.startsWith('/health') &&
+    !req.path.startsWith('/uploads') &&
     req.path !== '/'
   ) {
     req.url = `/api${req.url}`;
@@ -158,7 +159,12 @@ app.use('/api', tenantMiddleware, apiRouter);
 
 // 12. Handle 404
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found.` });
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found.`,
+    error: 'NotFoundError',
+    statusCode: 404
+  });
 });
 
 // 13. Global Error Handler (must be registered last)
@@ -166,5 +172,5 @@ app.use(errorMiddleware);
 
 // Start Server
 app.listen(env.PORT, () => {
-  console.log(`[Server] Running in ${env.NODE_ENV} mode on port ${env.PORT}`);
+  console.log(`[Server] Running in ${env.NODE_ENV} mode on port ${env.PORT}.`);
 });

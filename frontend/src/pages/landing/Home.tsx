@@ -49,7 +49,7 @@ export const Home: React.FC = () => {
   const erpModuleTeasers = [
     { name: 'Student Management', icon: <UserCheck className="h-5 w-5 text-violet-500" />, desc: 'Student profiles, admissions, and class section assignments' },
     { name: 'Teacher Management', icon: <Users className="h-5 w-5 text-indigo-500" />, desc: 'Faculty directory, subject allocations, and schedules' },
-    { name: 'Parent Portal', icon: <HeartHandshake className="h-5 w-5 text-pink-500" />, desc: 'Guardian access to student progress, fees, and notices' },
+    { name: 'Parent Portal', icon: <HeartHandshake className="h-5 w-5 text-pink-500" />, desc: 'Guardian access to student academic progress, attendance, and fee receipts' },
     { name: 'Attendance System', icon: <CalendarCheck className="h-5 w-5 text-amber-500" />, desc: 'Daily roll call, monthly rosters, and attendance reports' },
     { name: 'Fee Management', icon: <Wallet className="h-5 w-5 text-emerald-500" />, desc: 'Fee head setup, payment transactions, and receipts' },
     { name: 'Exams & Grades', icon: <GraduationCap className="h-5 w-5 text-purple-500" />, desc: 'Exam schedules, marksheets, and report card downloads' }

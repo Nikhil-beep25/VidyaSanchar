@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { Search, UserPlus, Trash2, Edit2, X } from 'lucide-react';
+import { DatePicker } from '../../../components/ui/DatePicker';
 
 export const TeacherManagement: React.FC = () => {
   const toast = useToast();
@@ -337,15 +338,11 @@ export const TeacherManagement: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                    Joining Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
+                  <DatePicker
+                    label="Joining Date *"
                     value={joiningDate}
-                    onChange={(e) => setJoiningDate(e.target.value)}
-                    className="w-full h-10 px-3 py-2 rounded-md border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    onChange={setJoiningDate}
+                    required
                   />
                 </div>
               </div>

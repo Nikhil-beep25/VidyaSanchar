@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { Search, Plus, Edit2, Trash2, X } from 'lucide-react';
+import { DatePicker } from '../../../components/ui/DatePicker';
 
 export const ParentManagement: React.FC = () => {
   const toast = useToast();
@@ -18,6 +19,7 @@ export const ParentManagement: React.FC = () => {
   const [address, setAddress] = useState('');
   const [occupation, setOccupation] = useState('');
   const [relation, setRelation] = useState('Father');
+  const [dateOfBirth, setDateOfBirth] = useState('');
 
   const [loading, setLoading] = useState(false);
 
@@ -48,8 +50,8 @@ export const ParentManagement: React.FC = () => {
 
   const handleOpenEdit = (p: any) => {
     setEditingParent(p);
-    setName(p.user?.name);
-    setEmail(p.user?.email);
+    setName(p.user?.name || '');
+    setEmail(p.user?.email || '');
     setPassword('');
     setPhone(p.user?.phone || '');
     setAddress(p.user?.address || '');
@@ -60,7 +62,7 @@ export const ParentManagement: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !relation) {
+    if (!name.trim() || !email.trim() || !relation.trim()) {
       toast.warning('Name, email, and relation are required.');
       return;
     }
@@ -68,31 +70,37 @@ export const ParentManagement: React.FC = () => {
     setLoading(true);
     try {
       const payload = {
-        name,
-        email,
-        phone,
-        address,
-        occupation,
-        relation,
-        password: password || undefined
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone ? phone.trim() : undefined,
+        address: address ? address.trim() : undefined,
+        occupation: occupation ? occupation.trim() : undefined,
+        relation: relation.trim(),
+        password: password ? password.trim() : undefined
       };
 
       if (editingParent) {
-        await apiRequest(`/parents/${editingParent.id}`, {
+        const updated = await apiRequest(`/parents/${editingParent.id}`, {
           method: 'PUT',
           body: JSON.stringify(payload)
         });
+
+        // Immediately update local state so table updates instantly without flickering
+        setParents((prev) =>
+          prev.map((p) => (p.id === editingParent.id ? { ...p, ...updated } : p))
+        );
+
         toast.success('Parent profile updated successfully.');
       } else {
-        await apiRequest('/parents', {
+        const created = await apiRequest('/parents', {
           method: 'POST',
-          body: JSON.stringify({ ...payload, password: password || 'Parent@123' })
+          body: JSON.stringify({ ...payload, password: password ? password.trim() : 'Parent@123' })
         });
         toast.success('Parent registered successfully.');
       }
 
       setModalOpen(false);
-      loadData();
+      await loadData();
     } catch (err: any) {
       toast.error(err.message || 'Operation failed.');
     } finally {
@@ -274,17 +282,26 @@ export const ParentManagement: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                    Occupation
-                  </label>
-                  <input
-                    type="text"
-                    value={occupation}
-                    onChange={(e) => setOccupation(e.target.value)}
-                    className="w-full h-10 px-3 py-2 rounded-md border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                    placeholder="e.g. CA"
+                  <DatePicker
+                    isDobMode
+                    label="Date of Birth"
+                    value={dateOfBirth}
+                    onChange={setDateOfBirth}
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                  Occupation
+                </label>
+                <input
+                  type="text"
+                  value={occupation}
+                  onChange={(e) => setOccupation(e.target.value)}
+                  className="w-full h-10 px-3 py-2 rounded-md border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  placeholder="e.g. CA"
+                />
               </div>
 
               <div>

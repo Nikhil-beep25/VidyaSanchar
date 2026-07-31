@@ -54,7 +54,7 @@ export const ParentDashboard: React.FC = () => {
     }
   };
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'attendance' | 'academics' | 'fees' | 'timetable' | 'homework'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'attendance' | 'academics' | 'fees' | 'timetable'>('overview');
 
   const loadChildren = async () => {
     try {
@@ -230,7 +230,7 @@ export const ParentDashboard: React.FC = () => {
 
             {/* Dashboard Tabs Selector */}
             <div className="border-b flex overflow-x-auto space-x-6 scrollbar-none">
-              {(['overview', 'attendance', 'academics', 'fees', 'timetable', 'homework'] as const).map(tab => (
+              {(['overview', 'attendance', 'academics', 'fees', 'timetable'] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -250,28 +250,7 @@ export const ParentDashboard: React.FC = () => {
               {/* Tab 1: Overview */}
               {activeTab === 'overview' && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Left: Homework List */}
-                  <div className="border rounded-2xl p-6 bg-card space-y-4 shadow-sm">
-                    <h3 className="font-bold text-base text-slate-800 dark:text-slate-200">Pending Homework</h3>
-                    <div className="divide-y divide-border">
-                      {dashboardData.homework.slice(0, 4).map((h: any) => (
-                        <div key={h.id} className="py-3.5 flex items-center justify-between text-xs">
-                          <div>
-                            <h4 className="font-bold text-slate-800 dark:text-slate-200">{h.title}</h4>
-                            <p className="text-slate-400 mt-0.5">{h.subjectName} | Teacher: {h.teacherName}</p>
-                          </div>
-                          <span className={`px-2.5 py-1 rounded-full font-bold ${h.submission ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}`}>
-                            {h.submission ? 'Submitted' : 'Pending'}
-                          </span>
-                        </div>
-                      ))}
-                      {dashboardData.homework.length === 0 && (
-                        <div className="p-8 text-center text-slate-400 text-xs">No pending homework.</div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Right: Class Notice Board Summary */}
+                  {/* Left: Class Timetable */}
                   <div className="border rounded-2xl p-6 bg-card space-y-4 shadow-sm">
                     <h3 className="font-bold text-base text-slate-800 dark:text-slate-200">Today's Class Timetable</h3>
                     <div className="divide-y divide-border">
@@ -501,56 +480,7 @@ export const ParentDashboard: React.FC = () => {
                 </div>
               )}
 
-              {/* Tab 6: Homework */}
-              {activeTab === 'homework' && (
-                <div className="border rounded-2xl bg-card shadow-sm overflow-hidden">
-                  <div className="p-4 border-b bg-muted/20">
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">Academic Homework Planner</h3>
-                  </div>
-                  <div className="p-6 space-y-4">
-                    {dashboardData.homework.map((h: any) => (
-                      <div key={h.id} className="p-4 border rounded-xl bg-slate-50/50 dark:bg-slate-800/30 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold text-[10px]">
-                              {h.subjectName}
-                            </span>
-                            <h4 className="font-bold text-slate-800 dark:text-slate-200">{h.title}</h4>
-                          </div>
-                          <p className="text-slate-500 font-medium">{h.description}</p>
-                          <span className="text-[10px] text-slate-400 block pt-1 font-medium">
-                            Due Date: {new Date(h.dueDate).toLocaleDateString('en-IN')} | Assigned by {h.teacherName}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className={`px-2.5 py-1 rounded-full font-bold ${
-                            h.submission
-                              ? h.submission.status === 'GRADED'
-                                ? 'bg-emerald-500/10 text-emerald-500'
-                                : 'bg-primary/10 text-primary'
-                              : 'bg-amber-500/10 text-amber-500'
-                          }`}>
-                            {h.submission
-                              ? h.submission.status === 'GRADED'
-                                ? `Graded: ${h.submission.marksObtained} Marks`
-                                : 'Submitted'
-                              : 'Pending'
-                            }
-                          </span>
-                          {h.submission?.feedback && (
-                            <div className="p-2 border bg-card rounded-lg text-[10px] text-slate-500 max-w-xs">
-                              <strong>Teacher Feedback:</strong> {h.submission.feedback}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                    {dashboardData.homework.length === 0 && (
-                      <div className="p-8 text-center text-slate-400">No homework assigned.</div>
-                    )}
-                  </div>
-                </div>
-              )}
+
             </div>
           </div>
         )

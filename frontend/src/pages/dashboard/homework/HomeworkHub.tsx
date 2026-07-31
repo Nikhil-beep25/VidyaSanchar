@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
 import { useAuth } from '../../../context/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { DatePicker } from '../../../components/ui/DatePicker';
 import {
   ClipboardList,
   Plus,
@@ -465,14 +466,12 @@ export const HomeworkHub: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase">Due Date</label>
-                  <input
-                    type="date"
-                    required
+                <div>
+                  <DatePicker
+                    label="Due Date"
                     value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-3 h-10 border rounded-lg bg-transparent text-sm"
+                    onChange={setDueDate}
+                    required
                   />
                 </div>
 

@@ -169,45 +169,23 @@ export async function verifyPayment(req: Request, res: Response, next: NextFunct
         payment.student.user.schoolId || undefined
       );
 
-      // Trigger In-App & Mock Email Notifications
+      // Trigger Mock Email Notifications
       const displayAmount = payment.amountPaid.toLocaleString('en-IN');
       const notificationMsg = `Fee payment of ₹${displayAmount} for "${payment.fee.title}" received successfully.`;
 
-      // Student notification
-      if (payment.student.userId) {
-        await prisma.notification.create({
-          data: {
-            title: 'Fee Payment Success',
-            message: notificationMsg,
-            recipientRole: 'STUDENT',
-            userId: payment.student.userId,
-            isAnnouncement: false,
-          }
-        });
-        if (payment.student.user?.email) {
-          sendMockEmail(payment.student.user.email, 'Fee Payment Receipt - VidyaSanchar', notificationMsg);
-        }
+      // Student email notification
+      if (payment.student.userId && payment.student.user?.email) {
+        sendMockEmail(payment.student.user.email, 'Fee Payment Receipt - VidyaSanchar', notificationMsg);
       }
 
-      // Parent notification
+      // Parent email notification
       const parentRelations = await prisma.parentStudentRelation.findMany({
         where: { studentId: payment.studentId },
         include: { parent: { include: { user: true } } }
       });
       for (const rel of parentRelations) {
-        if (rel.parent.userId) {
-          await prisma.notification.create({
-            data: {
-              title: 'Child Fee Payment Success',
-              message: `Fee payment of ₹${displayAmount} for "${payment.fee.title}" for your child "${payment.student.user?.name}" received successfully.`,
-              recipientRole: 'PARENT',
-              userId: rel.parent.userId,
-              isAnnouncement: false,
-            }
-          });
-          if (rel.parent.user?.email) {
-            sendMockEmail(rel.parent.user.email, 'Child Fee Payment Success', `Dear Parent, we have successfully received ₹${displayAmount} towards ${payment.fee.title} for ${payment.student.user?.name}.`);
-          }
+        if (rel.parent.user?.email) {
+          sendMockEmail(rel.parent.user.email, 'Child Fee Payment Success', `Dear Parent, we have successfully received ₹${displayAmount} towards ${payment.fee.title} for ${payment.student.user?.name}.`);
         }
       }
 

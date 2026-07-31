@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../context/AuthContext';
-import { Search, Plus, Edit2, Trash2, X, Check, Eye, EyeOff } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, X, Check, Eye, EyeOff, Calendar as CalendarIcon } from 'lucide-react';
+import { DatePicker } from '../../../components/ui/DatePicker';
 
 export const ExamManagement: React.FC = () => {
   const toast = useToast();
@@ -337,15 +338,11 @@ export const ExamManagement: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                    Scheduled Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
+                  <DatePicker
+                    label="Scheduled Date *"
                     value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="w-full h-10 px-3 border rounded-lg bg-background text-sm"
+                    onChange={setDate}
+                    required
                   />
                 </div>
               </div>

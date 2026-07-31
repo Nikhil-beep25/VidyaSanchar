@@ -54,8 +54,6 @@ model School {
   subscriptions SchoolSubscription[]
   auditLogs    AuditLog[]
   libraryBooks LibraryBook[]
-  notifications Notification[]
-  notices      Notice[]
 }
 
 model SubscriptionPlan {
@@ -105,16 +103,6 @@ model User {
   studentProfile Student?
   teacherProfile Teacher?
   parentProfile  Parent?
-  sentNotifications Notification[] @relation("SentNotifications")
-  userNotifications Notification[] @relation("UserNotifications")
-  
-  // Messaging
-  sentMessages     Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
-  
-  // Notice author
-  createdNotices   Notice[]  @relation("CreatedNotices")
-  
   // Auditing
   auditLogs        AuditLog[]
 }
@@ -201,7 +189,6 @@ model Class {
   assignments    Assignment[]
   attendance     Attendance[]
   homeworks      Homework[]
-  notices        Notice[]
 }
 
 model Subject {
@@ -362,25 +349,7 @@ model AssignmentSubmission {
   @@index([studentId])
 }
 
-model Notification {
-  id            String   @id @default(uuid())
-  title         String
-  message       String
-  recipientRole RoleType // All, SUPER_ADMIN, ADMIN, TEACHER, STUDENT, PARENT
-  isAnnouncement Boolean @default(false)
-  isRead        Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  
-  // Tenancy relation
-  schoolId      String?
-  school        School?  @relation(fields: [schoolId], references: [id], onDelete: SetNull)
-  
-  // Relations
-  senderId      String?
-  sender        User?    @relation("SentNotifications", fields: [senderId], references: [id])
-  userId        String?
-  user          User?    @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
-}
+
 
 model LibraryBook {
   id                String      @id @default(uuid())
@@ -448,20 +417,6 @@ model FeeTransaction {
   @@index([feeId])
 }
 
-model Message {
-  id          String   @id @default(uuid())
-  senderId    String
-  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  recipientId String
-  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
-  content     String
-  isRead      Boolean  @default(false)
-  isDeleted   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-
-  @@index([senderId])
-  @@index([recipientId])
-}
 
 model AuditLog {
   id        String   @id @default(uuid())
@@ -537,13 +492,7 @@ model StudentTransport {
   @@index([vehicleId])
 }
 
-enum NoticeType {
-  SCHOOL
-  CLASS
-  EXAM
-  FEE
-  EMERGENCY
-}
+
 
 model ParentStudentRelation {
   id         String   @id @default(uuid())
@@ -557,35 +506,6 @@ model ParentStudentRelation {
   @@unique([parentId, studentId])
   @@index([parentId])
   @@index([studentId])
-}
-
-model Notice {
-  id          String     @id @default(uuid())
-  title       String
-  content     String     // rich text content
-  type        NoticeType
-  isPinned    Boolean    @default(false)
-  attachment  String?    // URL/path to file
-  isDeleted   Boolean    @default(false)
-  
-  // Tenancy relation
-  schoolId    String?
-  school      School?    @relation(fields: [schoolId], references: [id], onDelete: SetNull)
-
-  // Target class (null for general school notices)
-  classId     String?
-  targetClass Class?     @relation(fields: [classId], references: [id], onDelete: SetNull)
-  
-  // Creator
-  authorId    String?
-  author      User?      @relation("CreatedNotices", fields: [authorId], references: [id], onDelete: SetNull)
-
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  @@index([schoolId])
-  @@index([classId])
-  @@index([authorId])
 }
 
 model Homework {

@@ -100,11 +100,6 @@ export async function getDashboardSummary(req: Request, res: Response, next: Nex
         }
       });
 
-      const recentAnnouncements = await prisma.notification.findMany({
-        take: 5,
-        orderBy: { createdAt: 'desc' }
-      });
-
       return res.status(200).json({
         role: userRole,
         stats: {
@@ -121,8 +116,7 @@ export async function getDashboardSummary(req: Request, res: Response, next: Nex
           upcomingExams
         },
         recentPayments,
-        recentActivities,
-        recentAnnouncements
+        recentActivities
       });
     }
 

@@ -28,9 +28,6 @@ const StudentDashboard = lazy(() => import('../pages/dashboard/StudentDashboard'
 const ParentDashboard = lazy(() => import('../pages/dashboard/ParentDashboard').then(module => ({ default: module.ParentDashboard })));
 
 // Phase 3 Lazy Loaded Pages
-const NoticeBoardPage = lazy(() => import('../pages/dashboard/communication/NoticeBoardPage').then(module => ({ default: module.NoticeBoardPage })));
-const CommunicationCenter = lazy(() => import('../pages/dashboard/communication/CommunicationCenter').then(module => ({ default: module.CommunicationCenter })));
-const HomeworkHub = lazy(() => import('../pages/dashboard/homework/HomeworkHub').then(module => ({ default: module.HomeworkHub })));
 const TimetableGrid = lazy(() => import('../pages/dashboard/timetable/TimetableGrid').then(module => ({ default: module.TimetableGrid })));
 
 // Lazy Loaded Admin Views
@@ -43,7 +40,6 @@ const AttendanceManagement = lazy(() => import('../pages/dashboard/admin/Attenda
 const TimetableManagement = lazy(() => import('../pages/dashboard/admin/TimetableManagement').then(module => ({ default: module.TimetableManagement })));
 const FeeManagement = lazy(() => import('../pages/dashboard/admin/FeeManagement').then(module => ({ default: module.FeeManagement })));
 const LibraryManagement = lazy(() => import('../pages/dashboard/admin/LibraryManagement').then(module => ({ default: module.LibraryManagement })));
-const AnnouncementManagement = lazy(() => import('../pages/dashboard/admin/AnnouncementManagement').then(module => ({ default: module.AnnouncementManagement })));
 const SettingsManagement = lazy(() => import('../pages/dashboard/admin/SettingsManagement').then(module => ({ default: module.SettingsManagement })));
 const ExamManagement = lazy(() => import('../pages/dashboard/admin/ExamManagement').then(module => ({ default: module.ExamManagement })));
 
@@ -113,30 +109,6 @@ const AppRoutesInternal: React.FC = () => {
       {/* Role-based Dashboards */}
       <Route element={<DashboardLayout />}>
         {/* Phase 3 Shared Routes */}
-        <Route
-          path="/dashboard/notices"
-          element={
-            <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']}>
-              <NoticeBoardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/messages"
-          element={
-            <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']}>
-              <CommunicationCenter />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/homework"
-          element={
-            <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']}>
-              <HomeworkHub />
-            </ProtectedRoute>
-          }
-        />
         <Route
           path="/dashboard/student/timetable"
           element={
@@ -246,14 +218,7 @@ const AppRoutesInternal: React.FC = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/dashboard/admin/announcements"
-          element={
-            <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
-              <AnnouncementManagement />
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/dashboard/admin/parents"
           element={

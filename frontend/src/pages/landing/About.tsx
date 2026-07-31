@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { 
   Sparkles, BookOpen, Receipt, Database, Smartphone, Award, Activity, 
   Users, GraduationCap, Calendar, Coins, FileSpreadsheet, Clock, 
-  HeartHandshake, BarChart3, ShieldAlert, Bell, Code2, Server, 
+  HeartHandshake, BarChart3, ShieldAlert, Code2, Server, 
   Link2, Globe, Palette, Cloud, Layers, Shield, ArrowRight, ChevronRight, Github, Linkedin
 } from 'lucide-react';
 import { Card } from '../../components/common/Card';
@@ -207,8 +207,8 @@ export const About: React.FC = () => {
       color: 'from-blue-500/10 to-indigo-500/5 hover:border-blue-500/30'
     },
     {
-      title: 'Poor Parent Communication',
-      description: 'Alert guardians instantly about announcements, fee payments, and attendances.',
+      title: 'Parent Portal Integration',
+      description: 'Keep guardians instantly informed about fee payments, attendance rosters, and academic report cards.',
       emoji: '📱',
       color: 'from-purple-500/10 to-pink-500/5 hover:border-purple-500/30'
     },
@@ -241,7 +241,7 @@ export const About: React.FC = () => {
     },
     {
       title: 'Attendance Tracking',
-      description: 'Digitized daily attendance tracking with automated reports and notifications.',
+      description: 'Digitized daily attendance tracking with automated rosters and monthly attendance percentage calculations.',
       icon: Calendar,
       color: 'text-indigo-500 bg-indigo-500/10 border-indigo-500/20'
     },
@@ -265,7 +265,7 @@ export const About: React.FC = () => {
     },
     {
       title: 'Parent Portal',
-      description: 'Direct dashboard for parents to view grades, notifications, and fees.',
+      description: 'Direct dashboard for parents to view academic grades, class schedules, and fee receipts.',
       icon: HeartHandshake,
       color: 'text-cyan-500 bg-cyan-500/10 border-cyan-500/20'
     },
@@ -282,9 +282,9 @@ export const About: React.FC = () => {
       color: 'text-red-500 bg-red-500/10 border-red-500/20'
     },
     {
-      title: 'Notifications & Communication',
-      description: 'Keep the community informed with real-time news and system notifications.',
-      icon: Bell,
+      title: 'Library & Book Management',
+      description: 'Catalog books, track student issue histories, and manage book availability.',
+      icon: BookOpen,
       color: 'text-pink-500 bg-pink-500/10 border-pink-500/20'
     }
   ];
@@ -519,7 +519,7 @@ export const About: React.FC = () => {
             Your Institution?
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto font-medium leading-relaxed">
-            Unleash powerful double-entry accounting ledgers, automatic attendances, notice boards, and student databases in minutes.
+            Unleash powerful double-entry accounting ledgers, automatic attendances, fee collections, and student databases in minutes.
           </p>
         </div>
 

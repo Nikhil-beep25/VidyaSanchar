@@ -113,25 +113,14 @@ import {
 } from '../controllers/libraryController';
 
 import {
-  createNotification,
-  getNotifications,
   submitContactForm,
-  getContactSubmissions,
-  markNotificationAsRead
-} from '../controllers/notificationController';
+  getContactSubmissions
+} from '../controllers/contactController';
 
 import {
   getDashboardSummary,
   getAdvancedAnalytics
 } from '../controllers/analyticsController';
-
-import {
-  sendMessage,
-  getMessages,
-  getChatParticipants,
-  createNotice,
-  getNotices
-} from '../controllers/communicationController';
 
 import {
   createAssignment,
@@ -164,9 +153,6 @@ import { uploadFile } from '../controllers/uploadController';
 
 // Phase 3 Imports
 import { getChildren, getChildDashboard } from '../controllers/parentController';
-import { getConversations, getMessageHistory, sendMessage as sendDirectMessage, markMessageAsRead } from '../controllers/messageController';
-import { getNotices as getNoticeBoardNotices, createNotice as createNoticeBoardNotice, deleteNotice } from '../controllers/noticeController';
-import { getHomework, createHomework, submitHomework, getHomeworkSubmissions, gradeHomeworkSubmission } from '../controllers/homeworkController';
 
 const router = Router();
 
@@ -233,7 +219,12 @@ router.use((req, res, next) => {
     '/payments',
     '/timetables',
     '/library',
-    '/notifications'
+    '/parent',
+    '/assignments',
+    '/transport',
+    '/reports',
+    '/upload',
+    '/contact'
   ];
   
   const hasValidPrefix = validPrefixes.some(prefix => normalizedPath.startsWith(prefix));
@@ -357,31 +348,14 @@ router.get('/library/issues', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']
 router.post('/library/issues', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), issueBook);
 router.put('/library/issues/:id/return', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), returnBook);
 
-// Notifications & Contact Inquiries
-router.post('/notifications', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createNotification);
-router.get('/notifications', getNotifications);
-router.patch('/notifications/:id/read', markNotificationAsRead);
+// Contact Inquiries
+router.post('/contact', submitContactForm);
 router.get('/contact/submissions', roleMiddleware(['SUPER_ADMIN', 'ADMIN']), getContactSubmissions);
-
-// Communication Messaging & School Notices
-router.get('/messages/conversations', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getConversations);
-router.get('/messages/history/:contactId', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getMessageHistory);
-router.post('/messages', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), sendDirectMessage);
-router.patch('/messages/:id/read', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), markMessageAsRead);
-
-router.post('/notices', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createNoticeBoardNotice);
-router.get('/notices', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT']), getNoticeBoardNotices);
-router.delete('/notices/:id', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), deleteNotice);
 
 // Parent Portal
 router.get('/parent/children', roleMiddleware(['PARENT']), getChildren);
 router.get('/parent/children/:studentId/dashboard', roleMiddleware(['PARENT']), getChildDashboard);
 
-// Homework Management
-router.get('/homework', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']), getHomework);
-router.post('/homework', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), createHomework);
-router.post('/homework/:homeworkId/submit', roleMiddleware(['STUDENT']), submitHomework);
-router.get('/homework/:homeworkId/submissions', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), getHomeworkSubmissions);
-router.patch('/homework/submissions/:submissionId/grade', roleMiddleware(['SUPER_ADMIN', 'ADMIN', 'TEACHER']), gradeHomeworkSubmission);
+
 
 export default router;

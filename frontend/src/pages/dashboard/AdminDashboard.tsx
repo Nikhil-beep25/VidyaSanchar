@@ -56,7 +56,6 @@ const AdminDashboardComponent: React.FC = () => {
     upcomingExams: 0,
   });
 
-  const [announcements, setAnnouncements] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
   const [recentPayments, setRecentPayments] = useState<any[]>([]);
   const [trends, setTrends] = useState<{
@@ -75,28 +74,30 @@ const AdminDashboardComponent: React.FC = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     setError(null);
+
+    // 1. Fetch dashboard summary stats independently
     try {
-      // 1. Fetch dashboard summary stats
       const summary = await apiRequest('/analytics/summary');
       if (summary) {
         setStats(summary.stats || {});
-        setAnnouncements(summary.recentAnnouncements || []);
         setActivities(summary.recentActivities || []);
         setRecentPayments(summary.recentPayments || []);
       }
+    } catch (err: any) {
+      console.warn('Non-fatal error fetching summary stats:', err);
+    }
 
-      // 2. Fetch trends metrics for SVGs
+    // 2. Fetch trends metrics for SVGs independently
+    try {
       const trendsData = await apiRequest('/analytics/trends');
       if (trendsData) {
         setTrends(trendsData);
       }
     } catch (err: any) {
-      console.error('Error loading admin dashboard stats:', err);
-      setError(err.message || 'Failed to retrieve school analytics. Please verify your authentication.');
-      toast.error('Failed to load real-time analytics data.');
-    } finally {
-      setLoading(false);
+      console.warn('Non-fatal error fetching trends metrics:', err);
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -463,7 +464,7 @@ const AdminDashboardComponent: React.FC = () => {
         </div>
       </div>
 
-      {/* Activity Logs & Branch announcements */}
+      {/* Activity Logs & Quick Action Tasks */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Audit Activities */}
         <div className="border border-violet-100 rounded-xl p-6 bg-card space-y-4 lg:col-span-2 text-left shadow-sm">

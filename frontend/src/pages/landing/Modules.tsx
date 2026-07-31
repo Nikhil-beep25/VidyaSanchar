@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   UserCheck, Users, HeartHandshake, CalendarCheck, Wallet, GraduationCap, 
   Award, Clock, FileText, Library, Home as HomeIcon, Bus, Briefcase, 
-  PackageCheck, FileSpreadsheet, FileCheck2, MessageSquare, BarChart3, 
+  PackageCheck, FileSpreadsheet, FileCheck2, ClipboardList, BarChart3, 
   ShieldCheck, Settings as SettingsIcon, Search, Filter, Layers, CheckCircle2, 
   X, ArrowRight, Shield, Database, Cpu, Sparkles, Check
 } from 'lucide-react';
@@ -83,20 +83,20 @@ export const Modules: React.FC = () => {
       title: 'Parent Portal',
       category: 'Core Academics',
       statBadge: 'Guardian Access',
-      overview: 'Guardian portal for viewing student attendance records, exam report cards, fee payments, and notices.',
+      overview: 'Guardian portal for viewing student attendance records, exam report cards, fee payments, and academic progress.',
       functionalities: [
         'Multi-Child Dashboard Switching',
         'Daily Attendance Roster Visibility',
         'Digital Report Card Downloads',
         'Fee Payment & Receipt Downloads',
-        'School Announcements & Direct Messages'
+        'Academic Progress Summary'
       ],
       userRoles: ['Parent'],
       details: {
         summary: 'Gives guardians visibility over student attendance, exam scores, and fee records.',
-        keyWorkflows: ['Fee Payment Recording', 'Absence Notification', 'Report Card Download', 'School Notices'],
-        dataEntities: ['Parent', 'Student', 'Payment', 'Notice'],
-        highlight: 'Gives parents visibility into student attendance, grades, and notices.'
+        keyWorkflows: ['Fee Payment Recording', 'Absence Monitoring', 'Report Card Download'],
+        dataEntities: ['Parent', 'Student', 'Payment', 'Class'],
+        highlight: 'Gives parents visibility into student attendance, grades, and fee receipts.'
       }
     },
     {
@@ -209,28 +209,7 @@ export const Modules: React.FC = () => {
         highlight: 'Provides weekly timetable matrices for classes and teachers.'
       }
     },
-    {
-      id: 'homework',
-      icon: <FileText className="h-7 w-7" />,
-      title: 'Homework & Assignments',
-      category: 'Core Academics',
-      statBadge: 'Assignment Portal',
-      overview: 'Digital assignment feeds, document uploads, student submission tracking, and teacher evaluation.',
-      functionalities: [
-        'Subject Assignment Feeds',
-        'PDF & Document Uploads',
-        'Student Submission Tracking',
-        'Teacher Evaluation & Feedback',
-        'Assignment Due Date Tracking'
-      ],
-      userRoles: ['Teacher', 'Student', 'Parent'],
-      details: {
-        summary: 'Streamlines assignment creation, student uploads, and teacher feedback.',
-        keyWorkflows: ['Assignment Creation', 'Student Submission', 'Teacher Evaluation'],
-        dataEntities: ['Homework', 'HomeworkSubmission', 'Student', 'Teacher'],
-        highlight: 'Provides digital assignment management for teachers and students.'
-      }
-    },
+
     {
       id: 'library',
       icon: <Library className="h-7 w-7" />,
@@ -385,28 +364,7 @@ export const Modules: React.FC = () => {
         highlight: 'Generates student certificates with verification IDs.'
       }
     },
-    {
-      id: 'communication',
-      icon: <MessageSquare className="h-7 w-7" />,
-      title: 'Notice Board & Alerts',
-      category: 'Governance & Security',
-      statBadge: 'Notice Dispatches',
-      overview: 'Targeted circular notices, school announcement feeds, notice board posts, and parent-teacher messaging.',
-      functionalities: [
-        'Role-Targeted Circular Notices',
-        'School Announcement Feeds',
-        'Notice Board Pinned Posts',
-        'Parent-Teacher Direct Messages',
-        'Event Calendar Records'
-      ],
-      userRoles: ['Super Admin', 'Admin', 'Teacher', 'Parent'],
-      details: {
-        summary: 'Central hub for school announcements and role-targeted notice dispatches.',
-        keyWorkflows: ['Notice Publishing', 'Notice Pinning', 'Direct Messaging'],
-        dataEntities: ['Notice', 'Notification', 'Message', 'User'],
-        highlight: 'Provides role-targeted notice board dispatches.'
-      }
-    },
+
     {
       id: 'reports-analytics',
       icon: <BarChart3 className="h-7 w-7" />,

@@ -3,18 +3,20 @@ import { logger } from '../utils/logger';
 import { env } from '../config/env';
 
 export function errorMiddleware(err: any, req: Request, res: Response, next: NextFunction) {
-  const status = err.status || 500;
+  const statusCode = err.statusCode || err.status || 500;
   const message = err.message || 'An unexpected error occurred on the server.';
 
-  // Stream to Winston logger
-  logger.error(`[API Error] Path: ${req.path} | Status: ${status} | Message: ${message}`, {
+  // Stream to logger
+  logger.error(`[API Error] Path: ${req.originalUrl || req.path} | Status: ${statusCode} | Message: ${message}`, {
     error: err,
     stack: err.stack,
   });
 
-  res.status(status).json({
+  return res.status(statusCode).json({
     success: false,
     message,
+    error: err.error || err.message || 'InternalServerError',
+    statusCode,
     stack: env.NODE_ENV === 'development' ? err.stack : undefined,
   });
 }

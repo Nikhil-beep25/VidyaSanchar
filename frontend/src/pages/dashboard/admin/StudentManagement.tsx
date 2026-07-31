@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { Search, UserPlus, Edit2, Trash2, X } from 'lucide-react';
+import { DatePicker } from '../../../components/ui/DatePicker';
 
 export const StudentManagement: React.FC = () => {
   const toast = useToast();
@@ -376,15 +377,12 @@ export const StudentManagement: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                    Date of Birth *
-                  </label>
-                  <input
-                    type="date"
-                    required
+                  <DatePicker
+                    isDobMode
+                    label="Date of Birth *"
                     value={dateOfBirth}
-                    onChange={(e) => setDateOfBirth(e.target.value)}
-                    className="w-full h-10 px-3 py-2 rounded-md border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    onChange={setDateOfBirth}
+                    required
                   />
                 </div>
                 <div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
 import { ClipboardCheck, Check, AlertCircle } from 'lucide-react';
+import { DatePicker } from '../../../components/ui/DatePicker';
 
 export const TeacherAttendance: React.FC = () => {
   const [classes, setClasses] = useState<any[]>([]);
@@ -124,13 +125,10 @@ export const TeacherAttendance: React.FC = () => {
           </select>
         </div>
 
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
-          <span className="text-xs font-semibold text-muted-foreground uppercase whitespace-nowrap">Date:</span>
-          <input
-            type="date"
+        <div className="w-full sm:w-56">
+          <DatePicker
             value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="h-10 px-3 border rounded-md bg-background text-sm w-full sm:w-48"
+            onChange={setDate}
           />
         </div>
       </div>

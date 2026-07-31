@@ -40,7 +40,7 @@ export const Pricing: React.FC = () => {
         'Examination schedules & grade assessment engines',
         'Digital report cards and marksheets export',
         'Tuition fee ledger records & payment receipts',
-        'Notice board notices & global school broadcasts',
+        'Library book catalog & student issue history',
       ],
     },
     {

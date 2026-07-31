@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { apiRequest, setAccessToken } from '../lib/api';
+import { apiRequest, setAccessToken, setRefreshToken } from '../lib/api';
 
 export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT' | 'PARENT';
 
@@ -42,19 +42,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     async function checkAuth() {
       try {
-        const data = await apiRequest('/auth/refresh', { method: 'POST', skipAuth: true });
-        if (data.accessToken) {
-          setAccessToken(data.accessToken);
-          // Fetch user profile
+        const storedRefreshToken = localStorage.getItem('refreshToken');
+        if (!storedRefreshToken && !localStorage.getItem('accessToken')) {
+          setLoading(false);
+          return;
+        }
+
+        const data = await apiRequest('/auth/refresh', {
+          method: 'POST',
+          skipAuth: true,
+          headers: storedRefreshToken ? { 'x-refresh-token': storedRefreshToken } : {},
+          body: JSON.stringify({ refreshToken: storedRefreshToken })
+        });
+
+        const token = data.accessToken || data.token;
+        if (token) {
+          setAccessToken(token);
+          if (data.refreshToken) setRefreshToken(data.refreshToken);
           const profile = await apiRequest('/users/profile');
           setUser(profile);
           localStorage.setItem('user', JSON.stringify(profile));
         }
       } catch (err: any) {
-        // Silent catch: user is not authenticated or refresh token expired
-        // Clean up storage and state only if it was an auth error
-        if (err.message && (err.message.includes('Refresh token') || err.message.includes('Unauthorized') || err.message.includes('Invalid'))) {
+        if (
+          err.message &&
+          (err.message.includes('Refresh token') ||
+            err.message.includes('Unauthorized') ||
+            err.message.includes('Invalid'))
+        ) {
           setAccessToken(null);
+          setRefreshToken(null);
           setUser(null);
           localStorage.removeItem('user');
         }
@@ -69,6 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const handleUnauthorized = () => {
       setAccessToken(null);
+      setRefreshToken(null);
       setUser(null);
       localStorage.removeItem('user');
     };
@@ -77,13 +95,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string): Promise<UserProfile> => {
+    console.log('[AuthContext] Initiating login request for:', email);
     const data = await apiRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
-      skipAuth: true,
+      skipAuth: true
     });
-    
-    setAccessToken(data.accessToken);
+
+    const token = data.accessToken || data.token;
+    if (!token || !data.user) {
+      console.error('[AuthContext] Login response missing token or user object:', data);
+      throw new Error('Server response missing authentication credentials or user details.');
+    }
+
+    console.log(`[AuthContext] Login verified for user: ${data.user.email} (${data.user.role})`);
+    setAccessToken(token);
+    if (data.refreshToken) {
+      setRefreshToken(data.refreshToken);
+    }
     setUser(data.user);
     localStorage.setItem('user', JSON.stringify(data.user));
     return data.user;
@@ -96,6 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Logout request failed:', err);
     } finally {
       setAccessToken(null);
+      setRefreshToken(null);
       setUser(null);
       localStorage.removeItem('user');
     }

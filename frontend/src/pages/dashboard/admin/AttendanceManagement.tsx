@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { Calendar as CalendarIcon, CheckCircle, Search, Save } from 'lucide-react';
+import { DatePicker } from '../../../components/ui/DatePicker';
 
 export const AttendanceManagement: React.FC = () => {
   const toast = useToast();
@@ -148,17 +149,12 @@ export const AttendanceManagement: React.FC = () => {
           </select>
         </div>
 
-        <div className="space-y-1 text-left">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Select Date *</label>
-          <div className="relative">
-            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full h-10 pl-9 pr-3 rounded-md border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            />
-          </div>
+        <div>
+          <DatePicker
+            label="Select Date *"
+            value={selectedDate}
+            onChange={setSelectedDate}
+          />
         </div>
 
         <div className="text-right">

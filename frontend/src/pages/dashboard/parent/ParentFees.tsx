@@ -334,7 +334,7 @@ export const ParentFees: React.FC = () => {
         </div>
       </div>
 
-      {/* 4. Payment Success/Failure Notification Pages */}
+      {/* 4. Payment Success/Failure Confirmation Banner */}
       {paymentStatus && (
         <div className={`p-5 rounded-xl border flex flex-col items-center justify-center text-center space-y-3 ${
           paymentStatus.status === 'success' 

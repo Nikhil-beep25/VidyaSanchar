@@ -80,18 +80,22 @@ export async function register(req: Request, res: Response, next: NextFunction) 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password } = req.body;
+    console.log(`[Backend Auth] Login attempt received for email: ${email}`);
 
     if (!email || !password) {
+      console.warn('[Backend Auth] Missing email or password in request body.');
       return res.status(400).json({ success: false, message: 'Email and password are required.' });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || !user.isActive) {
+      console.warn(`[Backend Auth] User not found or inactive for email: ${email}`);
       return res.status(401).json({ success: false, message: 'Invalid credentials or inactive account.' });
     }
 
     const isMatch = await comparePassword(password, user.passwordHash);
     if (!isMatch) {
+      console.warn(`[Backend Auth] Invalid password for email: ${email}`);
       return res.status(401).json({ success: false, message: 'Invalid credentials.' });
     }
 
@@ -105,21 +109,27 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    // Check if user has profiles and include profile references
+    // Check if user has profiles and include profile references safely
     let studentId: string | null = null;
     let teacherId: string | null = null;
     let parentId: string | null = null;
 
-    if (user.role === RoleType.STUDENT) {
-      const student = await prisma.student.findUnique({ where: { userId: user.id } });
-      studentId = student ? student.id : null;
-    } else if (user.role === RoleType.TEACHER) {
-      const teacher = await prisma.teacher.findUnique({ where: { userId: user.id } });
-      teacherId = teacher ? teacher.id : null;
-    } else if (user.role === RoleType.PARENT) {
-      const parent = await prisma.parent.findUnique({ where: { userId: user.id } });
-      parentId = parent ? parent.id : null;
+    try {
+      if (user.role === RoleType.STUDENT) {
+        const student = await prisma.student.findUnique({ where: { userId: user.id } });
+        studentId = student ? student.id : null;
+      } else if (user.role === RoleType.TEACHER) {
+        const teacher = await prisma.teacher.findUnique({ where: { userId: user.id } });
+        teacherId = teacher ? teacher.id : null;
+      } else if (user.role === RoleType.PARENT) {
+        const parent = await prisma.parent.findUnique({ where: { userId: user.id } });
+        parentId = parent ? parent.id : null;
+      }
+    } catch (profileErr) {
+      console.error('[Backend Auth] Non-fatal error looking up user sub-profile:', profileErr);
     }
+
+    console.log(`[Backend Auth] Authentication successful for user ID ${user.id} (${user.role})`);
 
     return res.status(200).json({
       success: true,
@@ -141,16 +151,24 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       refreshToken,      // compatibility fallback
     });
   } catch (error: any) {
+    console.error('[Backend Auth Error] Uncaught error during login:', error);
     return res.status(500).json({
       success: false,
-      message: error.message || 'An unexpected error occurred during login.'
+      message: error.message || 'An unexpected server error occurred during authentication.'
     });
   }
 }
 
 export async function refresh(req: Request, res: Response, next: NextFunction) {
   try {
-    const refreshToken = getCookie(req, 'refreshToken');
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+    const refreshToken =
+      getCookie(req, 'refreshToken') ||
+      req.body?.refreshToken ||
+      (req.headers['x-refresh-token'] as string) ||
+      bearerToken;
+
     if (!refreshToken) {
       return res.status(401).json({ success: false, message: 'Refresh token not found.' });
     }
@@ -169,7 +187,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
       token: newAccessToken, // compatibility fallback
     });
   } catch (error: any) {
-    return res.status(500).json({
+    return res.status(401).json({
       success: false,
       message: error.message || 'Invalid or expired refresh token.'
     });

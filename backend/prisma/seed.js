@@ -44,7 +44,6 @@ async function main() {
     await prisma.contactSubmission.deleteMany({});
     await prisma.bookIssue.deleteMany({});
     await prisma.libraryBook.deleteMany({});
-    await prisma.notification.deleteMany({});
     await prisma.assignment.deleteMany({});
     await prisma.timetable.deleteMany({});
     await prisma.payment.deleteMany({});
@@ -505,29 +504,6 @@ async function main() {
         }
     });
     console.log('Seeded Library books and issue records.');
-    // 16. Notifications
-    await prisma.notification.createMany({
-        data: [
-            {
-                title: 'Independence Day Celebration',
-                message: 'All students are requested to assemble in the school ground in proper school uniform at 7:30 AM on 15th August for Flag Hoisting.',
-                recipientRole: client_1.RoleType.STUDENT,
-                isAnnouncement: true,
-            },
-            {
-                title: 'Parent-Teacher Meeting (PTM) Scheduled',
-                message: 'Dear Parents, the first PTM for this academic year is scheduled on Saturday, July 18, 2026, from 9:00 AM to 1:00 PM.',
-                recipientRole: client_1.RoleType.PARENT,
-                isAnnouncement: true,
-            },
-            {
-                title: 'New Syllabus Guidelines - CBSE',
-                message: 'Attention Teachers, please download the updated curriculum documentation for 2026-27 and align your lesson plans.',
-                recipientRole: client_1.RoleType.TEACHER,
-                isAnnouncement: true,
-            }
-        ]
-    });
     // Contact submission
     await prisma.contactSubmission.create({
         data: {

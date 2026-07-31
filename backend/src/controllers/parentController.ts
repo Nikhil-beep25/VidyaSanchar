@@ -387,29 +387,51 @@ export async function createParent(req: Request, res: Response, next: NextFuncti
 export async function updateParent(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
-    const { name, phone, address, occupation, relation, isActive, studentIds } = req.body;
+    const { email, password, name, phone, address, occupation, relation, isActive, studentIds } = req.body;
 
-    const parent = await prisma.parent.findUnique({ where: { id } });
+    const parent = await prisma.parent.findUnique({
+      where: { id },
+      include: { user: true }
+    });
+
     if (!parent) {
       return res.status(404).json({ message: 'Parent profile not found.' });
     }
 
-    const result = await prisma.$transaction(async (tx) => {
+    // Unique email validation if email is being updated
+    if (email && email.trim().toLowerCase() !== parent.user.email.toLowerCase()) {
+      const existingUser = await prisma.user.findUnique({
+        where: { email: email.trim().toLowerCase() }
+      });
+      if (existingUser && existingUser.id !== parent.userId) {
+        return res.status(400).json({ message: 'Email address is already in use by another user.' });
+      }
+    }
+
+    // Hash password if provided
+    let passwordHash: string | undefined = undefined;
+    if (password && password.trim().length > 0) {
+      passwordHash = await hashPassword(password);
+    }
+
+    await prisma.$transaction(async (tx) => {
       await tx.user.update({
         where: { id: parent.userId },
         data: {
-          name,
-          phone,
-          address,
+          name: name !== undefined ? name : undefined,
+          email: email ? email.trim().toLowerCase() : undefined,
+          phone: phone !== undefined ? phone : undefined,
+          address: address !== undefined ? address : undefined,
+          passwordHash: passwordHash || undefined,
           isActive: isActive !== undefined ? isActive : undefined
         }
       });
 
-      const updatedParent = await tx.parent.update({
+      await tx.parent.update({
         where: { id },
         data: {
-          occupation,
-          relation
+          occupation: occupation !== undefined ? occupation : undefined,
+          relation: relation !== undefined ? relation : undefined
         }
       });
 
@@ -442,11 +464,33 @@ export async function updateParent(req: Request, res: Response, next: NextFuncti
           })
         );
       }
-
-      return updatedParent;
     });
 
-    return res.status(200).json(result);
+    // Fetch and return the fully updated parent record including user and students
+    const fullUpdatedParent = await prisma.parent.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+            phone: true,
+            address: true,
+            profileImage: true,
+            isActive: true
+          }
+        },
+        students: {
+          select: {
+            id: true,
+            rollNumber: true,
+            user: { select: { name: true } }
+          }
+        }
+      }
+    });
+
+    return res.status(200).json(fullUpdatedParent);
   } catch (error) {
     next(error);
   }

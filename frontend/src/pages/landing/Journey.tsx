@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Search, Cpu, CreditCard, MessageSquare, BarChart3, Rocket } from 'lucide-react';
+import { Sparkles, Search, Cpu, CreditCard, ClipboardList, BarChart3, Rocket } from 'lucide-react';
 import { Card } from '../../components/common/Card';
 
 export const Journey: React.FC = () => {
@@ -31,10 +31,10 @@ export const Journey: React.FC = () => {
     {
       year: '2026',
       phase: 'Q3 • Connect',
-      title: 'Communication Platform',
-      desc: 'Added notices, notifications, messaging, announcements, and parent-school communication tools.',
-      icon: <MessageSquare className="h-5 w-5 text-primary" />,
-      badges: ['Messaging', 'Notifications', 'Parent Portal']
+      title: 'Library Hub & Parent Portal',
+      desc: 'Added library book issue management, return tracking, and parent-school portal tools.',
+      icon: <ClipboardList className="h-5 w-5 text-primary" />,
+      badges: ['Library System', 'Parent Portal', 'Book Tracking']
     },
     {
       year: '2026',
