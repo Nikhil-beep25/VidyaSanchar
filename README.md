@@ -1,65 +1,300 @@
-# VidyaSanchar - Student Management System ERP
+# 🎓 VidyaSanchar – Student Management System ERP
 
-VidyaSanchar is a modern, scalable, enterprise-grade school enterprise resource planning (ERP) system designed primarily for Indian schools, colleges, universities, and coaching institutes. It is built entirely on free and open-source technologies.
+<div align="center">
+
+![GitHub stars](https://img.shields.io/github/stars/Nikhil-beep25/VidyaSanchar?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/Nikhil-beep25/VidyaSanchar?style=for-the-badge)
+![GitHub license](https://img.shields.io/github/license/Nikhil-beep25/VidyaSanchar?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/Nikhil-beep25/VidyaSanchar?style=for-the-badge)
+
+### 🚀 Modern School ERP & Student Management System
+
+**A full-stack School ERP platform designed to simplify administration, student management, fee collection, attendance tracking, examinations, and communication between schools, teachers, students, and parents.**
+
+🌐 **Live Demo:** https://vidya-sanchar.vercel.app
+
+</div>
 
 ---
 
-## 🛠️ Technology Stack
-- **Frontend**: React, TypeScript, Tailwind CSS, React Router v6, TanStack React Query
-- **Backend**: Node.js, Express.js, TypeScript, Prisma ORM
-- **Database**: PostgreSQL (containerized)
-- **Authentication**: JWT Access tokens (in-memory) & Refresh tokens (HTTP-only cookies), bcrypt hashing, Role-Based Access Control (RBAC)
-- **Infrastructure**: Docker, Docker Compose, Nginx (routing & proxy)
-- **Documentation**: Swagger/OpenAPI 3.0
+# 📖 Overview
+
+VidyaSanchar is a modern web-based School ERP solution that streamlines day-to-day school operations. It provides dedicated dashboards for administrators, teachers, students, and parents while keeping academic and administrative workflows organized in one place.
 
 ---
 
-## 📁 Project Structure
+# ✨ Features
+
+## 👨‍💼 Admin
+
+- Dashboard
+- Student Management
+- Teacher Management
+- Class & Section Management
+- Fee Management
+- Attendance Management
+- Exam Management
+- Subject Management
+- Reports & Analytics
+- User Management
+
+---
+
+## 👨‍🏫 Teacher
+
+- Teacher Dashboard
+- Student Attendance
+- Student Records
+- Exam Marks
+- Class Management
+- Profile Management
+
+---
+
+## 👨‍🎓 Student
+
+- Student Dashboard
+- Attendance History
+- Fee Details
+- Exam Results
+- Academic Information
+- Profile
+
+---
+
+## 👨‍👩‍👧 Parent
+
+- Child Information
+- Attendance Tracking
+- Fee Status
+- Academic Progress
+- Exam Results
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Axios
+
+## Backend
+
+- Node.js
+- Express.js
+- Prisma ORM
+- PostgreSQL
+- JWT Authentication
+- REST API
+
+## Deployment
+
+- Frontend → Vercel
+- Backend → Render
+- Database → PostgreSQL
+
+---
+
+# 📂 Project Structure
 
 ```
-.
-├── docker-compose.yml           # Multi-container orchestration
-├── README.md                    # Setup documentation
+VidyaSanchar/
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
 ├── backend/
-│   ├── Dockerfile               # Backend Docker build layers
-│   ├── package.json
-│   ├── tsconfig.json
 │   ├── prisma/
-│   │   ├── schema.prisma        # Database relational models
-│   │   └── seed.ts              # Seeding script with Indian context
-│   └── src/
-│       ├── index.ts             # Express application entry
-│       ├── config/              # Environment & DB clients
-│       ├── controllers/         # API business controllers
-│       ├── middlewares/         # JWT parsing & RBAC role checks
-│       ├── routes/              # Express API route maps
-│       ├── swagger/             # OpenAPI json schemas
-│       └── utils/               # JWT & bcrypt hashing helpers
-└── frontend/
-    ├── Dockerfile               # React + Nginx proxy image compiler
-    ├── nginx.conf               # Nginx reverse proxy configuration
-    ├── package.json
-    ├── tailwind.config.js
-    ├── src/
-    │   ├── App.tsx              # Routing and Provider registrations
-    │   ├── main.tsx
-    │   ├── index.css            # Stylesheets, Dark/Light custom variables
-    │   ├── components/layout/   # Landing and Dashboard layout wrappers
-    │   ├── context/             # Auth context (silent refresh loops) & Themes
-    │   ├── lib/api.ts           # Fetch client with auto refresh handler
-    │   ├── routes/              # Public/Private Protected routing configs
-    │   └── pages/
-    │       ├── landing/         # Marketing site pages
-    │       └── dashboard/       # SuperAdmin, Admin, Teacher, Student, Parent dashboards
+│   ├── src/
+│   ├── routes/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── utils/
+│   └── package.json
+│
+├── docker-compose.yml
+├── render.yaml
+└── README.md
 ```
 
 ---
 
-## 🚀 How to Run the Production Stack
+# 🚀 Getting Started
 
-### Prerequisites
-Make sure you have [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) installed on your machine.
+## Clone Repository
 
+```bash
+git clone https://github.com/Nikhil-beep25/VidyaSanchar.git
+```
+
+```
+cd VidyaSanchar
+```
+
+---
+
+# Install Dependencies
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+```
+
+### Backend
+
+```bash
+cd backend
+npm install
+```
+
+---
+
+# Environment Variables
+
+Create a `.env` file inside the backend folder.
+
+```env
+DATABASE_URL=
+JWT_SECRET=
+PORT=5000
+```
+
+---
+
+# Run Development Server
+
+### Backend
+
+```bash
+npm run dev
+```
+
+### Frontend
+
+```bash
+npm run dev
+```
+
+---
+
+# 📊 Modules
+
+- Student Management
+- Teacher Management
+- Parent Management
+- Class Management
+- Attendance
+- Fee Management
+- Examination
+- Dashboard
+- Reports
+- Authentication
+- Profile Management
+
+---
+
+# 🔒 Security
+
+- JWT Authentication
+- Password Encryption
+- Protected Routes
+- Role-Based Access Control
+- Secure REST APIs
+
+---
+
+# 📸 Screenshots
+
+> Add screenshots of your application here.
+
+Example:
+
+```
+screenshots/
+├── login.png
+├── dashboard.png
+├── students.png
+├── attendance.png
+├── fees.png
+```
+
+---
+
+# 🚀 Deployment
+
+### Frontend
+
+Vercel
+
+### Backend
+
+Render
+
+### Database
+
+PostgreSQL
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+1. Fork the repository
+
+2. Create a new branch
+
+```bash
+git checkout -b feature-name
+```
+
+3. Commit changes
+
+```bash
+git commit -m "Add feature"
+```
+
+4. Push changes
+
+```bash
+git push origin feature-name
+```
+
+5. Open a Pull Request
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+# 👨‍💻 Developer
+
+## Nikhil Bhadauriya
+
+Full Stack Developer
+
+GitHub:
+https://github.com/Nikhil-beep25
+
+---
+
+## ⭐ Support
+
+If you like this project, don't forget to ⭐ Star the repository.
+
+Made with ❤️ by **Nikhil Bhadauriya**
 ### Step 1: Start the Docker Containers
 In the root directory, run:
 ```bash
